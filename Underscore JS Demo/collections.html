@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collection Functions</title>
+</head>
+<body>
+  <a href="index.html">Home</a>
+  <br><br>
+  <h3>Collection Functions from Underscore.js</h3>
+  <div class="eachArray">
+    <label for="eachArray">_.each: Show an alert for each number in the array.</label><br>
+    <input type="text" id="eachArray" value="1, 2, 3">
+    <input type="text" id="eachFn" value="alert"><br>
+    <button id="eachArrayBtn">1. Alert the array</button>
+  </div><br>
+  <div class="mapArray">
+    <label for="mapArray">_.map: Apply a function to each element in an array and map to a new one. This function multiplies by 3.</label><br>
+    <input type="text" id="mapArray" value="2, 3, 4">
+    <input type="text" id="mapFn">
+    <span></span><br>
+    <button id="mapArrayBtn">2. Map the array</button>
+  </div><br>
+  <div class="reduceArray">
+    <label for="reduceArray">_.reduce: Apply an equation across values in an array where memo is the accumulator, starting at the value of the first number.</label><br>
+    <input type="text" id="reduceArray" value="1, 2, 3">
+    <input type="text" id="reduceFn">
+    <span></span><br>
+    <button id="reduceArrayBtn">3. Reduce the array</button>
+  </div><br>
+  <div class="findArray">
+    <label for="findArray">_.find: Find the first value to return true in an array. This function is looking for the first even value.</label><br>
+    <input type="text" id="findArray" value="1, 2, 3, 4">
+    <input type="text" id="findArrayFunction" value="num % 2 === 0">
+    <span></span><br>
+    <button id="findArrayBtn">4. Find first true in the array</button>
+  </div><br>
+  <div class="filterArray">
+    <label for="filterArray">_.filter: Apply an equation across values in an array to see which result to true.
+      Pick out evens.
+    </label><br>
+    <input type="text" id="filterArray" value="1, 2, 3, 4">
+    <input type="text" id="filterFn">
+    <span></span><br>
+    <button id="filterArrayBtn">5. Filter the array</button>
+  </div><br>
+  <div class="findWhere">
+    <label for="findWhereInput">_.findWhere: Find the first record with the listed property: author: 'David Benioff'.</label><br>
+    <textarea id="findWhereInput" cols="40" rows="4" value="
+      {name: 'City of Thieves', author: 'David Benioff'},
+      {name: 'The 25th Hour', author:'David Benioff'},
+      {name: 'The Hidden Life of Trees', author:'Peter Wohlleben'}
+    "></textarea>
+    <input type="text" id="findWhereFn">
+    <span></span><br>
+    <button id="findWhereBtn">6. Find a match</button>
+  </div><br>
+  <div class="where">
+    <label for="whereInput">_.where: Find the records that match the listed property: author: 'David Benioff'.</label><br>
+    <textarea id="whereInput" cols="40" rows="4" value="
+      {name: 'City of Thieves', author: 'David Benioff'},
+      {name: 'The 25th Hour', author:'David Benioff'},
+      {name: 'The Hidden Life of Trees', author:'Peter Wohlleben'}
+    "></textarea>
+    <input type="text" id="whereFn">
+    <span></span><br>
+    <button id="whereBtn">7. Find all matches</button>
+  </div><br>
+  <div class="reject">
+    <label for="rejectArray">_.reject: Apply an equation across values in an array to see which result to false.
+      Pick out evens.
+    </label><br>
+    <input type="text" id="rejectArray" value="1, 2, 3, 4">
+    <input type="text" id="rejectFn">
+    <span></span><br>
+    <button id="rejectBtn">8. Reject the array's true values</button>
+  </div><br>
+  <div class="every">
+    <label for="everyArray">_.every: Apply an equation across values in an array to see which result to false.
+      If any value is false, the result is false.
+    </label><br>
+    <input type="text" id="everyArray" value="1, 2, 3, 4">
+    <input type="text" id="everyFn">
+    <span></span><br>
+    <button id="everyBtn">9. Check every value</button>
+  </div><br>
+  <div class="some">
+    <label for="someArray">_.some: Apply an equation across values in an array to see which result to true.
+      If any value is true, the result is true.
+    </label><br>
+    <input type="text" id="someArray" value="1, 2, 3, 4">
+    <input type="text" id="someFn">
+    <span></span><br>
+    <button id="someBtn">10. Check for any true value</button>
+  </div><br>
+  <div class="contains">
+    <label for="containsArray">_.contains: Check to see if the array contains a value.
+    </label><br>
+    <input type="text" id="containsArray" value="1, 2, 3, 4">
+    <input type="text" id="containsValue">
+    <span></span><br>
+    <button id="containsBtn">11. Check to see if array contains value</button>
+  </div><br>
+  <div class="invoke">
+    <label for="invokeArray">_.invoke: Invoke a function across an array.
+    </label><br>
+    <input type="text" id="invokeArray" value="[5, 1, 7], [3, 2, 1]">
+    <input type="text" id="invokeFn" value="sort">
+    <span></span><br>
+    <button id="invokeBtn">12. Invoke the function across the array</button>
+  </div><br>
+  <div class="pluck">
+    <label for="pluckInput">_.pluck: Pluck property values from a JSON array.</label><br>
+    <textarea id="pluckInput" cols="40" rows="4"></textarea>
+    <input type="text" id="pluckFn" value="author">
+    <span></span><br>
+    <button id="pluckBtn">13. Pluck the properties</button>
+  </div><br>
+  <div class="max">
+    <label for="maxInput">_.max: Get the maximum value.</label><br>
+    <textarea id="maxInput" cols="40" rows="4"></textarea>
+    <input type="text" id="maxFn" value="year">
+    <span></span><br>
+    <button id="maxBtn">14. Get the max value</button>
+  </div><br>
+  <div class="min">
+    <label for="minInput">_.min: Get the minimum value.</label><br>
+    <textarea id="minInput" cols="40" rows="4"></textarea>
+    <input type="text" id="minFn" value="year">
+    <span></span><br>
+    <button id="minBtn">15. Get the min value</button>
+  </div><br>
+  <div class="sortBy">
+    <label for="sortByInput">_.sortBy: Sort the objects.</label><br>
+    <textarea id="sortByInput" cols="40" rows="4"></textarea>
+    <input type="text" id="sortByFn" value="name">
+    <span></span><br>
+    <button id="sortByBtn">16. Sort</button>
+  </div><br>
+  <div class="groupBy">
+    <label for="groupByInput">_.groupBy: Group items by a value determined by a method or present in the original list.
+    </label><br>
+    <input type="text" id="groupByInput" value="1.0, 2.8, 2.3, 4.5">
+    <input type="text" id="groupByFn" value="Math.floor(num)">
+    <span></span><br>
+    <button id="groupByBtn">17. Group by calculated value</button>
+  </div><br>
+  <div class="indexBy">
+    <label for="indexByInput">_.indexBy: Sort the objects and group them by a unique value.</label><br>
+    <textarea id="indexByInput" cols="40" rows="4"></textarea>
+    <input type="text" id="indexByFn" value="year">
+    <span></span><br>
+    <button id="indexByBtn">18. Index by a property</button>
+  </div><br>
+  <div class="countBy">
+    <label for="countByInput">_.countBy: Count items that match a value and group them.
+    </label><br>
+    <input type="text" id="countByInput" value="1, 2, 3, 4, 5">
+    <input type="text" id="countByFn" value="num % 2 == 0 ? 'even': 'odd'">
+    <span></span><br>
+    <button id="countByBtn">19. Group by condition and show count</button>
+  </div><br>
+  <div class="shuffle">
+    <label for="shuffleInput">_.shuffle: Shuffle items in an array.
+    </label><br>
+    <input type="text" id="shuffleInput" value="1, 2, 3, 4, 5">
+    <span></span><br>
+    <button id="shuffleBtn">20. Shuffle</button>
+  </div><br>
+  <div class="sample">
+    <label for="sampleInput">_.sample: Grab a certain number of sample items in random order.
+    </label><br>
+    <input type="text" id="sampleInput" value="1, 2, 3, 4, 5">
+    <input type="text" id="sampleFn" value="3">
+    <span></span><br>
+    <button id="sampleBtn">21. Sample</button>
+  </div><br>
+  <div class="size">
+    <label for="sizeInput">_.size: Get the length of the array or object.
+    </label><br>
+    <input type="text" id="sizeInput" value="1, 2, 3, 4, 5">
+    <span></span><br>
+    <button id="sizeBtn">22. Get the size</button>
+  </div><br>
+  <div class="partition">
+    <label for="partitionInput">_.partition: Group into two arrays: one where a condition is satisfied and one where it isn't.
+    </label><br>
+    <input type="text" id="partitionInput" value="1, 2, 3, 4, 5">
+    <input type="text" id="partitionFn" value="num % 2 == 0">
+    <span></span><br>
+    <button id="partitionBtn">23. Partition</button>
+  </div><br>
+  <div class="compact">
+    <label for="compactInput">_.compact: Remove falsy values.
+    </label><br>
+    <input type="text" id="compactInput" value="0, 1, false, 2, 3, NaN">
+    <span></span><br>
+    <button id="compactBtn">24. Make compact</button>
+  </div><br>
+
+  <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.3/underscore-umd-min.js"></script>
+  <script src="collections.js"></script>
+</body>
+</html>
