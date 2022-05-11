@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Array Functions</title>
+</head>
+<body>
+  <a href="index.html">Home</a>
+  <br><br>
+  <h3>Array Functions from Underscore.js</h3>
+
+  <div class="first">
+    <label for="firstInput">_.first: Get the first n elements from an array.
+    </label><br>
+    <input type="text" id="firstInput" value="5, 4, 3, 2, 1">
+    <input type="text" id="firstValue" value="2">
+    <span></span><br>
+    <button id="firstBtn">1. Get first</button>
+  </div><br>
+  <div class="initial">
+    <label for="initialInput">_.initial: Get all but the last n elements from an array.
+    </label><br>
+    <input type="text" id="initialInput" value="5, 4, 3, 2, 1">
+    <input type="text" id="initialValue" value="1">
+    <span></span><br>
+    <button id="initialBtn">2. Get initial</button>
+  </div><br>
+  <div class="last">
+    <label for="lastInput">_.last: Get the last n elements from an array.
+    </label><br>
+    <input type="text" id="lastInput" value="5, 4, 3, 2, 1">
+    <input type="text" id="lastValue" value="2">
+    <span></span><br>
+    <button id="lastBtn">3. Get last</button>
+  </div><br>
+  <div class="rest">
+    <label for="restInput">_.rest: Get all but the first n elements from an array.
+    </label><br>
+    <input type="text" id="restInput" value="5, 4, 3, 2, 1">
+    <input type="text" id="restValue" value="2">
+    <span></span><br>
+    <button id="restBtn">4. Get rest</button>
+  </div><br>
+  <div class="flatten">
+    <label for="flattenInput">_.flatten: Flatten the array to the depth given.
+    </label><br>
+    <input type="text" id="flattenInput" value="1, [2], [3, [[4, 5]]]">
+    <input type="text" id="flattenValue" value="2">
+    <span></span><br>
+    <button id="flattenBtn">5. Flatten</button>
+  </div><br>
+  <div class="without">
+    <label for="withoutInput">_.without: Take out all instances of the given values.
+    </label><br>
+    <input type="text" id="withoutInput" value="5, 4, 3, 5, 2, 1">
+    <input type="text" id="withoutValue" value="2, 5">
+    <span></span><br>
+    <button id="withoutBtn">6. Take out values</button>
+  </div><br>
+  <div class="union">
+    <label for="unionInput">_.union: Combine the unique values from one or more arrays.
+    </label><br>
+    <input type="text" id="unionInput" value="[1, 2, 3], [101, 2, 1, 10], [2, 1]">
+    <span></span><br>
+    <button id="unionBtn">7. Unite</button>
+  </div><br>
+  <div class="intersection">
+    <label for="intersectionInput">_.intersection: Get the common values across arrays. (Broken)
+    </label><br>
+    <input type="text" id="intersectionInput" value="[1, 2, 3], [101, 2, 1, 10], [10, 2, 1]">
+    <span></span><br>
+    <button id="intersectionBtn">8. Get intersection</button>
+  </div><br>
+  <div class="difference">
+    <label for="differenceInput">_.difference: Take out all instances of the given values.
+    </label><br>
+    <input type="text" id="differenceInput" value="5, 4, 3, 5, 2, 1">
+    <input type="text" id="differenceValue" value="2, 5">
+    <span></span><br>
+    <button id="differenceBtn">9. Find the different values</button>
+  </div><br>
+  <div class="uniq">
+    <label for="uniqInput">_.uniq: Get unique elements of an array.
+    </label><br>
+    <input type="text" id="uniqInput" value="5, 4, 3, 5, 2, 1">
+    <span></span><br>
+    <button id="uniqBtn">10. Get unique values</button>
+  </div><br>
+  <div class="zip">
+    <label for="zipInput">_.zip: Transpose arrays.
+    </label><br>
+    <input type="text" id="zipInput" value="[1, 2, 3], [101, 2, 10], [10, 2, 1]">
+    <span></span><br>
+    <button id="zipBtn">11. Zip</button>
+  </div><br>
+  <div class="unzip">
+    <label for="unzipInput">_.unzip: Transpose arrays. Function uses array of arrays as input.
+    </label><br>
+    <input type="text" id="unzipInput" value="[1,101,10], [2,2,2], [3,10,1]">
+    <span></span><br>
+    <button id="unzipBtn">12. Unzip</button>
+  </div><br>
+  <div class="object">
+    <label for="objectInput">_.object: Convert arrays into an object. (Broken)
+    </label><br>
+    <input type="text" id="objectInput" value='["john", "jane", "mary"], ["30", "40", "50"]'>
+    <span></span><br>
+    <button id="objectBtn">13. Create object</button>
+  </div><br>
+  <div class="chunk">
+    <label for="chunkInput">_.chunk: Chunk and array into multiple arrays of length n or less.
+    </label><br>
+    <input type="text" id="chunkInput" value='5, 4, 3, 5, 2, 1'>
+    <input type="text" id="chunkValue" value="2">
+    <span></span><br>
+    <button id="chunkBtn">14. Chunk array</button>
+  </div><br>
+  <div class="indexOf">
+    <label for="indexOfInput">_.indexOf: Find the first instance of the search value.
+    </label><br>
+    <input type="text" id="indexOfInput" value='5, 4, 3, 5, 2, 1'>
+    <input type="text" id="indexOfValue" value="2">
+    <span></span><br>
+    <button id="indexOfBtn">15. Find indexOf array</button>
+  </div><br>
+  <div class="lastIndexOf">
+    <label for="lastIndexOfInput">_.lastIndexOf: Find the last instance of the search value.
+    </label><br>
+    <input type="text" id="lastIndexOfInput" value='5, 4, 3, 5, 2, 1'>
+    <input type="text" id="lastIndexOfValue" value="5">
+    <span></span><br>
+    <button id="lastIndexOfBtn">16. Find lastIndexOf array</button>
+  </div><br>
+  <div class="sortedIndex">
+    <label for="sortedIndexInput">_.sortedIndex: Find where the value should fit into the sorted list.
+    </label><br>
+    <input type="text" id="sortedIndexInput" value="1, 2, 3, 4, 5">
+    <input type="text" id="sortedIndexValue" value="4.5">
+    <span></span><br>
+    <button id="sortedIndexBtn">17. Find sorted position</button>
+  </div><br>
+  <div class="findIndex">
+    <label for="findIndexInput">_.findIndex: Find the first instance where the condition is true. (Broken)
+    </label><br>
+    <input type="text" id="findIndexInput" value='4, 3, 5, 2, 1'>
+    <input type="text" id="findIndexFn" value="isPrime">
+    <span></span><br>
+    <button id="findIndexBtn">18. Find index where condition is true</button>
+  </div><br>
+  <div class="findLastIndex">
+    <label for="findLastIndexInput">_.findLastIndex: Find the last instance where the condition is true.
+    </label><br>
+    <input type="text" id="findLastIndexInput">
+    <input type="text" id="findLastIndexFn" value='{"author": "David Benioff"}'>
+    <span></span><br>
+    <button id="findLastIndexBtn">19. Find last index where condition is true</button>
+  </div><br>
+  <div class="range">
+    <label for="rangeValue1">_.range: Generate a list of numbers counted up from the first value to the second value by the step, which is the third value. (Broken)
+    </label><br>
+    <input type="text" id="rangeValue1" value="0">
+    <input type="text" id="rangeValue2" value='30'>
+    <input type="text" id="rangeValue3" value='5'>
+    <span></span><br>
+    <button id="rangeBtn">20. Create range</button>
+  </div><br>
+
+  <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.3/underscore-umd-min.js"></script>
+  <script src="arrays.js"></script>
+</body>
+</html>
