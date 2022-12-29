@@ -1,15 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Page Title</title>
+<title>Cropify</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
 </head>
 <body>
 
-<h1>My First Heading</h1>
-<p>My first paragraph.</p>
+<h1>General Items</h1>
+<p>These are the general items on the marketplace.</p>
+
+<p>Community Listings</p>
+<form id="sortGeneralItems">
+  <label for="sort">Sort:</label>
+  <select id="sort" name="cars">
+    <option value="default">Default</option>
+    <option value="nameAsc">Name: A to Z</option>
+    <option value="nameDesc">Name: Z to A</option>
+    <option value="specItemCtAsc">Specific Item Count: Ascending</option>
+    <option value="specItemCtDesc">Specific Item Count: Descending</option>
+  </select>
+</form>
+<ul id="generalItems"></ul>
 
 </body>
 <script>
+let generalItemsDefault = [{"id":1,"order":"1.00000000000000000000","Name":"Apple","Notes":"My fuji bag.","Active":true},{"id":2,"order":"2.00000000000000000000","Name":"Orange","Notes":null,"Active":false},{"id":3,"order":"3.00000000000000000000","Name":"Pear","Notes":null,"Active":false},{"id":4,"order":"4.00000000000000000000","Name":"","Notes":"","Active":false}];
+
 var myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 myHeaders.append("Authorization", "Token t48tRPtNQccyc6Q65klBDEP1QJqkwXw0");
@@ -17,12 +34,64 @@ var requestOptions = {
     method: "get",
     headers: myHeaders,
     redirect: "follow",
-    
 };
 
-fetch("https://api.baserow.io/api/database/rows/table/6842/?user_field_names=true", requestOptions)
-    .then(response => response.text())
-    .then(result => console.log(result))
-    .catch(error => console.log('error', error));
+async function getGeneralItems() {
+  let url = 'https://api.baserow.io/api/database/rows/table/6842/?user_field_names=true';
+  try {
+      let res = await fetch(url, requestOptions);
+      res = await res.json();
+      return await res.results;
+  } catch (error) {
+      console.log(error);
+  }
+}
+
+let filters = {};
+
+let sortBy = 'default';
+let sortGeneralItems = document.querySelector('form#sortGeneralItems>select');
+function getSort()  {
+  renderGeneralItems(filters, sortGeneralItems.value);
+}
+sortGeneralItems.addEventListener('change', getSort);
+
+async function renderGeneralItems(filters, sortBy) {
+  let generalItems = '';
+  generalItems = await getGeneralItems();
+  (!generalItems) ? generalItems = generalItemsDefault : generalItems;
+
+  if(sortBy == ('default' || undefined)){
+  } else if(sortBy=='nameAsc') {
+    generalItems = _.sortBy(generalItems, 'Name');
+  } else if(sortBy=='nameDesc') {
+    generalItems = _.sortBy(generalItems, 'Name').reverse();
+  } else if(sortBy=='specItemCtAsc'){
+    generalItems = _.sortBy(generalItems, 'Specific Item Count')
+  } else if(sortBy=='specItemCtDesc'){
+    generalItems = _.sortBy(generalItems, 'Specific Item Count').reverse();
+  }
+
+  let generalItemsContainer = document.querySelector('ul#generalItems');
+  generalItemsContainer.innerHTML = '';
+  generalItems.forEach(generalItem => {
+
+    let generalItemDiv = document.createElement("div");
+    generalItemDiv.className = 'img-card';
+    let generalItemDivP1 = document.createElement("p");
+    let generalItemDivP2 = document.createElement("p");
+
+    generalItemDivP1.textContent = generalItem.Name || 'Null';
+    generalItemDivP2.textContent = generalItem['Specific Item Count'] || 'Null';
+
+    generalItemDiv.appendChild(generalItemDivP1);
+    generalItemDiv.appendChild(generalItemDivP2);
+    generalItemsContainer.appendChild(generalItemDiv);
+
+  });
+}
+
+renderGeneralItems();
+
 </script>
 </html>
