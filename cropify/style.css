@@ -1,3 +1,84 @@
+/* Checkbox Formatting */
+.css-checkbox {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  width: 1px;
+  padding: 0;
+  border: 0;
+}
+.css-checkbox + label {
+  position: relative;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+  color: rgb(97, 97, 97);
+  height: 1.2em;
+}
+.css-checkbox + label::before {
+  content: " ";
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  width: 11px;
+  height: 11px;
+  background-color: inherit;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(55, 148, 36);
+  border-radius: 3px;
+  box-shadow: none;
+}
+.css-checkbox:checked + label::after {
+  content: " ";
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMTczLjg5OCA0MzkuNDA0bC0xNjYuNC0xNjYuNGMtOS45OTctOS45OTctOS45OTctMjYuMjA2IDAtMzYuMjA0bDM2LjIwMy0zNi4yMDRjOS45OTctOS45OTggMjYuMjA3LTkuOTk4IDM2LjIwNCAwTDE5MiAzMTIuNjkgNDMyLjA5NSA3Mi41OTZjOS45OTctOS45OTcgMjYuMjA3LTkuOTk3IDM2LjIwNCAwbDM2LjIwMyAzNi4yMDRjOS45OTcgOS45OTcgOS45OTcgMjYuMjA2IDAgMzYuMjA0bC0yOTQuNCAyOTQuNDAxYy05Ljk5OCA5Ljk5Ny0yNi4yMDcgOS45OTctMzYuMjA0LS4wMDF6Ii8+PC9zdmc+");
+  background-repeat: no-repeat;
+  background-size: 8px 8px;
+  background-position: center center;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  left: 0px;
+  top: 3px;
+  text-align: center;
+  background-color: rgb(67, 176, 42);
+  height: 14px;
+  width: 14px;
+  border-radius: 3px;
+}
+
+
+/* My CSS */
+ul#categories {
+  border: 1px solid black;
+  padding: 0 0 0 0;
+  list-style: none;
+}
+
+li.categoryLi {
+  color: inherit;
+  display: inline-block;
+  padding:5px 10px 5px 10px;
+}
+
+div#categoriesFilter {
+  max-width: 200px;
+}
+
+div#categoriesFilter>div {
+  color: inherit;
+  word-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* number of lines to show */
+          line-clamp: 2; 
+  -webkit-box-orient: vertical;
+}
+
 ul#generalItems {
   border: 1px solid black;
   padding: 0 0 0 0;
@@ -12,4 +93,21 @@ div.img-card {
   display: inline-block;
   padding: 5px 5px 5px 5px;
   margin: 5px 5px 5px 5px;
+}
+
+div.filterContainer {
+  border:1px solid grey;
+  padding: 5px;
+}
+
+div.filterDisplayContainer {
+  display: inline-block;
+}
+
+div.filterDisplayContainer>div {
+  display: inline-block;
+}
+
+form#sortGeneralItems {
+  display: inline-block;
 }
