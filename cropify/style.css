@@ -1,3 +1,13 @@
+html {
+  --color: #999;
+  --checked-color: rgb(55, 148, 36);
+
+  --bg-color: #e8e8e8;
+
+  font-family: Arial;
+  font-size: 16px;
+}
+
 /* Checkbox Formatting */
 .css-checkbox {
   position: absolute;
@@ -27,7 +37,7 @@
   background-color: inherit;
   border-width: 1px;
   border-style: solid;
-  border-color: rgb(55, 148, 36);
+  border-color: var(--checked-color);
   border-radius: 3px;
   box-shadow: none;
 }
@@ -50,8 +60,49 @@
   border-radius: 3px;
 }
 
+/* Radio Buttons */
+input[type="radio"] {
+  height: 1em;
+  width: 1em;
+  margin-right: 0.5rem;
+  accent-color: var(--checked-color);
+}
 
 /* My CSS */
+ul#groups {
+  border: 1px solid black;
+  padding: 0 0 0 0;
+  list-style: none;
+  vertical-align: top;
+}
+
+div.iconSelector {
+  background-color: grey;
+  border: 1px solid black;
+  min-width: 5em;
+  max-width: 10em;
+  min-height: 5em;
+  display: inline-block;
+  padding: 5px 5px 5px 5px;
+  margin: 5px 5px 5px 5px;
+  vertical-align: top;
+}
+
+div#groupsFilter {
+  max-width: 200px;
+}
+
+div#groupsFilter>div {
+  color: inherit;
+  word-wrap: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* number of lines to show */
+          line-clamp: 2; 
+  -webkit-box-orient: vertical;
+}
+
 ul#categories {
   border: 1px solid black;
   padding: 0 0 0 0;
@@ -93,6 +144,7 @@ div.img-card {
   display: inline-block;
   padding: 5px 5px 5px 5px;
   margin: 5px 5px 5px 5px;
+  vertical-align: top;
 }
 
 div.filterContainer {

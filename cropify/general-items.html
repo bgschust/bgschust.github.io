@@ -12,28 +12,30 @@
 <p>These are the general items on the marketplace.</p>
 
 <p>My Listings</p>
-<input type="checkbox">
 
 <p>Community Listings</p>
 <div class="filterContainer">
+
   <h4>Groups</h4>
   <ul id="groups"></ul>
   <h4>Categories</h4>
   <ul id="categories"></ul>
+
   <div class="filterDisplayContainer">
     <div id="groupsFilter">
       <label>Groups</label><br />
-      <input type="text" value="[1,2]">
-      <div>Default Groups</div>
+      <input type="text" id="groupFilterInput" value="[1,2]">
+      <div><span>Initial Groups</span></div>
     </div>
     <div id="categoriesFilter">
-      <label>Categories</label><br />
-      <input type="text" value="[3,4,5]">
-      <div><span>Default Categories</span></div>
+      <label>Categories</label>
+      <button>Reset</button><br />
+      <input type="text" id="categoriesFilterInput" value="[3,4,5]">
+      <div><span>Initial Categories</span></div>
     </div>
     <div id="outOfStockFilter">
       <label>Show out-of-stock items?</label><br />
-      <input type="checkbox">
+      <input type="checkbox" id="outOfStockFilterCheckbox">
     </div>
     <form id="sortGeneralItems">
       <label for="sort">Sort:</label>
@@ -47,54 +49,119 @@
     </form>
   </div>
 </div>
+
 <ul id="generalItems"></ul>
 
 </body>
 
 <script id="initialize">
+let groupsDefault = [{"id":1,"order":"1.00000000000000000000","Name":"Edible Harvests","Notes":"","Active":false,"General Items":[{"id":5,"value":"Tomato"},{"id":1,"value":"Apple"},{"id":2,"value":"Orange"},{"id":3,"value":"Pear"}],"General Items - Categories":[],"Parent Category":[{"id":9,"value":"Group"}]},{"id":10,"order":"10.00000000000000000000","Name":"Farm Services","Notes":"","Active":false,"General Items":[],"General Items - Categories":[],"Parent Category":[{"id":9,"value":"Group"}]},{"id":2,"order":"2.00000000000000000000","Name":"Artisan Foods & Beverages","Notes":"","Active":false,"General Items":[{"id":6,"value":"Sauerkraut"},{"id":7,"value":"Soft Pretzel"}],"General Items - Categories":[],"Parent Category":[{"id":9,"value":"Group"}]}];
 let categoriesDefault = [{"id":1,"order":"1.00000000000000000000","Name":"Edible Harvests","Notes":"","Active":false,"General Items":[{"id":5,"value":"Tomato"},{"id":1,"value":"Apple"},{"id":2,"value":"Orange"},{"id":3,"value":"Pear"}],"General Items - Categories":[]},{"id":2,"order":"2.00000000000000000000","Name":"Artisan Foods & Beverages","Notes":"","Active":false,"General Items":[{"id":6,"value":"Sauerkraut"},{"id":7,"value":"Soft Pretzel"}],"General Items - Categories":[]},{"id":3,"order":"3.00000000000000000000","Name":"Vegetables","Notes":"","Active":false,"General Items":[],"General Items - Categories":[{"id":5,"value":"Tomato"}]},{"id":4,"order":"4.00000000000000000000","Name":"Fruit","Notes":"","Active":false,"General Items":[],"General Items - Categories":[{"id":1,"value":"Apple"},{"id":2,"value":"Orange"},{"id":3,"value":"Pear"}]},{"id":5,"order":"5.00000000000000000000","Name":"Fermented Foods","Notes":"","Active":false,"General Items":[],"General Items - Categories":[{"id":6,"value":"Sauerkraut"}]},{"id":6,"order":"6.00000000000000000000","Name":"Baked Goods","Notes":"","Active":false,"General Items":[],"General Items - Categories":[{"id":7,"value":"Soft Pretzel"}]}];
 let generalItemsDefault = [{"id":1,"order":"1.00000000000000000000","Name":"Apple","Notes":"My fuji bag.","Active":true},{"id":2,"order":"2.00000000000000000000","Name":"Orange","Notes":null,"Active":false},{"id":3,"order":"3.00000000000000000000","Name":"Pear","Notes":null,"Active":false},{"id":4,"order":"4.00000000000000000000","Name":"","Notes":"","Active":false}];
 
-let filterDefault = {
-  group: [1,2],
-  categories: [3,4,5],
-  categoryObjects: [],
+const filterDefault = {
+  group: [1],
+  groupObjects: [{id: 1, value: 'Edible Harvests'}],
+  categories: [3,6,5],
+  categoryObjects: [{id: 3, value:'Vegetables'},{id: 6, value: 'Baked Goods'},{id:5, value:'Fermented Foods'}],
   show_outOfStock: false,
 };
-let filter = filterDefault;
+let filter = {};
+Object.assign(filter, filterDefault);
 
-// get filter values and re-render
-let filterGroupInput = document.querySelectorAll('div.filterDisplayContainer>div>input')[0];
-filter.group = JSON.parse(filterGroupInput.value);
-filterGroupInput.addEventListener('change', function getFilterGroups() {
-  filter.group = JSON.parse(filterGroupInput.value);
-  if (filter.group.length >= 1) {
-    renderCategories();
-  }
-});
-let filterCategoriesInput = document.querySelectorAll('div.filterDisplayContainer>div>input')[1];
-filter.categories = JSON.parse(filterCategoriesInput.value);
-filterCategoriesInput.addEventListener('change', function getFilterCategories() {
-  filter.categories = JSON.parse(filterCategoriesInput.value);
-  if (filter.categories.length >= 1) {
-    renderGeneralItems();
-  }
-});
-let filterShowOutOfStockCheckbox = document.querySelectorAll('div.filterDisplayContainer>div>input')[2];
-filter.show_outOfStock = filterShowOutOfStockCheckbox.checked;
-filterShowOutOfStockCheckbox.addEventListener('change', function getFilterCheckbox() {
-  filter.show_outOfStock = filterShowOutOfStockCheckbox.checked;
-  renderGeneralItems();
-});
-
-// get sort values and re-render
 let sortBy = 'default';
-let sortGeneralItems = document.querySelector('form#sortGeneralItems>select');
-function getSort()  {
-  sortBy = sortGeneralItems.value;
-  renderGeneralItems();
+
+// assign filter defaults to HTML inputs
+document.querySelector('input#groupFilterInput').value = JSON.stringify(filter.group);
+document.querySelector('input#categoriesFilterInput').value = JSON.stringify(filter.categories);
+</script>
+
+<script id="groups">
+var headers_groups = new Headers();
+headers_groups.append("Content-Type", "application/json");
+headers_groups.append("Authorization", "Token t48tRPtNQccyc6Q65klBDEP1QJqkwXw0");
+var requestOptionsGroups = {
+    method: "get",
+    headers: headers_groups,
+    redirect: "follow",
+};
+
+async function getGroups() {
+  let queryParams = [
+    {"user_field_names": true},
+    {"size": 100},
+    {"filter__field_819526__link_row_has": 9},
+  ];
+  
+  let query = '';
+  queryParams.forEach(function URIencode(item, index, arr){
+    let k = Object.keys(item)[0];
+    let v = item[k];
+    query += encodeURIComponent(k)+'='+encodeURIComponent(v);
+    if (index < queryParams.length - 1) {
+      query += '&';
+    }
+  });
+  if (query) {
+    query = '?'+ query;
+  }
+
+  let url = 'https://api.baserow.io/api/database/rows/table/126754/' + query;
+  
+  try {
+      let res = await fetch(url, requestOptionsGroups);
+      res = await res.json();
+      return await res.results;
+  } catch (error) {
+      console.log(error);
+  }
 }
-sortGeneralItems.addEventListener('change', getSort);
+
+async function renderGroups() {
+  let groups = [];
+  groups = await getGroups();
+  (groups.length == 0) ? groups = groupsDefault : groups;
+  
+  // browser sorting
+  groups = _.sortBy(groups, 'Name');
+  
+  groupsContainer.innerHTML = '';
+  groups.forEach(record => {
+    if (filter.group.indexOf(record.id) >= 0 
+        && _.pluck(filter.groupObjects, 'id').indexOf(record.id) == -1) {
+      filter.groupObjects.push({id: record.id, value: record.Name});
+    }
+    filter.groupNames = _.pluck(filter.groupObjects, 'value').sort().join(', ');
+    document.querySelector('div#groupsFilter>div>span').textContent = filter.groupNames;
+
+    let groupDiv = document.createElement("div");
+    groupDiv.className = 'iconSelector';
+    let groupRadioBtn = document.createElement("input");
+    groupRadioBtn.setAttribute('type', 'radio');
+    groupRadioBtn.setAttribute('name', 'group');
+    groupRadioBtn.className = 'iconSelector';
+    groupRadioBtn.checked = false;
+    if (filter.group[0] == record.id) {
+      groupRadioBtn.checked = true;
+    }
+    let groupPseudoLabel = document.createElement("label");
+    let groupDivP1 = document.createElement("p");
+
+    let recordSimple = JSON.stringify({id: record['id'], value: record['Name']});
+    groupRadioBtn.setAttribute('id', recordSimple);
+    groupPseudoLabel.textContent = '';
+    groupPseudoLabel.setAttribute('for', recordSimple);
+
+    groupDivP1.textContent = record.Name || 'Null';
+
+    groupDiv.appendChild(groupRadioBtn);
+    groupDiv.appendChild(groupPseudoLabel);
+    groupDiv.appendChild(groupDivP1);
+    groupsContainer.appendChild(groupDiv);
+
+  });
+  return groups;
+}
 </script>
 
 <script id="categories">
@@ -108,21 +175,20 @@ var requestOptionsCategories = {
 };
 
 async function getCategories() {
-
   let queryParams = [
     {"user_field_names": true},
     {"size": 100},
   ];
 
   // database filtering
-  if (typeof filter.group == 'object') {
+  /* if (typeof filter.group == 'object') {
     filter.group.forEach(function URLfilterGroups(value, index, arr) {
       queryParams.push({'filter__field_819526__link_row_has': value});
       if (index < filter.group.length - 1) {
         queryParams.push({'filter_type': 'OR'});
       }
     });
-  }
+  } */
   
   let query = '';
   queryParams.forEach(function URIencode(item, index, arr){
@@ -148,23 +214,43 @@ async function getCategories() {
   }
 }
 
-let categoriesContainer = document.querySelector('ul#categories');
 async function renderCategories() {
   let categories = '';
   categories = await getCategories();
   (!categories) ? categories = categoriesDefault : categories;
   
+  // update filter display for categories
+  categories.forEach(category => {
+    if (filter.categories.indexOf(category.id) >= 0 
+        && _.pluck(filter.categoryObjects, 'id').indexOf(category.id) == -1) {
+      filter.categoryObjects.push({id: category.id, value: category.Name});
+    } else if(filter.categories.indexOf(category.id) >= 0
+    && _.pluck(filter.categoryObjects, 'id').indexOf(category.id) >= 0) {
+      // this is to dynamically remove objects from filter.categoryObjects (unfinished)
+    } else {
+    }
+  });
+  filter.categoryNames = _.pluck(filter.categoryObjects, 'value').sort().join(', ');
+  document.querySelector('div#categoriesFilter>div>span').textContent = filter.categoryNames;
+
+  // browser filtering
+  if (filter.group.length > 0) {
+    categories = categories.filter(function filterByGroup(record){
+      let id = 0;
+      if (record['Parent Category'].length == 0) {
+        id = 'Null';
+      } else {
+        id = record['Parent Category'][0]['id'];
+      }  
+      return id == filter.group[0];
+    });
+  }
+
   // browser sorting
   categories = _.sortBy(categories, 'Name');
 
   categoriesContainer.innerHTML = '';
   categories.forEach(category => {
-
-    if (filter.categories.indexOf(category.id) >= 0 
-        && _.pluck(filter.categoryObjects, 'id').indexOf(category.id) == -1) {
-      filter.categoryObjects.push({id: category.id, value: category.Name});
-    }
-
     let categoryLi = document.createElement("li");
     categoryLi.className = 'categoryLi';
     let categoryCheckbox = document.createElement("input");
@@ -186,27 +272,8 @@ async function renderCategories() {
     categoriesContainer.appendChild(categoryLi);
 
   });
+  return categories;
 }
-
-categoriesContainer.addEventListener('change', adjustCategories);
-function adjustCategories(event){
-  filter.categoryObjects = _.sortBy(filter.categoryObjects, 'id');
-  if (event.target.checked) {
-    filter.categoryObjects.push(JSON.parse(event.target.id));
-  } else if (!event.target.checked) {
-    let i = filter.categories.indexOf(JSON.parse(event.target.id).id);
-    filter.categoryObjects.splice(i,1);
-  }
-  filter.categoryObjects = _.sortBy(filter.categoryObjects, 'id');
-  filter.categories = _.pluck(filter.categoryObjects,'id');
-  filter.categoryNames = _.pluck(filter.categoryObjects, 'value');
-  document.querySelector('div#categoriesFilter>div>span').textContent = filter.categoryNames.sort().join(', ');
-  filterCategoriesInput.value = JSON.stringify(filter.categories);
-  renderGeneralItems();
-  return filter;
-}
-
-renderCategories();
 </script>
 
 <script id="generalItems">
@@ -301,9 +368,90 @@ async function renderGeneralItems() {
     generalItemsContainer.appendChild(generalItemDiv);
 
   });
+  return generalItems;
+}
+</script>
+
+<script id="processFilters">
+// initially render lists
+let groups = renderGroups();
+let categories = renderCategories();
+let generalItems = renderGeneralItems();
+
+// change filter inputs to reflect checkbox and radio button clicks
+let groupsContainer = document.querySelector('ul#groups');
+groupsContainer.addEventListener('change', adjustGroups);
+function adjustGroups(event){
+  filter.groupObjects = [];
+  filter.groupObjects.push(JSON.parse(event.target.id));
+  filter.group = _.pluck(filter.groupObjects,'id');
+  filter.groupNames = _.pluck(filter.groupObjects, 'value').sort().join(', ');
+  document.querySelector('div#groupsFilter>div>span').textContent = filter.groupNames;
+  filterGroupInput.value = JSON.stringify(filter.group);
+  renderCategories();
+}
+let categoriesContainer = document.querySelector('ul#categories');
+categoriesContainer.addEventListener('change', adjustCategories);
+function adjustCategories(event){
+  filter.categoryObjects = _.sortBy(filter.categoryObjects, 'id');
+  filter.categories = _.pluck(filter.categoryObjects,'id');
+  if (event.target.checked) {
+    filter.categoryObjects.push(JSON.parse(event.target.id));
+  } else if (!event.target.checked) {
+    let i = filter.categories.indexOf(JSON.parse(event.target.id).id);
+    if(i >= 0) {
+      filter.categoryObjects.splice(i,1);
+    }
+  }
+  filter.categoryObjects = _.sortBy(filter.categoryObjects, 'id');
+  filter.categories = _.pluck(filter.categoryObjects,'id');
+  filter.categoryNames = _.pluck(filter.categoryObjects, 'value').sort().join(', ');
+  document.querySelector('div#categoriesFilter>div>span').textContent = filter.categoryNames;
+  filterCategoriesInput.value = JSON.stringify(filter.categories);
+  renderGeneralItems();
+  return filter;
 }
 
-renderGeneralItems();
+// get filter input values and re-render
+let filterGroupInput = document.querySelectorAll('div.filterDisplayContainer>div>input')[0];
+filter.group = JSON.parse(filterGroupInput.value);
+filterGroupInput.addEventListener('change', function filterGroups() {
+  filter.group = JSON.parse(filterGroupInput.value);
+  if (filter.group.length >= 1) {
+    renderCategories();
+  }
+});
+let filterCategoriesInput = document.querySelectorAll('div.filterDisplayContainer>div>input')[1];
+filter.categories = JSON.parse(filterCategoriesInput.value);
+filterCategoriesInput.addEventListener('change', function getFilterCategories() {
+  filter.categories = JSON.parse(filterCategoriesInput.value);
+  if (filter.categories.length >= 1) {
+    renderGeneralItems();
+  }
+});
+document.querySelector('div#categoriesFilter button').addEventListener('click', resetCategories); 
+function resetCategories() {
+  filter.categories = filterDefault.categories;
+  filter.categoryObjects = filterDefault.categoryObjects;
+  filter.categoryNames = _.pluck(filter.categoryObjects, 'value');
+  filterCategoriesInput.value = JSON.stringify(filter.categories);
+  renderCategories();
+  renderGeneralItems();
+}
+let filterShowOutOfStockCheckbox = document.querySelectorAll('div.filterDisplayContainer>div>input')[2];
+filter.show_outOfStock = filterShowOutOfStockCheckbox.checked;
+filterShowOutOfStockCheckbox.addEventListener('change', function getFilterCheckbox() {
+  filter.show_outOfStock = filterShowOutOfStockCheckbox.checked;
+  renderGeneralItems();
+});
 
+// get sort input values and re-render
+let sortGeneralItems = document.querySelector('form#sortGeneralItems>select');
+function getSorted()  {
+  sortBy = sortGeneralItems.value;
+  renderGeneralItems();
+}
+sortGeneralItems.addEventListener('change', getSorted);
 </script>
+
 </html>
