@@ -1,56 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Cropify</title>
-<meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
-<link rel="stylesheet" href="style.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <title>Cropify</title>
+  <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
 </head>
 <body>
 
-<h1>General Items</h1>
-<p>These are the general items on the marketplace.</p>
+  <iframe id="component_topNav" src="components/topNavigation.html"></iframe>
 
-<p>My Listings</p>
-
-<p>Community Listings</p>
-<div class="filterContainer">
-
-  <h4>Groups</h4>
-  <ul id="groups"></ul>
-  <h4>Categories</h4>
-  <ul id="categories"></ul>
-
-  <div class="filterDisplayContainer">
-    <div id="groupsFilter">
-      <label>Groups</label><br />
-      <input type="text" id="groupFilterInput" value="[1,2]">
-      <div><span>Initial Groups</span></div>
+  <div id="mainContainer">
+    <div id="listingsSalesOrders">
+      <div class="selected">
+        Listings
+      </div>
+      <div>
+        <a href="orders.html">Orders</a>
+      </div>
+      <div>
+        <a href="sales.html">Sales</a>
+      </div>
     </div>
-    <div id="categoriesFilter">
-      <label>Categories</label>
-      <button>Reset</button><br />
-      <input type="text" id="categoriesFilterInput" value="[3,4,5]">
-      <div><span>Initial Categories</span></div>
+    
+    <p>General Items: These are the general items on the marketplace.</p>
+    <input type="text" placeholder="Search... (not working)">
+
+    <h3>My Listings</h3>
+
+    <h3>Community Listings</h3>
+    <div class="filterContainer">
+
+      <h4>Item Groups</h4>
+      <ul id="groups"></ul>
+      <h4>Categories</h4>
+      <ul id="categories"></ul>
+
+      <div class="filterDisplayContainer">
+        <div id="groupsFilter">
+          <label>Groups</label><br />
+          <input type="text" id="groupFilterInput" value="[1,2]">
+          <div><span>Initial Groups</span></div>
+        </div>
+        <div id="categoriesFilter">
+          <label>Categories</label>
+          <button>Reset</button><br />
+          <input type="text" id="categoriesFilterInput" value="[3,4,5]">
+          <div><span>Initial Categories</span></div>
+        </div>
+        <div id="outOfStockFilter">
+          <label>Show out-of-stock items?</label><br />
+          <input type="checkbox" id="outOfStockFilterCheckbox">
+        </div>
+        <form id="sortGeneralItems">
+          <label for="sort">Sort:</label>
+          <select id="sort" name="cars">
+            <option value="default">Default</option>
+            <option value="nameAsc">Name: A to Z</option>
+            <option value="nameDesc">Name: Z to A</option>
+            <option value="specItemCtAsc">Specific Item Count: Ascending</option>
+            <option value="specItemCtDesc">Specific Item Count: Descending</option>
+          </select>
+        </form>
+      </div>
     </div>
-    <div id="outOfStockFilter">
-      <label>Show out-of-stock items?</label><br />
-      <input type="checkbox" id="outOfStockFilterCheckbox">
-    </div>
-    <form id="sortGeneralItems">
-      <label for="sort">Sort:</label>
-      <select id="sort" name="cars">
-        <option value="default">Default</option>
-        <option value="nameAsc">Name: A to Z</option>
-        <option value="nameDesc">Name: Z to A</option>
-        <option value="specItemCtAsc">Specific Item Count: Ascending</option>
-        <option value="specItemCtDesc">Specific Item Count: Descending</option>
-      </select>
-    </form>
+
+    <ul id="generalItems"></ul>
+
+    <a target="_blank" href="https://icons8.com/icon/85181/shopping-basket">Shopping Basket</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+    <a target="_blank" href="https://icons8.com/icon/85147/male-user">Male User</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
   </div>
-</div>
-
-<ul id="generalItems"></ul>
 
 </body>
 
@@ -60,10 +80,10 @@ let categoriesDefault = [{"id":1,"order":"1.00000000000000000000","Name":"Edible
 let generalItemsDefault = [{"id":1,"order":"1.00000000000000000000","Name":"Apple","Notes":"My fuji bag.","Active":true},{"id":2,"order":"2.00000000000000000000","Name":"Orange","Notes":null,"Active":false},{"id":3,"order":"3.00000000000000000000","Name":"Pear","Notes":null,"Active":false},{"id":4,"order":"4.00000000000000000000","Name":"","Notes":"","Active":false}];
 
 const filterDefault = {
-  group: [1],
-  groupObjects: [{id: 1, value: 'Edible Harvests'}],
-  categories: [3,6,5],
-  categoryObjects: [{id: 3, value:'Vegetables'},{id: 6, value: 'Baked Goods'},{id:5, value:'Fermented Foods'}],
+  group: [430],
+  groupObjects: [{id: 430, value: 'Edible Harvests'}],
+  categories: [484],
+  categoryObjects: [{id: 484, value:'Eggs & Dairy'}],
   show_outOfStock: false,
 };
 let filter = {};
@@ -90,7 +110,7 @@ async function getGroups() {
   let queryParams = [
     {"user_field_names": true},
     {"size": 100},
-    {"filter__field_819526__link_row_has": 9},
+    {"filter__field_819526__link_row_has": 347},
   ];
   
   let query = '';
@@ -134,8 +154,13 @@ async function renderGroups() {
     filter.groupNames = _.pluck(filter.groupObjects, 'value').sort().join(', ');
     document.querySelector('div#groupsFilter>div>span').textContent = filter.groupNames;
 
-    let groupDiv = document.createElement("div");
-    groupDiv.className = 'iconSelector';
+    let groupLabel = document.createElement("label");
+    groupLabel.className = 'iconSelector';
+    let groupSpan1 = document.createElement("span");
+    let groupBr = document.createElement("br");
+    let groupSpan2 = document.createElement("span");
+    let groupBr2 = document.createElement("br");
+    let groupImg = document.createElement("img");
     let groupRadioBtn = document.createElement("input");
     groupRadioBtn.setAttribute('type', 'radio');
     groupRadioBtn.setAttribute('name', 'group');
@@ -145,19 +170,26 @@ async function renderGroups() {
       groupRadioBtn.checked = true;
     }
     let groupPseudoLabel = document.createElement("label");
-    let groupDivP1 = document.createElement("p");
 
     let recordSimple = JSON.stringify({id: record['id'], value: record['Name']});
     groupRadioBtn.setAttribute('id', recordSimple);
     groupPseudoLabel.textContent = '';
     groupPseudoLabel.setAttribute('for', recordSimple);
+    groupLabel.setAttribute('for', recordSimple);
 
-    groupDivP1.textContent = record.Name || 'Null';
+    groupSpan1.textContent = record['Line 1'] || 'Null';
+    groupSpan2.textContent = record['Line 2'] || 'Null';
+    let imgSrc = record.Image[0].url;
+    groupImg.setAttribute('src', imgSrc);
 
-    groupDiv.appendChild(groupRadioBtn);
-    groupDiv.appendChild(groupPseudoLabel);
-    groupDiv.appendChild(groupDivP1);
-    groupsContainer.appendChild(groupDiv);
+    groupLabel.appendChild(groupSpan1);
+    groupLabel.appendChild(groupBr);
+    groupLabel.appendChild(groupSpan2);
+    groupLabel.appendChild(groupBr2);
+    groupLabel.appendChild(groupImg);
+    groupLabel.appendChild(groupRadioBtn);
+    groupLabel.appendChild(groupPseudoLabel);
+    groupsContainer.appendChild(groupLabel);
 
   });
   return groups;
@@ -177,13 +209,14 @@ var requestOptionsCategories = {
 async function getCategories() {
   let queryParams = [
     {"user_field_names": true},
-    {"size": 100},
+    {'filter__field_822699__equal': 'General Item Group'},
+    {"size": 200},
   ];
 
   // database filtering
   /* if (typeof filter.group == 'object') {
     filter.group.forEach(function URLfilterGroups(value, index, arr) {
-      queryParams.push({'filter__field_819526__link_row_has': value});
+      queryParams.push({'filter__field_822692__link_row_has': 347});
       if (index < filter.group.length - 1) {
         queryParams.push({'filter_type': 'OR'});
       }
@@ -237,7 +270,7 @@ async function renderCategories() {
   if (filter.group.length > 0) {
     categories = categories.filter(function filterByGroup(record){
       let id = 0;
-      if (record['Parent Category'].length == 0) {
+      if (record['Parent Category'].length == 0 || undefined) {
         id = 'Null';
       } else {
         id = record['Parent Category'][0]['id'];

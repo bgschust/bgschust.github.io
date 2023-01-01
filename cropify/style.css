@@ -3,89 +3,115 @@ html {
   --checked-color: rgb(55, 148, 36);
 
   --bg-color: #e8e8e8;
+  --box-shadow: rgb(201, 201, 201);
 
   font-family: Arial;
   font-size: 16px;
 }
 
-/* Checkbox Formatting */
-.css-checkbox {
-  position: absolute;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  height: 1px;
-  width: 1px;
-  padding: 0;
-  border: 0;
+body {
+  padding: 0px;
+  margin: 0px;
+  background-color: var(--bg-color);
 }
-.css-checkbox + label {
-  position: relative;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  margin-right: 8px;
-  color: rgb(97, 97, 97);
-  height: 1.2em;
+
+iframe {
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  display: block;
 }
-.css-checkbox + label::before {
-  content: " ";
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 8px;
-  width: 11px;
-  height: 11px;
-  background-color: inherit;
-  border-width: 1px;
-  border-style: solid;
-  border-color: var(--checked-color);
-  border-radius: 3px;
-  box-shadow: none;
+
+iframe#component_topNav {
+  width: 100%;
+  height: 82px;
 }
-.css-checkbox:checked + label::after {
-  content: " ";
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMTczLjg5OCA0MzkuNDA0bC0xNjYuNC0xNjYuNGMtOS45OTctOS45OTctOS45OTctMjYuMjA2IDAtMzYuMjA0bDM2LjIwMy0zNi4yMDRjOS45OTctOS45OTggMjYuMjA3LTkuOTk4IDM2LjIwNCAwTDE5MiAzMTIuNjkgNDMyLjA5NSA3Mi41OTZjOS45OTctOS45OTcgMjYuMjA3LTkuOTk3IDM2LjIwNCAwbDM2LjIwMyAzNi4yMDRjOS45OTcgOS45OTcgOS45OTcgMjYuMjA2IDAgMzYuMjA0bC0yOTQuNCAyOTQuNDAxYy05Ljk5OCA5Ljk5Ny0yNi4yMDcgOS45OTctMzYuMjA0LS4wMDF6Ii8+PC9zdmc+");
-  background-repeat: no-repeat;
-  background-size: 8px 8px;
-  background-position: center center;
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  left: 0px;
-  top: 3px;
+
+div#mainContainer {
+  margin: 16px;
+}
+
+h4 {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+ul {
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+div#listingsSalesOrders {
+  background-color: white;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 12px 8px;
+  display: inline;
+  border-radius: 22px;
   text-align: center;
-  background-color: rgb(67, 176, 42);
-  height: 14px;
-  width: 14px;
-  border-radius: 3px;
+  box-shadow: 3px 3px 3px 1px var(--box-shadow);
 }
 
-/* Radio Buttons */
-input[type="radio"] {
-  height: 1em;
-  width: 1em;
-  margin-right: 0.5rem;
-  accent-color: var(--checked-color);
+div#listingsSalesOrders a {
+  text-decoration: none;
+  color: inherit;
 }
 
-/* My CSS */
+div#listingsSalesOrders div {
+  background-color: inherit;
+  display: inline-block;
+  padding: 6px;
+  width: 84px;
+  border-radius: 18px;
+  color: rgb(133, 133, 133);
+  font-weight:bold;
+}
+
+div#listingsSalesOrders div.selected {
+  background-color: rgb(155, 255, 56);
+  color: black;
+}
+
 ul#groups {
-  border: 1px solid black;
+  border: 0px solid black;
   padding: 0 0 0 0;
   list-style: none;
   vertical-align: top;
 }
 
-div.iconSelector {
+label.iconSelector {
   background-color: grey;
-  border: 1px solid black;
+  border: 0px solid black;
+  border-radius: 10px;
+  box-shadow: 3px 3px 0px 0px var(--box-shadow);
   min-width: 5em;
   max-width: 10em;
   min-height: 5em;
   display: inline-block;
+  background-color: white;
   padding: 5px 5px 5px 5px;
   margin: 5px 5px 5px 5px;
   vertical-align: top;
+  text-align: center;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+}
+
+label.iconSelector span {
+  font-size: 12px;
+}
+
+label.iconSelector img {
+  height: 36px;
+  padding-top: 3px;
+}
+
+label.iconSelector input[type="radio"] {
+  position: absolute;
+  margin-right: -10px;
+  margin-top: 30px;
+  float: right;
 }
 
 div#groupsFilter {
@@ -104,7 +130,7 @@ div#groupsFilter>div {
 }
 
 ul#categories {
-  border: 1px solid black;
+  border: 0px solid black;
   padding: 0 0 0 0;
   list-style: none;
 }
@@ -162,4 +188,65 @@ div.filterDisplayContainer>div {
 
 form#sortGeneralItems {
   display: inline-block;
+}
+
+/* Checkbox Formatting */
+.css-checkbox {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  width: 1px;
+  padding: 0;
+  border: 0;
+}
+.css-checkbox + label {
+  position: relative;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+  color: rgb(97, 97, 97);
+  height: 1.2em;
+}
+.css-checkbox + label::before {
+  content: " ";
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  width: 11px;
+  height: 11px;
+  background-color: inherit;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--checked-color);
+  border-radius: 3px;
+  box-shadow: none;
+}
+.css-checkbox:checked + label::after {
+  content: " ";
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMTczLjg5OCA0MzkuNDA0bC0xNjYuNC0xNjYuNGMtOS45OTctOS45OTctOS45OTctMjYuMjA2IDAtMzYuMjA0bDM2LjIwMy0zNi4yMDRjOS45OTctOS45OTggMjYuMjA3LTkuOTk4IDM2LjIwNCAwTDE5MiAzMTIuNjkgNDMyLjA5NSA3Mi41OTZjOS45OTctOS45OTcgMjYuMjA3LTkuOTk3IDM2LjIwNCAwbDM2LjIwMyAzNi4yMDRjOS45OTcgOS45OTcgOS45OTcgMjYuMjA2IDAgMzYuMjA0bC0yOTQuNCAyOTQuNDAxYy05Ljk5OCA5Ljk5Ny0yNi4yMDcgOS45OTctMzYuMjA0LS4wMDF6Ii8+PC9zdmc+");
+  background-repeat: no-repeat;
+  background-size: 8px 8px;
+  background-position: center center;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  left: 0px;
+  top: 3px;
+  text-align: center;
+  background-color: rgb(67, 176, 42);
+  height: 14px;
+  width: 14px;
+  border-radius: 3px;
+}
+
+/* Radio Buttons */
+input[type="radio"] {
+  height: 1.1em;
+  width: 1.1em;
+  margin-right: 0.5rem;
+  accent-color: var(--checked-color);
+  cursor: pointer;
 }
