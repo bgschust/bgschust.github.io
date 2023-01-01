@@ -1,3 +1,10 @@
+@font-face {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 400;
+  src: url(components/RobotoFont/Roboto-Regular.ttf);
+}
+
 html {
   --color: #999;
   --checked-color: rgb(55, 148, 36);
@@ -5,7 +12,9 @@ html {
   --bg-color: #e8e8e8;
   --box-shadow: rgb(201, 201, 201);
 
-  font-family: Arial;
+  --grey-text: rgb(133, 133, 133);
+
+  font-family: Roboto, Tahoma, Arial, sans-serif;
   font-size: 16px;
 }
 
@@ -41,6 +50,10 @@ ul {
   margin-bottom: 16px;
 }
 
+button {
+  cursor: pointer;
+}
+
 div#listingsSalesOrders {
   background-color: white;
   margin-left: auto;
@@ -63,7 +76,7 @@ div#listingsSalesOrders div {
   padding: 6px;
   width: 84px;
   border-radius: 18px;
-  color: rgb(133, 133, 133);
+  color: var(--grey-text);
   font-weight:bold;
 }
 
@@ -109,13 +122,13 @@ label.iconSelector img {
 
 label.iconSelector input[type="radio"] {
   position: absolute;
-  margin-right: -10px;
-  margin-top: 30px;
+  margin-top: 28px;
+  margin-left: 8px;
   float: right;
 }
 
-div#groupsFilter {
-  max-width: 200px;
+.groupPseudoLabel {
+  display: none;
 }
 
 div#groupsFilter>div {
@@ -139,10 +152,6 @@ li.categoryLi {
   color: inherit;
   display: inline-block;
   padding:5px 10px 5px 10px;
-}
-
-div#categoriesFilter {
-  max-width: 200px;
 }
 
 div#categoriesFilter>div {
@@ -180,14 +189,36 @@ div.filterContainer {
 
 div.filterDisplayContainer {
   display: inline-block;
+  border: 1px solid var(--box-shadow);
+  border-radius: 5px;
+  padding: 7px 7px 7px 7px;
+  background-color: white;
+}
+
+div.filterDisplayContainer>img {
+  display: inline-block;
+  width: 38px;
+  margin-right: 8px;
+  margin-left: 8px;
 }
 
 div.filterDisplayContainer>div {
   display: inline-block;
+  margin-right: 8px;
+  width: 200px;
+  vertical-align: top;
 }
 
-form#sortGeneralItems {
+div.filterDisplayContainer>form {
   display: inline-block;
+  padding-right: 8px;
+  vertical-align: top;
+}
+
+div.filterDisplayContainer label {
+  color: var(--grey-text);
+  font-size: 0.8em;
+  line-height: 1.6em;
 }
 
 /* Checkbox Formatting */

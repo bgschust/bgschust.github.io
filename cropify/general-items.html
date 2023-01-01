@@ -3,6 +3,7 @@
 <head>
   <title>Cropify</title>
   <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="images/favicon.png">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
@@ -38,23 +39,24 @@
       <ul id="categories"></ul>
 
       <div class="filterDisplayContainer">
+        <img src="images/icons8-filter-and-sort-50.png" alt="List Filters">
         <div id="groupsFilter">
-          <label>Groups</label><br />
-          <input type="text" id="groupFilterInput" value="[1,2]">
+          <label>Group</label><br />
+          <input type="text" id="groupFilterInput" value="[1,2]" style="display:none;">
           <div><span>Initial Groups</span></div>
         </div>
         <div id="categoriesFilter">
           <label>Categories</label>
           <button>Reset</button><br />
-          <input type="text" id="categoriesFilterInput" value="[3,4,5]">
+          <input type="text" id="categoriesFilterInput" value="[3,4,5]" style="display:none;">
           <div><span>Initial Categories</span></div>
         </div>
         <div id="outOfStockFilter">
-          <label>Show out-of-stock items?</label><br />
+          <label for="outOfStockFilterCheckbox" style="cursor:pointer;">Show out-of-stock items?</label><br />
           <input type="checkbox" id="outOfStockFilterCheckbox">
         </div>
         <form id="sortGeneralItems">
-          <label for="sort">Sort:</label>
+          <label for="sort">Sort: </label><br />
           <select id="sort" name="cars">
             <option value="default">Default</option>
             <option value="nameAsc">Name: A to Z</option>
@@ -70,6 +72,7 @@
 
     <a target="_blank" href="https://icons8.com/icon/85181/shopping-basket">Shopping Basket</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
     <a target="_blank" href="https://icons8.com/icon/85147/male-user">Male User</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+    <a target="_blank" href="https://icons8.com/icon/43428/filter-and-sort">Filter and Sort</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
   </div>
 
 </body>
@@ -82,8 +85,8 @@ let generalItemsDefault = [{"id":1,"order":"1.00000000000000000000","Name":"Appl
 const filterDefault = {
   group: [430],
   groupObjects: [{id: 430, value: 'Edible Harvests'}],
-  categories: [484],
-  categoryObjects: [{id: 484, value:'Eggs & Dairy'}],
+  categories: [484,485,498,493],
+  categoryObjects: [{id: 484, value:'Eggs & Dairy'},{id: 485, value:'Fruit'},{id: 498, value:'Vegetables'},{id: 493, value:'Omnivore Meat'}],
   show_outOfStock: false,
 };
 let filter = {};
@@ -170,6 +173,7 @@ async function renderGroups() {
       groupRadioBtn.checked = true;
     }
     let groupPseudoLabel = document.createElement("label");
+    groupPseudoLabel.className = 'groupPseudoLabel';
 
     let recordSimple = JSON.stringify({id: record['id'], value: record['Name']});
     groupRadioBtn.setAttribute('id', recordSimple);
@@ -464,10 +468,15 @@ filterCategoriesInput.addEventListener('change', function getFilterCategories() 
 });
 document.querySelector('div#categoriesFilter button').addEventListener('click', resetCategories); 
 function resetCategories() {
+  filter.group = filterDefault.group;
+  filter.groupObjects = filterDefault.groupObjects;
+  filter.groupNames = _.pluck(filter.groupObjects, 'value');
+  filterGroupInput.value = JSON.stringify(filter.group);
   filter.categories = filterDefault.categories;
   filter.categoryObjects = filterDefault.categoryObjects;
   filter.categoryNames = _.pluck(filter.categoryObjects, 'value');
   filterCategoriesInput.value = JSON.stringify(filter.categories);
+  renderGroups();
   renderCategories();
   renderGeneralItems();
 }
