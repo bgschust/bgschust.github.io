@@ -5,7 +5,8 @@
   <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="images/favicon.png">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles/style.css">
+  <link rel="stylesheet" href="styles/general-items.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
 </head>
 <body>
@@ -13,6 +14,7 @@
   <iframe id="component_topNav" src="components/topNavigation.html"></iframe>
 
   <div id="mainContainer">
+
     <div id="listingsSalesOrders">
       <div class="selected">
         Listings
@@ -26,7 +28,11 @@
     </div>
     
     <p>General Items: These are the general items on the marketplace.</p>
-    <input type="text" placeholder="Search... (not working)">
+
+    <div id="searchContainer">
+      <input type="text" id="search" placeholder="Search...">
+      <img src="images/icons8-search-32.png" alt="searchIcon">
+    </div>
 
     <input type="checkbox" class="accordion" id="accordionPanel_myListings" checked>
     <a href="#accordionPanel_myListings" style="text-decoration:none;color:inherit;">
@@ -47,32 +53,40 @@
       <ul id="categories"></ul>
 
       <div class="filterDisplayContainer">
-        <img src="images/icons8-filter-and-sort-50.png" alt="List Filters">
-        <div id="groupsFilter">
-          <label>Group</label><br />
-          <input type="text" id="groupFilterInput" value="[1,2]" style="display:none;">
-          <div><span>Initial Groups</span></div>
-        </div>
-        <div id="categoriesFilter">
-          <label>Categories</label>
-          <button>Reset</button><br />
-          <input type="text" id="categoriesFilterInput" value="[3,4,5]" style="display:none;">
-          <div><span>Initial Categories</span></div>
-        </div>
-        <div id="outOfStockFilter">
-          <label for="outOfStockFilterCheckbox" style="cursor:pointer;">Show out-of-stock items?</label><br />
-          <input type="checkbox" id="outOfStockFilterCheckbox">
-        </div>
-        <form id="sortGeneralItems">
-          <label for="sort">Sort: </label><br />
-          <select id="sort" name="cars">
-            <option value="default">Default</option>
-            <option value="nameAsc">Name: A to Z</option>
-            <option value="nameDesc">Name: Z to A</option>
-            <option value="specItemCtAsc">Specific Item Count: Ascending</option>
-            <option value="specItemCtDesc">Specific Item Count: Descending</option>
-          </select>
-        </form>
+        <table>
+          <tr>
+            <td>
+              <img src="images/icons8-filter-and-sort-50.png" alt="List Filters">
+            </td>
+            <td>
+              <div id="groupsFilter">
+                <label>Group</label><br />
+                <input type="text" id="groupFilterInput" value="[1,2]" style="display:none;">
+                <div><span>Initial Groups</span></div>
+              </div>
+              <div id="categoriesFilter">
+                <label>Categories</label>
+                <button>Reset</button><br />
+                <input type="text" id="categoriesFilterInput" value="[3,4,5]" style="display:none;">
+                <div><span>Initial Categories</span></div>
+              </div>
+              <div id="outOfStockFilter">
+                <label for="outOfStockFilterCheckbox" style="cursor:pointer;">Show out-of-stock items?</label><br />
+                <input type="checkbox" id="outOfStockFilterCheckbox">
+              </div>
+              <form id="sortGeneralItems">
+                <label for="sort">Sort: </label><br />
+                <select id="sort" name="cars">
+                  <option value="default">Default</option>
+                  <option value="nameAsc">Name: A to Z</option>
+                  <option value="nameDesc">Name: Z to A</option>
+                  <option value="specItemCtAsc">Specific Item Count: Ascending</option>
+                  <option value="specItemCtDesc">Specific Item Count: Descending</option>
+                </select>
+              </form>
+            </td>
+          </tr>
+        </table>
       </div>
     </div>
 
@@ -90,6 +104,7 @@
         <li><a target="_blank" href="https://icons8.com/icon/85147/male-user">Male User</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
         <li><a target="_blank" href="https://icons8.com/icon/43428/filter-and-sort">Filter and Sort</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
         <li><a target="_blank" href="https://icons8.com/icon/2775/collapse-arrow">Collapse Arrow</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+        <li><a target="_blank" href="https://icons8.com/icon/14079/search">Search</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
       </ol>
     </div>
   </div>
@@ -347,6 +362,7 @@ async function getGeneralItems() {
   let queryParams = [
     {"user_field_names": true},
     {"size": 200},
+    {"include": "Name,Short Description,Active,Specific Item Count,Group,Category"}
   ];
 
   // database filtering
@@ -407,21 +423,69 @@ async function renderGeneralItems() {
     generalItems = _.sortBy(generalItems, 'Specific Item Count').reverse();
   }
 
+  // browser search
+  if (searchInput.value != undefined || '') {
+    generalItems.forEach(record => {
+      record.searchTargetText = record.Category[0].value + ' ' + record.Name + ' ' + record['Short Description'];
+      record.searchTargetText = record.searchTargetText.toLowerCase();
+    });
+    generalItems = generalItems.filter(function filterSearch(record){
+      return record.searchTargetText.indexOf(searchInput.value.toLowerCase()) >= 0;
+    });
+  }
+
   let generalItemsContainer = document.querySelector('ul#generalItems');
   generalItemsContainer.innerHTML = '';
   generalItems.forEach(generalItem => {
 
+    //console.log(generalItem);
+
+    let generalItemA = document.createElement("a");
+    generalItemA.className = 'generalItem';
     let generalItemDiv = document.createElement("div");
-    generalItemDiv.className = 'img-card';
-    let generalItemDivP1 = document.createElement("p");
-    let generalItemDivP2 = document.createElement("p");
+    generalItemDiv.className = 'generalItem';
+    let generalItemCol1 = document.createElement("div");
+    generalItemCol1.className = "col1";
+    let generalItemP1 = document.createElement("p");
+    generalItemP1.className = "categoryName";
+    let generalItemP2 = document.createElement("p");
+    generalItemP2.className = "generalItem_Name";
+    let generalItemP3 = document.createElement("p");
+    generalItemP3.className = "description";
+    let generalItemCol2 = document.createElement("div");
+    generalItemCol2.className = "col2";
+    let generalItemBtn = document.createElement("button");
+    let generalItemBr1 = document.createElement("br");
+    let generalItemSpan1 = document.createElement("span");
+    let generalItemBr2 = document.createElement("br");
+    let generalItemSpan2 = document.createElement("span");
+    generalItemSpan2.className = 'itemCtLabel';
 
-    generalItemDivP1.textContent = generalItem.Name || 'Null';
-    generalItemDivP2.textContent = generalItem['Specific Item Count'] || 'Null';
+    let url = 'specific-items.html' + '?' + 'generalItem_id' + '=' + generalItem.id;
+    generalItemA.setAttribute('href', url);
+    generalItemP1.textContent = generalItem.Category[0].value || 'Category not found';
+    generalItemP2.textContent = generalItem.Name || 'Name not found';
+    generalItemP3.textContent = generalItem['Short Description'] || 'No description.';
+    generalItemBtn.textContent = 'Details';
+    generalItemSpan1.textContent = generalItem['Specific Item Count'] || 0;
+    if (generalItem['Specific Item Count'] > 1 || generalItem['Specific Item Count'] == 0) {
+      generalItemSpan2.textContent = ' items';
+    } else {
+      generalItemSpan2.textContent = ' item';
+    }
 
-    generalItemDiv.appendChild(generalItemDivP1);
-    generalItemDiv.appendChild(generalItemDivP2);
-    generalItemsContainer.appendChild(generalItemDiv);
+    generalItemCol1.appendChild(generalItemP1);
+    generalItemCol1.appendChild(generalItemP2);
+    generalItemCol1.appendChild(generalItemP3);
+    generalItemCol2.appendChild(generalItemBtn);
+    generalItemCol2.appendChild(generalItemBr1);
+    generalItemCol2.appendChild(generalItemSpan1);
+    generalItemCol2.appendChild(generalItemBr2);
+    generalItemCol2.appendChild(generalItemSpan2);
+    generalItemDiv.appendChild(generalItemCol1);
+    generalItemDiv.appendChild(generalItemCol2);
+    generalItemA.appendChild(generalItemDiv);
+    generalItemsContainer.appendChild(generalItemA);
 
   });
   return generalItems;
@@ -469,7 +533,7 @@ function adjustCategories(event){
 }
 
 // get filter input values and re-render
-let filterGroupInput = document.querySelectorAll('div.filterDisplayContainer>div>input')[0];
+let filterGroupInput = document.querySelectorAll('div.filterDisplayContainer div input')[0];
 filter.group = JSON.parse(filterGroupInput.value);
 filterGroupInput.addEventListener('change', function filterGroups() {
   filter.group = JSON.parse(filterGroupInput.value);
@@ -477,7 +541,7 @@ filterGroupInput.addEventListener('change', function filterGroups() {
     renderCategories();
   }
 });
-let filterCategoriesInput = document.querySelectorAll('div.filterDisplayContainer>div>input')[1];
+let filterCategoriesInput = document.querySelectorAll('div.filterDisplayContainer div input')[1];
 filter.categories = JSON.parse(filterCategoriesInput.value);
 filterCategoriesInput.addEventListener('change', function getFilterCategories() {
   filter.categories = JSON.parse(filterCategoriesInput.value);
@@ -499,7 +563,7 @@ function resetCategories() {
   renderCategories();
   renderGeneralItems();
 }
-let filterShowOutOfStockCheckbox = document.querySelectorAll('div.filterDisplayContainer>div>input')[2];
+let filterShowOutOfStockCheckbox = document.querySelectorAll('div.filterDisplayContainer div input')[2];
 filter.show_outOfStock = filterShowOutOfStockCheckbox.checked;
 filterShowOutOfStockCheckbox.addEventListener('change', function getFilterCheckbox() {
   filter.show_outOfStock = filterShowOutOfStockCheckbox.checked;
@@ -513,6 +577,13 @@ function getSorted()  {
   renderGeneralItems();
 }
 sortGeneralItems.addEventListener('change', getSorted);
+
+// get search input value and re-render
+let searchInput = document.querySelector('input#search');
+searchInput.addEventListener('change', getSearched);
+function getSearched() {
+  renderGeneralItems();
+}
 </script>
 
 </html>

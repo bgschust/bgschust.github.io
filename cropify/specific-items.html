@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify: General Items</title>
+  <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="styles/style.css">
+  <link rel="stylesheet" href="styles/specific-items.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+</head>
+<body>
+
+  <iframe id="component_topNav" src="components/topNavigation.html"></iframe>
+
+  <div id="mainContainer">
+
+    <div id="listingsSalesOrders">
+      <div class="selected">
+        Listings
+      </div>
+      <div>
+        <a href="orders.html">Orders</a>
+      </div>
+      <div>
+        <a href="sales.html">Sales</a>
+      </div>
+    </div>
+
+    <div id="thisGeneralItem">
+      <p>This general item.</p>
+    </div>
+    
+    <p>Specific Items: These are the general items on the marketplace.</p>
+
+    <div id="searchContainer">
+      <input type="text" id="search" placeholder="Search... (not working)">
+      <img src="images/icons8-search-32.png" alt="searchIcon">
+    </div>
+
+    <input type="checkbox" class="accordion" id="accordionPanel_myListings" checked>
+    <a href="#accordionPanel_myListings" style="text-decoration:none;color:inherit;">
+      <label for="accordionPanel_myListings" class="accordion">
+        <h3>My Listings</h3>
+      </label>
+    </a>
+    <div class="collapsible">
+      <p>My general items here.</p>
+    </div>
+
+    <h3>Community Listings</h3>
+    <div class="filterContainer">
+    </div>
+  </div>
+
+</body>
+</html>
