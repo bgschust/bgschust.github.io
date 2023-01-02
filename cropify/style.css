@@ -183,7 +183,7 @@ div.img-card {
 }
 
 div.filterContainer {
-  border:1px solid grey;
+  border:0px solid grey;
   padding: 5px;
 }
 
@@ -198,7 +198,7 @@ div.filterDisplayContainer {
 div.filterDisplayContainer>img {
   display: inline-block;
   width: 38px;
-  margin-right: 8px;
+  margin-right: 16px;
   margin-left: 8px;
 }
 
@@ -280,4 +280,57 @@ input[type="radio"] {
   margin-right: 0.5rem;
   accent-color: var(--checked-color);
   cursor: pointer;
+}
+
+/* Accordion Panels */
+label.accordion {
+  cursor: pointer;
+}
+
+input.accordion + a label.accordion h3:hover {
+  color:var(--grey-text);
+}
+
+input.accordion + a label.accordion h3::after {
+  display: inline-block;
+  margin-left: 10px;
+  background-image: url('images/icons8-collapse-arrow-50.png');
+  background-size: 16px 16px;
+  width: 16px;
+  height: 16px;
+  content: "";
+  transform: rotate(90deg);
+  transition: 0.5s ease;
+}
+
+input.accordion:checked + a label.accordion h3::after {
+  transform: rotate(180deg);
+  transition: 0.5s ease;
+}
+
+input.accordion {
+  display: none;
+}
+
+.collapsible {
+  display: block;
+}
+
+input.accordion ~ .collapsible {
+  overflow: hidden;
+  height: 0;
+
+  -webkit-transition: height 1s ease;
+  -moz-transition: height 1s ease;
+  -ms-transition: height 1s ease;
+  -o-transition: height 1s ease;
+  transition: height 1s ease;
+}
+
+#accordionPanel_sources:checked ~ .collapsible {
+  height: 100px; /* needs a numeric value here to keep transition */
+}
+
+#accordionPanel_myListings:checked ~ .collapsible {
+  height: 100px; /* needs a numeric value here to keep transition */
 }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Cropify</title>
+  <title>Cropify: General Items</title>
   <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="images/favicon.png">
@@ -28,7 +28,15 @@
     <p>General Items: These are the general items on the marketplace.</p>
     <input type="text" placeholder="Search... (not working)">
 
-    <h3>My Listings</h3>
+    <input type="checkbox" class="accordion" id="accordionPanel_myListings" checked>
+    <a href="#accordionPanel_myListings" style="text-decoration:none;color:inherit;">
+      <label for="accordionPanel_myListings" class="accordion">
+        <h3>My Listings</h3>
+      </label>
+    </a>
+    <div class="collapsible">
+      <p>My general items here.</p>
+    </div>
 
     <h3>Community Listings</h3>
     <div class="filterContainer">
@@ -69,10 +77,21 @@
     </div>
 
     <ul id="generalItems"></ul>
-
-    <a target="_blank" href="https://icons8.com/icon/85181/shopping-basket">Shopping Basket</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
-    <a target="_blank" href="https://icons8.com/icon/85147/male-user">Male User</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
-    <a target="_blank" href="https://icons8.com/icon/43428/filter-and-sort">Filter and Sort</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
+    
+    <input type="checkbox" class="accordion" id="accordionPanel_sources" checked>
+    <a href="#accordionPanel_sources" style="text-decoration:none;color:inherit;">
+      <label for="accordionPanel_sources" class="accordion">
+        <h3>Sources</h3>
+      </label>
+    </a>
+    <div class="collapsible">
+      <ol>
+        <li><a target="_blank" href="https://icons8.com/icon/85181/shopping-basket">Shopping Basket</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+        <li><a target="_blank" href="https://icons8.com/icon/85147/male-user">Male User</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+        <li><a target="_blank" href="https://icons8.com/icon/43428/filter-and-sort">Filter and Sort</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+        <li><a target="_blank" href="https://icons8.com/icon/2775/collapse-arrow">Collapse Arrow</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+      </ol>
+    </div>
   </div>
 
 </body>
