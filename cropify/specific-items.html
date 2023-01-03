@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Cropify: General Items</title>
+  <title>Cropify: Specific Items</title>
   <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="images/favicon.png">
   <link rel="stylesheet" href="styles/style.css">
   <link rel="stylesheet" href="styles/specific-items.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="components/functions.js"></script>
 </head>
 <body>
 
@@ -28,13 +29,16 @@
     </div>
 
     <div id="thisGeneralItem">
-      <p>This general item.</p>
+      <h4>
+        <img src="images/icons8-left-50.png" alt="Back Arrow">
+        <span>Name not Found</span>
+        <span class="generalItem_category">Category not Found</span>
+      </h4>
+      <p>No description found.</p>
     </div>
-    
-    <p>Specific Items: These are the general items on the marketplace.</p>
 
     <div id="searchContainer">
-      <input type="text" id="search" placeholder="Search... (not working)">
+      <input type="text" id="search" placeholder="Search...">
       <img src="images/icons8-search-32.png" alt="searchIcon">
     </div>
 
@@ -45,13 +49,254 @@
       </label>
     </a>
     <div class="collapsible">
-      <p>My general items here.</p>
+      <p>My specific items here.</p>
+    </div>
+
+    <!-- The Modal -->
+    <div id="specificItemDetail_modal" class="modal">
+
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <iframe src="specific-item-detail.html"></iframe>
+      </div>
+
     </div>
 
     <h3>Community Listings</h3>
     <div class="filterContainer">
     </div>
+    <ul id="specificItems"></ul>
+    
+    <input type="checkbox" class="accordion" id="accordionPanel_sources">
+    <a href="#accordionPanel_sources" style="text-decoration:none;color:inherit;">
+      <label for="accordionPanel_sources" class="accordion">
+        <h3>Sources</h3>
+      </label>
+    </a>
+    <div class="collapsible">
+      <ol>
+        <li><a target="_blank" href="https://icons8.com/icon/85181/shopping-basket">Shopping Basket</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+        <li><a target="_blank" href="https://icons8.com/icon/85147/male-user">Male User</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+        <li><a target="_blank" href="https://icons8.com/icon/43428/filter-and-sort">Filter and Sort</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+        <li><a target="_blank" href="https://icons8.com/icon/2775/collapse-arrow">Collapse Arrow</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+        <li><a target="_blank" href="https://icons8.com/icon/14079/search">Search</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+        <li><a target="_blank" href="https://icons8.com/icon/7811/left">Left</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+      </ol>
+    </div>
   </div>
 
 </body>
+
+<script id="initialize">
+  document.querySelector('div#thisGeneralItem>h4>img').addEventListener('click', function goBack(){
+    window.location.href = 'general-items.html';
+  });
+
+  const urlParams = new URLSearchParams(window.location.search);
+  let generalItem_id = urlParams.get('generalItem_id');
+
+  let generalItem_default = {"id":5,"order":"3.99999999999999999999","Name":"Tomato","Short Description":"","Active":false,"Specific Items":[{"id":6,"value":"[Demo] Canned Tomato"}],"Specific Item Count":"1","Group":[{"ids":{"database_table_126754":430},"value":"Edible Harvests"}],"Category":[{"id":498,"value":"Vegetables"}],"Users":[{"ids":{"database_table_4390":4,"database_table_6844":6},"value":"Jeffrey"}]};
+
+  var headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", "Token t48tRPtNQccyc6Q65klBDEP1QJqkwXw0");
+  var requestOptions = {
+      method: "get",
+      headers: headers,
+      redirect: "follow",
+  };
+</script>
+
+<script id="specificItem_modal">
+  // Get the modal
+  let modal = document.querySelector("#specificItemDetail_modal");
+
+  // Get the <span> element that closes the modal
+  let close = document.querySelectorAll(".close")[0];
+
+  // When the user clicks on <span> (x), close the modal
+  close.onclick = function() {
+    modal.style.display = "none";
+  }
+  
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+</script>
+
+<script id="generalItem">
+  async function getGeneralItem() {
+
+    let queryParams = [
+      {"user_field_names": true}
+    ];
+    
+    let url = buildURL(
+      'https://api.baserow.io/api/database/rows/table/6842/' + generalItem_id + '/', 
+      queryParams
+    );
+
+    try {
+        let resGeneralItem = await fetch(url, requestOptions);
+        resGeneralItem = await resGeneralItem.json();
+        return await resGeneralItem;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  let generalItem = async function renderGeneralItem() {
+    let generalItem = {};
+    generalItem = await getGeneralItem();
+    
+    document.querySelectorAll('div#thisGeneralItem>h4>span')[0].textContent = generalItem.Name;
+    document.querySelectorAll('div#thisGeneralItem>h4>span')[1].textContent = 
+      generalItem.Group[0].value + ': ' + generalItem.Category[0].value;
+    document.querySelector('div#thisGeneralItem>p').textContent = generalItem['Short Description'];
+
+    return generalItem;
+  }();
+</script>
+
+<script id="specificItem">
+  async function getSpecificItems() {
+  
+    let queryParams = [
+      {"user_field_names": true},
+      {"size": 200},
+      {"include": "Name,Short Description,Active,General Item,Producer,Markets"},
+      {'filter__field_818432__link_row_has': generalItem_id}
+    ];
+    
+    let url = buildURL(
+      'https://api.baserow.io/api/database/rows/table/6844/', 
+      queryParams
+    );
+  
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res.results;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+  
+  async function renderSpecificItems() {
+    let specificItems = '';
+    specificItems = await getSpecificItems();
+    (!specificItems) ? specificItems = '' : specificItems;
+
+    // browser filtering
+    /* if (filter.show_outOfStock == false) {
+      generalItems = generalItems.filter(function filterShow_outOfStock(record){
+        return record['Specific Item Count'] > 0;
+      });
+    } */
+  
+    // browser sorting
+    /* if(sortBy == ('default' || undefined)){
+    } else if(sortBy=='nameAsc') {
+      generalItems = _.sortBy(generalItems, 'Name');
+    } else if(sortBy=='nameDesc') {
+      generalItems = _.sortBy(generalItems, 'Name').reverse();
+    } else if(sortBy=='specItemCtAsc'){
+      generalItems = _.sortBy(generalItems, 'Specific Item Count')
+    } else if(sortBy=='specItemCtDesc'){
+      generalItems = _.sortBy(generalItems, 'Specific Item Count').reverse();
+    } */
+  
+    // browser search
+    if (searchInput.value != undefined || '') {
+      specificItems.forEach(record => {
+        record.searchTargetText = ((record.Producer.length) ? record.Producer[0].value : 'No producer') +
+          + ' ' + _.pluck(record.Markets, 'value').join(',') 
+          + ' ' + record.Name 
+          + ' ' + record['Short Description'];
+        record.searchTargetText = record.searchTargetText.toLowerCase();
+      });
+      specificItems = specificItems.filter(function filterSearch(record){
+        return record.searchTargetText.indexOf(searchInput.value.toLowerCase()) >= 0;
+      });
+    }
+  
+    let specificItemsContainer = document.querySelector('ul#specificItems');
+    specificItemsContainer.innerHTML = '';
+    specificItems.forEach(record => {
+  
+      let specificItemA = document.createElement("a");
+      specificItemA.className = 'specificItem';
+      let specificItemDiv = document.createElement("div");
+      specificItemDiv.classList.add('specificItem','listCard');
+      let specificItemCol1 = document.createElement("div");
+      specificItemCol1.className = "col1";
+      let specificItemP1 = document.createElement("p");
+      specificItemP1.className = "categoryName";
+      let specificItemP2 = document.createElement("p");
+      specificItemP2.className = "specificItem_Name";
+      let specificItemP3 = document.createElement("p");
+      specificItemP3.className = "description";
+      let specificItemCol2 = document.createElement("div");
+      specificItemCol2.className = "col2";
+      let specificItemBtn = document.createElement("button");
+      let specificItemBr1 = document.createElement("br");
+      let specificItemSpan1 = document.createElement("span");
+      let specificItemBr2 = document.createElement("br");
+      let specificItemSpan2 = document.createElement("span");
+      specificItemSpan2.className = 'itemCtLabel';
+      
+      // set modal url in button
+      let url = 'specific-item-detail.html' + '?' + 'specificItem_id' + '=' + record.id;
+      specificItemBtn.setAttribute('id', url);
+      specificItemBtn.addEventListener('click', function openModal(){
+        let btn_url = this.getAttribute('id');
+        document.querySelector('div#specificItemDetail_modal iframe').setAttribute('src', btn_url);
+        modal.style.display = "block";
+      });
+
+      specificItemP1.textContent =  record['General Item'][0].value || 'General item not found';
+      specificItemP1.textContent += ' from ';
+      specificItemP1.textContent += (record.Producer.length) ? record.Producer[0].value : 'Seller not found.';
+      specificItemP2.textContent = record.Name || 'Name not found';
+      specificItemP3.textContent = record['Short Description'] || 'No description.';
+      specificItemBtn.textContent = 'Details';
+  
+      specificItemCol1.appendChild(specificItemP1);
+      specificItemCol1.appendChild(specificItemP2);
+      specificItemCol1.appendChild(specificItemP3);
+      specificItemCol2.appendChild(specificItemBtn);
+      specificItemCol2.appendChild(specificItemBr1);
+      specificItemCol2.appendChild(specificItemSpan1);
+      specificItemCol2.appendChild(specificItemBr2);
+      specificItemCol2.appendChild(specificItemSpan2);
+      specificItemDiv.appendChild(specificItemCol1);
+      specificItemDiv.appendChild(specificItemCol2);
+      specificItemA.appendChild(specificItemDiv);
+      specificItemsContainer.appendChild(specificItemA);
+  
+    });
+    return specificItems;
+  }
+</script>
+
+<script id="processFilters">
+  // initially render lists
+  //let markets = renderMarkets();
+  //let producers = renderProducers();
+  let specificItems = renderSpecificItems();
+
+  // get search input value and re-render
+  let searchInput = document.querySelector('input#search');
+  searchInput.addEventListener('change', getSearched);
+  function getSearched() {
+    renderSpecificItems();
+  }
+</script>
+
+
+
 </html>

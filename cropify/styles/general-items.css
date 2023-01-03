@@ -122,19 +122,6 @@ a.generalItem {
   text-decoration: none;
 }
 
-div.generalItem {
-  background-color: white;
-  border: 1px solid black;
-  border-radius: 7px;
-  display: inline-block;
-  height: 5em;
-  width: 300px;
-  padding: 10px 14px 10px 12px;
-  margin: 5px 5px 5px 5px;
-  vertical-align: top;
-  box-shadow: 3px 3px 3px 1px var(--box-shadow);
-}
-
 div.generalItem div.col1 {
   display: inline-block;
   width: 80%;

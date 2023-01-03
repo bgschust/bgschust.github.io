@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify: Specific Item Detail</title>
+  <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="styles/style.css">
+  <link rel="stylesheet" href="styles/specific-item-detail.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="components/functions.js"></script>
+</head>
+<body>
+
+  <h3 id="specificItem_Name">Specific Item Name</h3>
+  <p>Produced by <span>Producer not found</span>.</p>
+
+  <h4>Payment Method</h4>
+  <input type="radio" id="payAtPickup" name="paymentMethod" value="payAtPickup" checked>
+  <label for="payAtPickup">Pay at Pick-Up</label>
+
+  <h4>Markets</h4>
+  <input type="radio" id="default" name="market" value="default">
+  <label for="default">Market Name</label>
+  <input type="number">
+  <button>+</button>
+  <p>Available: 1</p>
+
+</body>
+
+<script id="initialize">
+  const urlParams = new URLSearchParams(window.location.search);
+  let specificItem_id = urlParams.get('specificItem_id');
+
+  var headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", "Token t48tRPtNQccyc6Q65klBDEP1QJqkwXw0");
+  var requestOptions = {
+      method: "get",
+      headers: headers,
+      redirect: "follow",
+  };
+</script>
+
+<script id="specificItem">
+  async function getSpecificItem() {
+
+    let queryParams = [
+      {"user_field_names": true}
+    ];
+    
+    let url = buildURL(
+      'https://api.baserow.io/api/database/rows/table/6844/' + specificItem_id + '/', 
+      queryParams
+    );
+
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  let specificItem = async function renderSpecificItem() {
+    let specificItem = {};
+    specificItem = await getSpecificItem();
+    
+    document.querySelector('#specificItem_Name').textContent = specificItem.Name;
+    
+
+    return specificItem;
+  }();
+</script>
+
+</html>
