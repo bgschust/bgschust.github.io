@@ -410,18 +410,30 @@ async function renderGeneralItems() {
       return record['Specific Item Count'] > 0;
     });
   }
-
+  
   // browser sorting
+  generalItems.forEach(record => {
+    record.order = Number(record.order);
+  }); // convert order to number
+
   if(sortBy == ('default' || undefined)){
+    generalItems = _.sortBy(generalItems, 'order');
   } else if(sortBy=='nameAsc') {
     generalItems = _.sortBy(generalItems, 'Name');
   } else if(sortBy=='nameDesc') {
     generalItems = _.sortBy(generalItems, 'Name').reverse();
   } else if(sortBy=='specItemCtAsc'){
-    generalItems = _.sortBy(generalItems, 'Specific Item Count')
+    generalItems = _.sortBy(
+      _.sortBy(generalItems, 'Name'), 
+      'Specific Item Count'
+    )
   } else if(sortBy=='specItemCtDesc'){
-    generalItems = _.sortBy(generalItems, 'Specific Item Count').reverse();
+    generalItems = _.sortBy(
+      _.sortBy(generalItems, 'Name').reverse(), 
+      'Specific Item Count'
+    ).reverse();
   }
+  
 
   // browser search
   if (searchInput.value != undefined || '') {

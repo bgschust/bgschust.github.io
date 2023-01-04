@@ -50,6 +50,10 @@
     </a>
     <div class="collapsible">
       <p>My specific items here.</p>
+      <button id="sellThisItem">
+        <img alt="Dollar Sign" src="images/icons8-dollar-sign-32.png">
+        <span>Sell this Item</span>
+      </button>
     </div>
 
     <!-- The Modal -->
@@ -82,6 +86,7 @@
         <li><a target="_blank" href="https://icons8.com/icon/2775/collapse-arrow">Collapse Arrow</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
         <li><a target="_blank" href="https://icons8.com/icon/14079/search">Search</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
         <li><a target="_blank" href="https://icons8.com/icon/7811/left">Left</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+        <li><a target="_blank" href="https://icons8.com/icon/KUDz8WHDLm1L/dollar-sign">Dollar Sign</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
       </ol>
     </div>
   </div>
@@ -97,6 +102,10 @@
   let generalItem_id = urlParams.get('generalItem_id');
 
   let generalItem_default = {"id":5,"order":"3.99999999999999999999","Name":"Tomato","Short Description":"","Active":false,"Specific Items":[{"id":6,"value":"[Demo] Canned Tomato"}],"Specific Item Count":"1","Group":[{"ids":{"database_table_126754":430},"value":"Edible Harvests"}],"Category":[{"id":498,"value":"Vegetables"}],"Users":[{"ids":{"database_table_4390":4,"database_table_6844":6},"value":"Jeffrey"}]};
+
+  document.querySelector('button#sellThisItem').addEventListener('click', function goToSellItem() {
+    window.location.href = 'sell-item.html' + '?generalItem_id=' + generalItem_id;
+  });
 
   var headers = new Headers();
   headers.append("Content-Type", "application/json");
