@@ -26,6 +26,8 @@
   <h4 class="markets">Markets</h4>
   <p>No markets found.</p>
 
+  <button id="addToCart">Add to Cart</button>
+
 </body>
 
 <script id="initialize">
@@ -101,7 +103,6 @@
   let marketItems = async function renderMarketItems() {
     let records = [];
     records = await getMarketItems();
-    console.log(records);
     
     if (records.length > 0) {
       // browser sorting
@@ -119,23 +120,24 @@
         let recordLabel = document.createElement('label');
         let recordInput = document.createElement('input');
         recordInput.setAttribute('type','number');
-        let recordButton = document.createElement('button');
+        //let recordButton = document.createElement('button');
         let recordBr = document.createElement('br');
         let recordQtyAvail = document.createElement('p');
         recordQtyAvail.classList.add('qtyAvail');
 
         recordRadioBtn.setAttribute('name','market');
-        recordRadioBtn.setAttribute('id', JSON.stringify(record.Market[0]));
+        recordRadioBtn.setAttribute('id', record.ID);// JSON.stringify(record.Market[0]));
         recordLabel.textContent = record.Market[0].value;
-        recordLabel.setAttribute('for', JSON.stringify(record.Market[0]));
-        recordButton.textContent = '+';
-        recordButton.value = JSON.stringify(record.Market[0]);
-        recordQtyAvail.textContent = record.Quantity.toString() + ((record.Quantity) ? ' available' : '');
+        recordLabel.setAttribute('for', record.ID);
+        recordInput.value = 1;
+        //recordButton.textContent = '+';
+        //recordButton.value = JSON.stringify(record.Market[0]);
+        recordQtyAvail.textContent = record['Quantity Available'].toString() + ' available';
 
         recordDiv.appendChild(recordRadioBtn);
         recordDiv.appendChild(recordLabel);
         recordDiv.appendChild(recordInput);
-        recordDiv.appendChild(recordButton);
+        //recordDiv.appendChild(recordButton);
         recordDiv.appendChild(recordBr);
         recordDiv.appendChild(recordQtyAvail);
         document.querySelector('h4.markets+p').append(recordDiv);
@@ -143,6 +145,53 @@
     }
     return records;
   }();
+</script>
+
+<script id="postCartItem">
+  var headers_postCartItem = new Headers();
+  headers_postCartItem.append("Content-Type", "application/json");
+  var requestOptions_postCartItem = {
+      method: "post",
+      headers: headers,
+      redirect: "follow",
+  };
+
+  async function postCartItem() {
+    let url = 'https://hook.us1.make.com/42o0dgvtlti1ugp3lxeb4j4fbpsb85jy';
+    try {
+        let res = await fetch(url, requestOptions_postCartItem);
+        return await res.text();
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  let cartQuantity = 0;
+  let marketItem_ID = 0;
+
+  document.querySelector('h4.markets+p').addEventListener('change', function getCartItem () {
+    if (event.target.parentNode.querySelector('input[type=radio]').getAttribute('type') == 'radio' && event.target.parentNode.querySelector('input[type=radio]').checked == true) {
+      marketItem_ID = JSON.parse(event.target.parentNode.querySelector('input[type=radio]').getAttribute('id'));
+      cartQuantity = Number(event.target.parentNode.querySelector('input[type=number]').value);
+    }
+  });
+
+  document.querySelector('button#addToCart').addEventListener('click', function submitCartItem(){
+    let body = {
+      "Fulfillment Method": "Self Pick-Up",
+      "Payment Method": "Pay at Pick-Up",
+      "Market-Item_ID": marketItem_ID,
+      "User_ID": 2,
+      "Password": "getYourGainz$09",
+      "Cart Quantity": cartQuantity
+    };
+    requestOptions_postCartItem.body = JSON.stringify(body);
+    let response = postCartItem();
+    console.log(response);
+    if (response == 'Cart item posted.') {
+      alert('Added to cart. You may close the modal.');
+    }
+  });
 </script>
 
 </html>
