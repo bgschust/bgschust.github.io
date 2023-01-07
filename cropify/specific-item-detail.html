@@ -65,7 +65,8 @@
     }
   }
 
-  let specificItem = async function renderSpecificItem() {
+  if (specificItem_id != null || undefined) {
+    let specificItem = async function renderSpecificItem() {
     let specificItem = {};
     specificItem = await getSpecificItem();
     
@@ -76,6 +77,8 @@
     
     return specificItem;
   }();
+  }
+  
 </script>
 
 <script id="marketItems">
@@ -160,7 +163,8 @@
     let url = 'https://hook.us1.make.com/42o0dgvtlti1ugp3lxeb4j4fbpsb85jy';
     try {
         let res = await fetch(url, requestOptions_postCartItem);
-        return await res.text();
+        res = await res.text();
+        return await res;
     } catch (error) {
         console.log(error);
     }
@@ -168,6 +172,7 @@
 
   let cartQuantity = 0;
   let marketItem_ID = 0;
+  let basketID = 1;
 
   document.querySelector('h4.markets+p').addEventListener('change', function getCartItem () {
     if (event.target.parentNode.querySelector('input[type=radio]').getAttribute('type') == 'radio' && event.target.parentNode.querySelector('input[type=radio]').checked == true) {
@@ -183,14 +188,15 @@
       "Market-Item_ID": marketItem_ID,
       "User_ID": 2,
       "Password": "getYourGainz$09",
-      "Cart Quantity": cartQuantity
+      "Basket Quantity": cartQuantity,
+      "Basket ID": basketID
     };
     requestOptions_postCartItem.body = JSON.stringify(body);
-    let response = postCartItem();
-    console.log(response);
-    if (response == 'Cart item posted.') {
-      alert('Added to cart. You may close the modal.');
+    async function showCartItemResponse() {
+      let response = await postCartItem();
+      alert(response);
     }
+    showCartItemResponse();
   });
 </script>
 
