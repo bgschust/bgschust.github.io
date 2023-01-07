@@ -171,13 +171,13 @@
   }();
 </script>
 
-<script id="specificItem">
+<script id="specificItems">
   async function getSpecificItems() {
   
     let queryParams = [
       {"user_field_names": true},
       {"size": 200},
-      {"include": "Name,Short Description,Active,General Item,Producer,Markets"},
+      {"include": "Name,Short Description,Active,General Item,Producer,Markets,Prices (AgG)"},
       {'filter__field_818432__link_row_has': generalItem_id}
     ];
     
@@ -273,6 +273,18 @@
       specificItemP2.textContent = record.Name || 'Name not found';
       specificItemP3.textContent = record['Short Description'] || 'No description.';
       specificItemBtn.textContent = 'Details';
+      if (record['Prices (AgG)'].length) {
+        let prices = [];
+        _.pluck(record['Prices (AgG)'], 'value').forEach(price => {
+          price = Number(price);
+          prices.push(price);
+        });
+        prices.sort();
+        let lowestPrice = prices[0];
+        specificItemSpan1.innerHTML = lowestPrice + ' AgG';
+      } else {
+        specificItemSpan1.innerHTML = 'No items.';
+      }
   
       specificItemCol1.appendChild(specificItemP1);
       specificItemCol1.appendChild(specificItemP2);

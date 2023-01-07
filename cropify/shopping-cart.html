@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify: Shopping Cart</title>
+  <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="styles/style.css">
+  <link rel="stylesheet" href="styles/shopping-cart.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="components/functions.js"></script>
+</head>
+<body>
+
+  <iframe id="component_topNav" src="components/topNavigation.html"></iframe>
+
+  <div class="mainContent">
+
+    <h3>Shopping Cart</h3>
+
+    <h4>Cart Summary</h4>
+    <div id="cartSummaryContainer">
+      <p id="uniqueItems">Unique Items: <span>0</span></p>
+      <p id="totalItems">Total Items: <span>0</span></p>
+      <p id="subtotal">Subtotal (AgG): <span>0</span></p>
+      <p id="transactionFee">Transaction Fee: <span>0</span></p>
+      <p id="timestamps">Created at <span>unknown time</span>. Updated at <span>unknown time</span>.</p>
+    </div>
+
+    <h4>Cart Items</h4>
+    <div id="cartItemsContainer">Waiting for cart items.</div>
+
+  </div>
+
+</body>
+
+<script id="getCart">
+  var headers_getCart = new Headers();
+  headers_getCart.append("Content-Type", "application/json");
+  var requestOptions_getCart = {
+      method: "GET",
+      headers: headers_getCart,
+      redirect: "follow",
+  };
+
+  async function getCart() {
+    let basketID = 1;
+
+    let queryParams = [
+      {"User_ID": 2},
+      {"Password": "getYourGainz$09"},
+      {"Basket ID": basketID}
+    ];    
+
+    let url = buildURL('https://bright-yak-90.hooks.n8n.cloud/webhook/9d74ce68-a26d-4bb2-b267-32933cdf702d', 
+      queryParams);
+    try {
+        let res = await fetch(url, requestOptions_getCart);
+        res = await res.text();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderCart() {
+    let response = await getCart();
+    response = JSON.parse(response);
+
+    // render cart summary
+    let cartSummaryContainer = document.querySelector('div#cartSummaryContainer');
+    cartSummaryContainer.querySelector('p#uniqueItems>span').textContent = response.cartSummary['Unique Items'];
+    cartSummaryContainer.querySelector('p#totalItems>span').textContent = response.cartSummary['Total Basket Item Quantity'];
+    cartSummaryContainer.querySelector('p#subtotal>span').textContent = response.cartSummary['Subtotal (AgG)'];
+    cartSummaryContainer.querySelector('p#transactionFee>span').textContent = response.cartSummary['Transaction Fee (AgG)'];
+    cartSummaryContainer.querySelectorAll('p#timestamps>span')[0].textContent = response.cartSummary['Created Time'];
+    cartSummaryContainer.querySelectorAll('p#timestamps>span')[1].textContent = response.cartSummary['Updated Time'];
+
+    // simplify cart items JSON
+    let cartItems = response.cartItems;
+    cartItems.forEach((item, index) => {
+      cartItems[index].supplierName = item.Supplier[0].value;
+      cartItems[index].supplierID = item.Supplier[0].ids.database_table_127809;
+      cartItems[index].supplierObject = {
+        id: item.Supplier[0].ids.database_table_127809,
+        value: item.Supplier[0].value
+      };
+      cartItems[index].marketName = item.Market[0].value;
+      cartItems[index].marketID = item.Market[0].ids.database_table_127809;
+      cartItems[index].marketObject = {
+        id: item.Market[0].ids.database_table_127809,
+        value: item.Market[0].value
+      };
+    });
+
+    // sort cart items
+    cartItems = _.sortBy(cartItems, 'order');
+    cartItems = _.sortBy(cartItems, 'supplierName');
+    cartItems = _.sortBy(cartItems, 'marketName');
+
+    // render cart items
+    let cartItemsContainer = document.querySelector('div#cartItemsContainer');
+    cartItemsContainer.innerHTML = '';
+    _.uniq(_.pluck(cartItems,'marketID')).forEach(marketID => {
+      let thisMarket_cartItems = cartItems.filter(item => {
+        return item.marketObject.id == marketID;
+      });
+
+      let marketDiv = document.createElement('div');
+      marketDiv.className = 'marketDiv';
+      let marketTitle = document.createElement('div');
+      marketTitle.className = 'marketTitle';
+      marketTitle.textContent = thisMarket_cartItems[0].marketName;
+      marketDiv.appendChild(marketTitle);
+      let marketContent = document.createElement('div');
+      marketContent.className = 'marketContent';
+
+      _.uniq(_.pluck(thisMarket_cartItems,'supplierID')).forEach(supplierID => {
+        let thisSupplier_cartItems = thisMarket_cartItems.filter(item => {
+          return item.supplierObject.id == supplierID;
+        });
+
+        let supplierDiv = document.createElement('div');
+        supplierDiv.className = 'supplierDiv';
+        let supplierTitle = document.createElement('div');
+        supplierTitle.className = 'supplierTitle';
+        supplierTitle.textContent = thisSupplier_cartItems[0].supplierName;
+        supplierDiv.appendChild(supplierTitle);
+        let supplierContent = document.createElement('div');
+        supplierContent.className = 'supplierContent';
+
+        thisSupplier_cartItems.forEach(item => {
+          let cartItemDiv = document.createElement('div');
+          let cartItemLine1 = document.createElement('p');
+          let cartItemLine2 = document.createElement('p');
+          let cartItemQty = document.createElement('span');
+          let cartItemPrice = document.createElement('span');
+          let cartItemExtPrice = document.createElement('span');
+
+          cartItemLine1.textContent = item['Specific Item'][0].value;
+          cartItemQty.textContent = item['Basket Quantity'];
+          cartItemPrice.textContent = item['Price (AgG)'] + ' each';
+          cartItemExtPrice.textContent = item['Extended Price (AgG)'] + ' AgG';
+          
+          cartItemLine2.appendChild(cartItemQty);
+          cartItemLine2.innerHTML += ' @ ';
+          cartItemLine2.appendChild(cartItemPrice);
+          cartItemLine2.innerHTML += ' = ';
+          cartItemLine2.appendChild(cartItemExtPrice);
+          cartItemDiv.appendChild(cartItemLine1);
+          cartItemDiv.appendChild(cartItemLine2);
+          supplierContent.appendChild(cartItemDiv);
+        });
+        supplierDiv.appendChild(supplierContent);
+        marketContent.appendChild(supplierDiv);
+      });
+      marketDiv.appendChild(marketContent);
+      cartItemsContainer.appendChild(marketDiv);
+    });
+  }
+  renderCart();
+
+</script>
+
+</html>

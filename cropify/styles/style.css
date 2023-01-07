@@ -25,6 +25,10 @@ body {
   background-color: var(--bg-color);
 }
 
+div.mainContent {
+  padding: 10px;
+}
+
 iframe {
   border: 0px;
   padding: 0px;

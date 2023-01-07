@@ -113,39 +113,38 @@
         record.MarketName = record.Market[0].value;
       });
       records = _.sortBy(records, 'MarketName');
-
-      // rendering
-      document.querySelector('h4.markets+p').innerHTML = '';
-      records.forEach(record => {
-        let recordDiv = document.createElement('div');
-        let recordRadioBtn = document.createElement('input');
-        recordRadioBtn.setAttribute('type','radio');
-        let recordLabel = document.createElement('label');
-        let recordInput = document.createElement('input');
-        recordInput.setAttribute('type','number');
-        //let recordButton = document.createElement('button');
-        let recordBr = document.createElement('br');
-        let recordQtyAvail = document.createElement('p');
-        recordQtyAvail.classList.add('qtyAvail');
-
-        recordRadioBtn.setAttribute('name','market');
-        recordRadioBtn.setAttribute('id', record.ID);// JSON.stringify(record.Market[0]));
-        recordLabel.textContent = record.Market[0].value;
-        recordLabel.setAttribute('for', record.ID);
-        recordInput.value = 1;
-        //recordButton.textContent = '+';
-        //recordButton.value = JSON.stringify(record.Market[0]);
-        recordQtyAvail.textContent = record['Quantity Available'].toString() + ' available';
-
-        recordDiv.appendChild(recordRadioBtn);
-        recordDiv.appendChild(recordLabel);
-        recordDiv.appendChild(recordInput);
-        //recordDiv.appendChild(recordButton);
-        recordDiv.appendChild(recordBr);
-        recordDiv.appendChild(recordQtyAvail);
-        document.querySelector('h4.markets+p').append(recordDiv);
-      });
     }
+
+    // rendering
+    document.querySelector('h4.markets+p').innerHTML = '';
+    records.forEach(record => {
+      let recordDiv = document.createElement('div');
+      let recordRadioBtn = document.createElement('input');
+      recordRadioBtn.setAttribute('type','radio');
+      let recordLabel = document.createElement('label');
+      let recordInput = document.createElement('input');
+      recordInput.setAttribute('type','number');
+      let recordBr = document.createElement('br');
+      let recordQtyAvail = document.createElement('p');
+      recordQtyAvail.classList.add('qtyAvail');
+
+      recordRadioBtn.setAttribute('name','market');
+      recordRadioBtn.setAttribute('id', record.ID);// JSON.stringify(record.Market[0]));
+      recordLabel.textContent = record.Market[0].value;
+      recordLabel.setAttribute('for', record.ID);
+      recordInput.value = 1;
+      recordQtyAvail.innerHTML = 
+        record['Quantity Available'].toString() + ' available for <b>'
+        + record['Price (AgG)'] + '</b> each';
+
+      recordDiv.appendChild(recordRadioBtn);
+      recordDiv.appendChild(recordLabel);
+      recordDiv.appendChild(recordInput);
+      recordDiv.appendChild(recordBr);
+      recordDiv.appendChild(recordQtyAvail);
+      document.querySelector('h4.markets+p').append(recordDiv);
+    });
+    
     return records;
   }();
 </script>
@@ -193,8 +192,13 @@
     };
     requestOptions_postCartItem.body = JSON.stringify(body);
     async function showCartItemResponse() {
+      let statusBlock = document.createElement("div");
+      statusBlock.setAttribute('id','statusBlock');
+      statusBlock.textContent = "Please wait.";
+      document.querySelector('button#addToCart').insertAdjacentElement('beforebegin',statusBlock);
+
       let response = await postCartItem();
-      alert(response);
+      statusBlock.textContent = response;
     }
     showCartItemResponse();
   });

@@ -1,0 +1,35 @@
+div#cartSummaryContainer>p {
+  margin: 0px;
+}
+
+div.marketDiv {
+  border: 1px solid darkgreen;
+  border-radius: 5px;
+  margin-bottom: 8px;
+}
+
+div.marketTitle {
+  background-color: darkgreen;
+  color: white;
+  padding: 1px 0px 1px 6px;
+}
+
+div.marketContent {
+  padding: 8px;
+}
+
+div.supplierDiv {
+  border: 1px solid greenyellow;
+  border-radius: 5px;
+  margin-bottom: 8px;
+}
+
+div.supplierTitle {
+  background-color: greenyellow;
+  color: white;
+  padding: 1px 0px 1px 6px;
+}
+
+div.supplierContent {
+  padding: 8px;
+}
