@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify: Log In</title>
+  <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="styles/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="components/functions.js"></script>
+</head>
+<body>
+
+  <iframe id="component_topNav" src="components/topNavigation.html"></iframe>
+
+  <h2>Log In</h2>
+  <h3>Sign into your account.</h3>
+
+  <label for="email">Email Address</label>
+  <input type="text" id="email"><br>
+  <label for="password">Password</label>
+  <input type="password" id="password"><br>
+
+  <div id="statusBlock"></div>
+  <button class="signIn">Sign In</button>
+
+</body>
+
+<script id="signIn">
+  var headers_signIn = new Headers();
+  headers_signIn.append("Content-Type", "application/json");
+  var requestOptions_signIn = {
+      method: "POST",
+      headers: headers_signIn,
+      redirect: "follow",
+  };
+
+  async function signIn() {
+    let url = 'https://atusvkd36toxhl1glmt49q0v.hooks.n8n.cloud/webhook/df14efaa-ba37-4098-ab7e-be46a24c94e0';
+    try {
+        let res = await fetch(url, requestOptions_signIn);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  document.querySelector('button.signIn').addEventListener('click', function () {
+    let body = {
+      "Email Address": document.querySelector('input#email').value,
+      "Password": document.querySelector('input#password').value
+    };
+    requestOptions_signIn.body = JSON.stringify(body);
+
+    async function showResponse() {
+      let statusBlock = document.querySelector('div#statusBlock');
+      statusBlock.textContent = 'Please wait.'
+      let response = await signIn();
+      statusBlock.textContent = response.message;
+      if (response.message == 'Logged in.') {
+        statusBlock.innerHTML = "Successfully logged in!";
+        window.location.href = 'index.html';
+        localStorage.setItem("user", 
+          JSON.stringify({
+            id: response.data.id,
+            "Email Address": document.querySelector('input#email').value,
+            Password: document.querySelector('input#password').value
+          })
+        );
+      } else if (response.message == 'Incorrect password.') {
+        statusBlock.textContent = 'Incorrect password.';
+      } else if (response.message == 'User email could not be found.') {
+        statusBlock.textContent = 'User email could not be found.';
+      }
+    }
+    showResponse();
+  })
+  
+
+</script>
+
+</html>

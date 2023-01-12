@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify: Sign Up</title>
+  <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="styles/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="components/functions.js"></script>
+</head>
+<body>
+
+  <iframe id="component_topNav" src="components/topNavigation.html"></iframe>
+
+  <h2>Email Verification</h2>
+  <div id="statusBlock">Checking your email verification code...</div>
+
+</body>
+
+<script id="verifyEmail">
+  const urlParams = new URLSearchParams(window.location.search);
+  let verificationCode = urlParams.get('verificationCode');
+  let userID = urlParams.get('userID');
+
+  var headers_verifyEmail = new Headers();
+  headers_verifyEmail.append("Content-Type", "application/json");
+  var requestOptions_verifyEmail = {
+      method: "PUT",
+      headers: headers_verifyEmail,
+      redirect: "follow",
+  };
+
+  async function verifyEmail() {
+    let url = 'https://atusvkd36toxhl1glmt49q0v.hooks.n8n.cloud/webhook-test/b52a4af5-ba54-4805-894c-8595b6cd946a';
+    try {
+        let res = await fetch(url, requestOptions_verifyEmail);
+        res = await res.text();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  let body = {
+    verificationCode: verificationCode,
+    userID: userID
+  };
+  requestOptions_verifyEmail.body = JSON.stringify(body);
+
+  async function showResponse() {
+    let statusBlock = document.querySelector('div#statusBlock');
+    let response = await verifyEmail();
+    statusBlock.textContent = await response;
+    if (response == 'Verified.') {
+      statusBlock.innerHTML = "Success! Please proceed to <a href='log-in.html'>log in</a>.";
+    } else if (response == 'Wrong verification code.') {
+      statusBlock.textContent = 'Your email address could not be verified. Please try again.'
+    }
+  }
+  showResponse();
+
+</script>
+
+</html>
