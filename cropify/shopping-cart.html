@@ -14,7 +14,7 @@
 
   <iframe id="component_topNav" src="components/topNavigation.html"></iframe>
 
-  <div class="mainContent">
+  <div id="mainContainer">
 
     <h3>Shopping Cart</h3>
 
@@ -44,19 +44,16 @@
   };
 
   async function getCart() {
-    let basketID = 1;
-
     let queryParams = [
-      {"User_ID": 2},
-      {"Password": "getYourGainz$09"},
-      {"Basket ID": basketID}
+      {"User_ID": JSON.parse(localStorage.getItem('user')).id},
+      {"Password": JSON.parse(localStorage.getItem('user')).Password}
     ];    
 
     let url = buildURL('https://atusvkd36toxhl1glmt49q0v.hooks.n8n.cloud/webhook/9d74ce68-a26d-4bb2-b267-32933cdf702d', 
       queryParams);
     try {
         let res = await fetch(url, requestOptions_getCart);
-        res = await res.text();
+        res = await res.json();
         return await res;
     } catch (error) {
         console.log(error);
@@ -65,7 +62,6 @@
 
   async function renderCart() {
     let response = await getCart();
-    response = JSON.parse(response);
 
     // render cart summary
     let cartSummaryContainer = document.querySelector('div#cartSummaryContainer');

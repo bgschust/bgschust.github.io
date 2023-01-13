@@ -1,0 +1,8 @@
+div#profileSummary {
+  border-left: 2px solid var(--grey-text);
+  padding: 8px 0 8px 12px;
+}
+
+div#profileSummary p {
+  margin: 0px;
+}

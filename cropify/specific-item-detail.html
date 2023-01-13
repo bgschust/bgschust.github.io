@@ -171,7 +171,6 @@
 
   let cartQuantity = null;
   let marketItem_ID = null;
-  let basketID = 1;
 
   document.querySelector('h4.markets+p').addEventListener('change', function getCartItem () {
     if (event.target.parentNode.querySelector('input[type=radio]').getAttribute('type') == 'radio' && event.target.parentNode.querySelector('input[type=radio]').checked == true) {
@@ -185,10 +184,9 @@
       "Fulfillment Method": "Self Pick-Up",
       "Payment Method": "Pay at Pick-Up",
       "Market-Item_ID": marketItem_ID,
-      "User_ID": 2,
-      "Password": "getYourGainz$09",
+      "User_ID": JSON.parse(localStorage.getItem('user')).id,
+      "Password": JSON.parse(localStorage.getItem('user')).Password,
       "Basket Quantity": cartQuantity,
-      "Basket ID": basketID
     };
     requestOptions_postCartItem.body = JSON.stringify(body);
     async function showCartItemResponse() {
