@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="images/favicon.png">
   <link rel="stylesheet" href="styles/style.css">
+  <link rel="stylesheet" href="styles/sign-up.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
   <script src="components/functions.js"></script>
 </head>
@@ -14,29 +15,102 @@
   <iframe id="component_topNav" src="components/topNavigation.html"></iframe>
 
   <div id="mainContainer">
-    <h2>Sign Up</h2>
-    <h3>User Registration</h3>
+    
 
-    <label for="email">Email Address</label>
-    <input type="text" id="email"><br>
-    <label for="password">Password</label>
-    <input type="password" id="password"><br>
-    <label for="passwordConfirmation">Confirm Password</label>
-    <input type="password" id="passwordConfirmation"><br>
-    <label for="firstName">First Name</label>
-    <input type="text" id="firstName">
-    <label for="lastName">Last Name</label>
-    <input type="text" id="lastName"><br>
-    <label for="zipcode">Zipcode</label>
-    <input type="text" id="zipcode"><br>
-    <input type="checkbox" id="termsConditions">
-    <label for="termsConditions">I accept the terms & conditions.</label><br><br>
+    <div class="centeredContent">
+      <h2>Sign Up</h2>
+      <h3>User Registration</h3>
+      <div class="formBlock">
+        <label for="email">Email Address</label>
+        <input type="text" id="email"><br>
+        <label for="password">Password</label>
+        <input type="password" id="password"><br>
+        <label for="passwordConfirmation">Confirm Password</label>
+        <input type="password" id="passwordConfirmation"><br>
+        <div id="passwordValidationBlock"></div>
+        <div>
+          <div style="display:inline-block;">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName">
+          </div>
+          <div style="display:inline-block;">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName">
+          </div>
+        </div>
+        <label for="zipcode">Zipcode</label>
+        <input type="text" id="zipcode"><br>
+        <input type="checkbox" id="termsConditions">
+        <label for="termsConditions">I accept the terms & conditions.</label><br><br>
 
-    <div id="statusBlock"></div>
-    <button class="registerUser">Register</button>
+        <div id="statusBlock"></div>
+        <button class="submitForm registerUser">Register</button>
+      </div>
+    </div>
   </div>
 
 </body>
+
+<script id="validation">
+  let passwordValidationStatus = 'invalid';
+
+  document.querySelector('input#password').addEventListener('input', validatePassword);
+  document.querySelector('input#passwordConfirmation').addEventListener('input', validatePassword);
+  function validatePassword() {
+    let passwordValidationBlock = document.querySelector('div#passwordValidationBlock');
+    passwordValidationBlock.classList.add('validationBlock');
+
+    let password = document.querySelector('input#password');
+    let passwordConfirmation = document.querySelector('input#passwordConfirmation');
+    let regEx = /^[0-9a-zA-Z]+$/;
+
+    if (this.value.match(regEx) 
+        && this.value.length <= 32 
+        && this.value.length >=8 
+        && password.value == passwordConfirmation.value) {
+      passwordValidationStatus = 'valid';
+      passwordValidationBlock.setAttribute('style','display:none;');
+    } else {
+      passwordValidationBlock.setAttribute('style','display:inherit;');
+      passwordValidationBlock.innerHTML = 'Invalid password: <br>';
+    }
+
+    if(!this.value.match(regEx)) {
+      passwordValidationStatus = 'invalid';
+      let alphanumericStatus = document.createElement('p');
+      alphanumericStatus.setAttribute('id','passwordValidation_alphanumericStatus');
+      alphanumericStatus.innerHTML = "&#x26A0; No special characters allowed. Alphanumeric only (i.e. a-z, A-Z, 0-9).";
+      passwordValidationBlock.appendChild(alphanumericStatus);
+    } else {
+      let passwordValidation_alphanumericStatus = document.querySelector('p#passwordValidation_alphanumericStatus');
+      passwordValidation_alphanumericStatus ? passwordValidation_alphanumericStatus.remove() : '';
+    }
+    if (this.value.length > 32 || this.value.length < 8) {
+      passwordValidationStatus = 'invalid';
+      let lengthStatus = document.createElement('p');
+      lengthStatus.setAttribute('id','passwordValidation_lengthStatus');
+      lengthStatus.innerHTML = "&#x26A0; Wrong length. Password should be 8-32 characters long.";
+      passwordValidationBlock.appendChild(lengthStatus);
+    } else {
+      let passwordValidation_lengthStatus = document.querySelector('p#passwordValidation_lengthStatus');
+      passwordValidation_lengthStatus ? passwordValidation_lengthStatus.remove() : '';
+    }
+    passwordValidation();
+  }
+  function passwordValidation() {
+    if (password.value !== passwordConfirmation.value) {
+      passwordValidationStatus = 'invalid';
+      let confirmStatus = document.createElement('p');
+      confirmStatus.setAttribute('id','passwordValidation_confirmStatus');
+      confirmStatus.innerHTML = "&#x26A0; Passwords do not match.";
+      passwordValidationBlock.appendChild(confirmStatus);
+    } else {
+      let passwordValidation_confirmStatus = document.querySelector('p#passwordValidation_confirmStatus');
+      passwordValidation_confirmStatus ? passwordValidation_confirmStatus.remove() : '';
+    }
+  }
+
+</script>
 
 <script id="registerUser">
   var headers_registerUser = new Headers();
@@ -60,24 +134,33 @@
   }
 
   document.querySelector('button.registerUser').addEventListener('click', function submitRegistration(){
-    let body = {
-      "Email Address": document.querySelector('input#email').value,
-      "Password": document.querySelector('input#password').value,
-      "Password Confirmation": document.querySelector('input#passwordConfirmation').value,
-      "First Name": document.querySelector('input#firstName').value,
-      "Last Name": document.querySelector('input#lastName').value,
-      "Zipcode": document.querySelector('input#zipcode').value,
-      "Terms & Conditions Acceptance": document.querySelector('input#termsConditions').checked
-    };
-    requestOptions_registerUser.body = JSON.stringify(body);
-    async function showResponse() {
-      let statusBlock = document.querySelector('div#statusBlock');
-      statusBlock.textContent = "Please wait.";
-
-      let response = await registerUser();
-      statusBlock.textContent = await response;
+    let statusBlock = document.querySelector('div#statusBlock');
+    let email = document.querySelector('input#email').value;
+    let termsConditions = document.querySelector('input#termsConditions').checked;
+    let zipCode = document.querySelector('input#zipcode').value;
+    if(email
+        && passwordValidationStatus === 'valid' 
+        && termsConditions === true
+        && zipCode.length === 5) {
+      let body = {
+        "Email Address": document.querySelector('input#email').value,
+        "Password": document.querySelector('input#password').value,
+        "Password Confirmation": document.querySelector('input#passwordConfirmation').value,
+        "First Name": document.querySelector('input#firstName').value,
+        "Last Name": document.querySelector('input#lastName').value,
+        "Zipcode": zipCode,
+        "Terms & Conditions Acceptance": termsConditions
+      };
+      requestOptions_registerUser.body = JSON.stringify(body);
+      async function showResponse() {
+        statusBlock.textContent = "Please wait.";
+        let response = await registerUser();
+        statusBlock.textContent = await response;
+      }
+      showResponse();
+    } else {
+      statusBlock.textContent = "Check form errors.";
     }
-    showResponse();
   });
 </script>
 
