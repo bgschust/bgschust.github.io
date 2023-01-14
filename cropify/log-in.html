@@ -31,8 +31,6 @@
 <script id="signIn">
   var headers_signIn = new Headers();
   headers_signIn.append("Content-Type", "application/json");
-  //headers_signIn.append('Target-Endpoint',
-  //  'https://atusvkd36toxhl1glmt49q0v.hooks.n8n.cloud/webhook-test/1383521f-d15b-4e3f-aa00-a28da667243f')
   var requestOptions_signIn = {
       method: "POST",
       headers: headers_signIn,
@@ -40,7 +38,8 @@
   };
 
   async function signIn() {
-    let url = 'https://atusvkd36toxhl1glmt49q0v.hooks.n8n.cloud/webhook-test/1383521f-d15b-4e3f-aa00-a28da667243f';
+    let url = 'https://corsproxy.io/?' // CORS proxy server
+    +'https://bgschust.app.n8n.cloud/webhook/1383521f-d15b-4e3f-aa00-a28da667243f';
     try {
         let res = await fetch(url, requestOptions_signIn);
         res = await res.json();
@@ -62,17 +61,16 @@
       statusBlock.textContent = 'Please wait.';
       let response = await signIn();
       
-      //statusBlock.textContent = response.message || response;
+      statusBlock.textContent = response.message || response;
       if (response.message == 'Logged in.') {
         statusBlock.innerHTML = "Successfully logged in!";
+        let user = {
+          id: response.data.id,
+          "Email Address": document.querySelector('input#email').value,
+          Password: document.querySelector('input#password').value
+        };
+        setCookie('user', JSON.stringify(user), 30);
         window.location.href = 'index.html';
-        localStorage.setItem("user", 
-          JSON.stringify({
-            id: response.data.id,
-            "Email Address": document.querySelector('input#email').value,
-            Password: document.querySelector('input#password').value
-          })
-        );
       } else if (response.message == 'Incorrect password.') {
         statusBlock.textContent = 'Incorrect password.';
       } else if (response.message == 'User email could not be found.') {
@@ -80,8 +78,7 @@
       }
     }
     showResponse();
-  })
-  
+  });
 
 </script>
 

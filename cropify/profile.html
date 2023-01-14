@@ -39,11 +39,11 @@
 
 <script>
   document.querySelector('button#logOut').addEventListener('click', function() {
-    localStorage.setItem('user', '{}');
+    setCookie('user', '', 30);
     window.location.href = '';
   });
 
-  if (JSON.parse(localStorage.getItem('user')).id) {
+  if (getCookie('user')) {
     document.querySelector('div.loggedIn').setAttribute('style','display:inherit;');
     document.querySelector('div.loggedOut').setAttribute('style','display:none;');
   } else {
@@ -62,11 +62,12 @@
     };
 
     let queryParams = [
-      {"User_ID": JSON.parse(localStorage.getItem('user')).id},
-      {"Password": JSON.parse(localStorage.getItem('user')).Password}
+      {"User_ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password}
     ];    
 
-    let url = buildURL('https://atusvkd36toxhl1glmt49q0v.hooks.n8n.cloud/webhook/8b4841f8-ee9b-456c-8627-5498efb022a9', 
+    let url = buildURL('https://corsproxy.io/?' // CORS proxy server
+      + 'https://bgschust.app.n8n.cloud/webhook/8b4841f8-ee9b-456c-8627-5498efb022a9', 
       queryParams);
     try {
         let res = await fetch(url, requestOptions_getUser);
@@ -90,7 +91,7 @@
       profileSummary.querySelectorAll('p')[2].querySelectorAll('span')[0].textContent = response.user['Zipcode'];
     }    
   }
-  if(JSON.parse(localStorage.getItem('user')).id) {
+  if(getCookie('user')) {
     renderProfile();
   }
 

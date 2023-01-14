@@ -159,7 +159,8 @@
   };
 
   async function postCartItem() {
-    let url = 'https://atusvkd36toxhl1glmt49q0v.hooks.n8n.cloud/webhook/a19b8dc9-0847-45fe-b497-1a8eabbda88d';
+    let url = 'https://corsproxy.io/?' // CORS proxy server
+      + 'https://bgschust.app.n8n.cloud/webhook/a19b8dc9-0847-45fe-b497-1a8eabbda88d';
     try {
         let res = await fetch(url, requestOptions_postCartItem);
         res = await res.text();
@@ -184,8 +185,8 @@
       "Fulfillment Method": "Self Pick-Up",
       "Payment Method": "Pay at Pick-Up",
       "Market-Item_ID": marketItem_ID,
-      "User_ID": JSON.parse(localStorage.getItem('user')).id,
-      "Password": JSON.parse(localStorage.getItem('user')).Password,
+      "User_ID": JSON.parse(getCookie('user')).id,
+      "Password": JSON.parse(getCookie('user')).Password,
       "Basket Quantity": cartQuantity,
     };
     requestOptions_postCartItem.body = JSON.stringify(body);

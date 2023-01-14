@@ -32,7 +32,8 @@
   };
 
   async function verifyEmail() {
-    let url = 'https://atusvkd36toxhl1glmt49q0v.hooks.n8n.cloud/webhook/b52a4af5-ba54-4805-894c-8595b6cd946a';
+    let url = 'https://corsproxy.io/?' // CORS proxy server
+      + 'https://bgschust.app.n8n.cloud/webhook/b52a4af5-ba54-4805-894c-8595b6cd946a';
     try {
         let res = await fetch(url, requestOptions_verifyEmail);
         res = await res.text();
