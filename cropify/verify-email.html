@@ -38,7 +38,7 @@
   requestOptions_verifyEmail.body = JSON.stringify(body);
 
   async function verifyEmail() {
-    let url = 'https://hammerhead.cropify.org/'+ // CORS proxy server
+    let url = 'https://hammerhead.cropify.org/cors-proxy/'+ // CORS proxy server
       'https://bgschust.app.n8n.cloud/webhook/b52a4af5-ba54-4805-894c-8595b6cd946a';
     try {
         let res = await fetch(url, requestOptions_verifyEmail);

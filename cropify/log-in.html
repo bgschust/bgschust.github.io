@@ -41,7 +41,7 @@
   };
 
   async function signIn() {
-    let url = 'https://corsproxy.io/?' // CORS proxy server
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
     +'https://bgschust.app.n8n.cloud/webhook/1383521f-d15b-4e3f-aa00-a28da667243f';
     try {
         let res = await fetch(url, requestOptions_signIn);

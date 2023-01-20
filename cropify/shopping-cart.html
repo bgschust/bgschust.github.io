@@ -23,12 +23,15 @@
       <p id="uniqueItems">Unique Items: <span>0</span></p>
       <p id="totalItems">Total Items: <span>0</span></p>
       <p id="subtotal">Subtotal (AgG): <span>0</span></p>
-      <p id="transactionFee">Transaction Fee: <span>0</span></p>
+      <p id="transactionFee">Transaction Fee (AgG): <span>0</span></p>
       <p id="timestamps">Created at <span>unknown time</span>. Updated at <span>unknown time</span>.</p>
     </div>
 
     <h4>Cart Items</h4>
     <div id="cartItemsContainer">Waiting for cart items.</div>
+
+    <br><br>
+    <a target="_blank" href="https://icons8.com/icon/99961/delete">Delete</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
 
   </div>
 
@@ -49,7 +52,7 @@
       {"Password": JSON.parse(getCookie('user')).Password}
     ];    
 
-    let url = buildURL('https://corsproxy.io/?' // CORS proxy server
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
       + 'https://bgschust.app.n8n.cloud/webhook/9d74ce68-a26d-4bb2-b267-32933cdf702r', 
       queryParams);
     try {
@@ -94,6 +97,7 @@
     cartItems = _.sortBy(cartItems, 'order');
     cartItems = _.sortBy(cartItems, 'supplierName');
     cartItems = _.sortBy(cartItems, 'marketName');
+    //console.log(cartItems);
 
     // render cart items
     let cartItemsContainer = document.querySelector('div#cartItemsContainer');
@@ -128,24 +132,41 @@
 
         thisSupplier_cartItems.forEach(item => {
           let cartItemDiv = document.createElement('div');
+          cartItemDiv.classList.add('cartItem');
+          let cartItemCol1 = document.createElement('div');
+          cartItemCol1.classList.add('cartItemCol1');
           let cartItemLine1 = document.createElement('p');
           let cartItemLine2 = document.createElement('p');
           let cartItemQty = document.createElement('span');
           let cartItemPrice = document.createElement('span');
           let cartItemExtPrice = document.createElement('span');
+          let cartItemCol2 = document.createElement('div');
+          cartItemCol2.classList.add('cartItemCol2');
+          let cartItemTrashIcon = document.createElement('img');
+          cartItemTrashIcon.classList.add('cartItemTrashBtn');
 
+          cartItemDiv.setAttribute('id','basketItemID-'+item.id);
           cartItemLine1.textContent = item['Specific Item'][0].value;
           cartItemQty.textContent = item['Basket Quantity'];
           cartItemPrice.textContent = item['Price (AgG)'] + ' each';
           cartItemExtPrice.textContent = item['Extended Price (AgG)'] + ' AgG';
+          cartItemTrashIcon.setAttribute('src', './images/icons8-delete-24.png');
+          cartItemTrashIcon.addEventListener('click', function () {
+            let basketItemID = this.parentNode.parentNode.id;
+            basketItemID = basketItemID.slice('basketItemID-'.length);
+            deleteCartItem(basketItemID);
+          });
           
           cartItemLine2.appendChild(cartItemQty);
           cartItemLine2.innerHTML += ' @ ';
           cartItemLine2.appendChild(cartItemPrice);
           cartItemLine2.innerHTML += ' = ';
           cartItemLine2.appendChild(cartItemExtPrice);
-          cartItemDiv.appendChild(cartItemLine1);
-          cartItemDiv.appendChild(cartItemLine2);
+          cartItemCol1.appendChild(cartItemLine1);
+          cartItemCol1.appendChild(cartItemLine2);
+          cartItemDiv.appendChild(cartItemCol1);
+          cartItemDiv.appendChild(cartItemCol2);
+          cartItemCol2.appendChild(cartItemTrashIcon);
           supplierContent.appendChild(cartItemDiv);
         });
         supplierDiv.appendChild(supplierContent);
@@ -157,6 +178,52 @@
   }
   renderCart();
 
+</script>
+
+<script id="deleteCartItem">
+  async function deleteCartItem_inDB(cartItemID) {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "DELETE",
+        headers: headers,
+        redirect: "follow",
+        body: JSON.stringify({
+          "User ID": JSON.parse(getCookie('user')).id,
+          "Password": JSON.parse(getCookie('user')).Password,
+          "Basket-Item ID": Number(cartItemID)
+        })
+    };
+
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+      + 'https://bgschust.app.n8n.cloud/webhook/1070ed1c-34f9-42ae-92bd-41ee32e12b22';
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function deleteCartItem(cartItemID) {
+    let querySelection = 'div#'+'basketItemID-'+cartItemID;
+    let cartItemDiv = document.querySelector(querySelection);
+    let supplierContent = cartItemDiv.parentNode;
+    let marketContent = supplierContent.parentNode.parentNode;
+
+    let res = await deleteCartItem_inDB(cartItemID);
+
+    cartItemDiv.remove();
+    if(!supplierContent.childNodes.length) {
+      supplierContent.parentNode.remove();
+    }
+    if(!marketContent.childNodes.length) {
+      marketContent.parentNode.remove();
+    }
+
+    renderCart();
+  }
 </script>
 
 </html>

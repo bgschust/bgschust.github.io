@@ -4,6 +4,7 @@
   <title>Cropify: Specific Item Detail</title>
   <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
   <link rel="icon" type="image/png" href="images/favicon.png">
   <link rel="stylesheet" href="styles/style.css">
   <link rel="stylesheet" href="styles/specific-item-detail.css">
@@ -159,7 +160,7 @@
   };
 
   async function postCartItem() {
-    let url = 'https://corsproxy.io/?' // CORS proxy server
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
       + 'https://bgschust.app.n8n.cloud/webhook/a19b8dc9-0847-45fe-b497-1a8eabbda88d';
     try {
         let res = await fetch(url, requestOptions_postCartItem);
