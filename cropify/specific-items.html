@@ -48,9 +48,10 @@
         <h3>My Listings</h3>
       </label>
     </a>
-    <div class="collapsible">
-      <p>My specific items here.</p>
-      <button id="sellThisItem">
+    <div class="collapsible mySpecificItems">
+      <p>My specific items here. Please sign up or log in.</p>
+      <ul id="mySpecificItems" class="cardList"></ul>
+      <button id="sellThisItem" class="outlined">
         <img alt="Dollar Sign" src="images/icons8-us-dollar-24.png">
         <span>Sell this Item</span>
       </button>
@@ -70,7 +71,7 @@
     <h3>Community Listings</h3>
     <div class="filterContainer">
     </div>
-    <ul id="specificItems"></ul>
+    <ul id="specificItems" class="cardList"></ul>
     
     <input type="checkbox" class="accordion" id="accordionPanel_sources">
     <a href="#accordionPanel_sources" style="text-decoration:none;color:inherit;">
@@ -171,6 +172,161 @@
   }();
 </script>
 
+<script id="mySpecificItems">
+  async function getMySpecificItems() {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    var requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+  
+    let queryParams = [
+      {"User ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password},
+      {"General Item ID": generalItem_id}
+    ];
+    
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+      + 'https://bgschust.app.n8n.cloud/webhook/WU05rozb8uszh5mcrEONXL06UzQoSyL6EGWw', 
+      queryParams
+    );
+
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res.results;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderMySpecificItems() {
+    let records = '';
+    records = await getMySpecificItems();
+    (!records) ? records = '' : records;
+
+    // browser filtering
+    /* if (filter.show_outOfStock == false) {
+      generalItems = generalItems.filter(function filterShow_outOfStock(record){
+        return record['Specific Item Count'] > 0;
+      });
+    } */
+
+    // browser sorting
+    /* if(sortBy == ('default' || undefined)){
+    } else if(sortBy=='nameAsc') {
+      generalItems = _.sortBy(generalItems, 'Name');
+    } else if(sortBy=='nameDesc') {
+      generalItems = _.sortBy(generalItems, 'Name').reverse();
+    } else if(sortBy=='specItemCtAsc'){
+      generalItems = _.sortBy(generalItems, 'Specific Item Count')
+    } else if(sortBy=='specItemCtDesc'){
+      generalItems = _.sortBy(generalItems, 'Specific Item Count').reverse();
+    } */
+
+    // browser search
+    /*if (searchInput.value != undefined || '') {
+      records.forEach(record => {
+        record.searchTargetText = ((record.Producer.length) ? record.Producer[0].value : 'No producer') +
+          + ' ' + _.pluck(record.Markets, 'value').join(',') 
+          + ' ' + record.Name 
+          + ' ' + record['Short Description'];
+        record.searchTargetText = record.searchTargetText.toLowerCase();
+      });
+      records = records.filter(function filterSearch(record){
+        return record.searchTargetText.indexOf(searchInput.value.toLowerCase()) >= 0;
+      });
+    }*/
+
+    let listContainer = document.querySelector('ul#mySpecificItems');
+    listContainer.innerHTML = '';
+    records.forEach(record => {
+
+      let specificItemA = document.createElement("a");
+      specificItemA.className = 'specificItem';
+      let specificItemDiv = document.createElement("div");
+      specificItemDiv.classList.add('specificItem','listCard');
+      let specificItemCol1 = document.createElement("div");
+      specificItemCol1.className = "col1";
+      let specificItemP1 = document.createElement("p");
+      specificItemP1.className = "categoryName";
+      let specificItemP2 = document.createElement("p");
+      specificItemP2.className = "specificItem_Name";
+      let specificItemP3 = document.createElement("p");
+      specificItemP3.className = "description";
+      let specificItemCol2 = document.createElement("div");
+      specificItemCol2.className = "col2";
+      let specificItemBtn = document.createElement("button");
+      let specificItemBr1 = document.createElement("br");
+      let specificItemSpan1 = document.createElement("span");
+      let specificItemBr2 = document.createElement("br");
+      let specificItemSpan2 = document.createElement("span");
+      specificItemSpan2.className = 'itemCtLabel';
+      
+      // set modal url in button
+      let url = 'specific-item-detail.html' + '?' + 'specificItem_id' + '=' + record.id;
+      specificItemBtn.setAttribute('id', url);
+      specificItemBtn.addEventListener('click', function openModal(){
+        while(!getCookie('user')) {
+          alert('Please sign up and log in to go to specific item details.');
+          window.location.href = './profile.html';
+        }
+        let btn_url = this.getAttribute('id');
+        document.querySelector('div#specificItemDetail_modal iframe').setAttribute('src', btn_url);
+        modal.style.display = "block";
+      });
+
+      specificItemP1.textContent =  record['General Item'][0].value || 'General item not found';
+      specificItemP1.textContent += ' from ';
+      specificItemP1.textContent += (record.Producer.length) ? record.Producer[0].value : 'Seller not found.';
+      specificItemP2.textContent = record.Name || 'Name not found';
+      specificItemP3.textContent = record['Short Description'] || 'No description.';
+      specificItemBtn.textContent = 'Details';
+      if (record['Prices (AgG)'].length) {
+        let prices = [];
+        _.pluck(record['Prices (AgG)'], 'value').forEach(price => {
+          price = Number(price);
+          prices.push(price);
+        });
+        prices.sort();
+        let lowestPrice = prices[0];
+        specificItemSpan1.innerHTML = lowestPrice + ' AgG';
+      } else {
+        specificItemSpan1.innerHTML = 'No items.';
+      }
+
+      specificItemCol1.appendChild(specificItemP1);
+      specificItemCol1.appendChild(specificItemP2);
+      specificItemCol1.appendChild(specificItemP3);
+      specificItemCol2.appendChild(specificItemBtn);
+      specificItemCol2.appendChild(specificItemBr1);
+      specificItemCol2.appendChild(specificItemSpan1);
+      specificItemCol2.appendChild(specificItemBr2);
+      specificItemCol2.appendChild(specificItemSpan2);
+      specificItemDiv.appendChild(specificItemCol1);
+      specificItemDiv.appendChild(specificItemCol2);
+      specificItemA.appendChild(specificItemDiv);
+      listContainer.appendChild(specificItemA);
+
+    });
+
+    let statusBlock = document.querySelector('div.mySpecificItems>p');
+    if(records.length) {
+      statusBlock.textContent = '';
+      statusBlock.setAttribute('style','display:none;');
+    } else {
+      statusBlock.textContent = 'No items found.';
+    }
+
+    return records;
+  }
+  if(getCookie('user')) {
+    renderMySpecificItems();
+  }
+</script>
+
 <script id="specificItems">
   async function getSpecificItems() {
   
@@ -262,6 +418,10 @@
       let url = 'specific-item-detail.html' + '?' + 'specificItem_id' + '=' + record.id;
       specificItemBtn.setAttribute('id', url);
       specificItemBtn.addEventListener('click', function openModal(){
+        while(!getCookie('user')) {
+          alert('Please sign up and log in to go to specific item details.');
+          window.location.href = './profile.html';
+        }
         let btn_url = this.getAttribute('id');
         document.querySelector('div#specificItemDetail_modal iframe').setAttribute('src', btn_url);
         modal.style.display = "block";

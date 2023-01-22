@@ -37,6 +37,13 @@
 
 </body>
 
+<script id="initialization">
+  if(!getCookie('user')) {
+    alert('Please sign up and log in to go to the shopping cart.');
+    window.location.href = './profile.html';
+  }
+</script>
+
 <script id="getCart">
   var headers_getCart = new Headers();
   headers_getCart.append("Content-Type", "application/json");
