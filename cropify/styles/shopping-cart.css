@@ -33,3 +33,24 @@ div.supplierTitle {
 div.supplierContent {
   padding: 8px;
 }
+
+div.cartItem {
+  display: grid;
+}
+
+div.cartItem>div.cartItemCol1 {
+  grid-column-start: 1;
+  grid-column-end: 5
+}
+
+div.cartItem>div.cartItemCol2 {
+  grid-column-start: 6;
+  grid-column-end: 6;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+}
+
+img.cartItemTrashBtn {
+  cursor: pointer;
+}
