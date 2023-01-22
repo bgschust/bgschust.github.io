@@ -5,12 +5,19 @@
   src: url(../components/RobotoFont/Roboto-Regular.ttf);
 }
 
-a {
-  color: var(--primary-green);
-}
+html {
+  --primary-green: rgb(53, 180, 36);
+  --secondary-green: rgb(63, 211, 43);
+  --checked-color: rgb(55, 148, 36);
 
-a:hover {
-  color: var(--secondary-green);
+  --bg-color: #e8e8e8;
+  --box-shadow: rgb(201, 201, 201);
+  --grey-text: rgb(133, 133, 133);
+  --dark-grey-text: rgb(100, 100, 100);
+  
+
+  font-family: Roboto, Tahoma, Arial, sans-serif;
+  font-size: 16px;
 }
 
 body {
@@ -19,26 +26,62 @@ body {
   background-color: var(--bg-color);
 }
 
+iframe {
+  border: 0px;
+  padding: 0px;
+  margin: 0px;
+  display: block;
+}
+
+iframe#component_topNav {
+  width: 100%;
+  height: 82px;
+}
+
+div#mainContainer {
+  margin: 16px;
+}
+
+h4 {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+ul {
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+ul.cardList {
+  padding: 0px;
+}
+
 button {
   cursor: pointer;
   display: inline-block;
 }
 
-button {
-  text-align: center;
-  background-color: var(--primary-green);
-  border-radius: 5px;
-  padding: 7px 11px;
-  border: 0px;
-  color: white;
-  font-family: inherit;
-}
 button.outlined {
   background-color: white;
 }
 
-button:hover {
-  background-color: var(--secondary-green);
+a {
+  color: var(--primary-green);
+}
+
+a:hover {
+  color: var(--secondary-green);
+}
+
+div#listingsSalesOrders {
+  background-color: white;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 12px 8px;
+  display: inline;
+  border-radius: 22px;
+  text-align: center;
+  box-shadow: 3px 3px 3px 1px var(--box-shadow);
 }
 
 div#listingsSalesOrders a {
@@ -61,21 +104,6 @@ div#listingsSalesOrders div.selected {
   color: black;
 }
 
-div#listingsSalesOrders {
-  background-color: white;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 12px 8px;
-  display: inline;
-  border-radius: 22px;
-  text-align: center;
-  box-shadow: 3px 3px 3px 1px var(--box-shadow);
-}
-
-div#mainContainer {
-  margin: 16px;
-}
-
 div#searchContainer {
   display: flex;
   flex-wrap: wrap;
@@ -83,36 +111,19 @@ div#searchContainer {
   align-content: center;
 }
 
-div.centeredContent {
-  text-align: center;
-}
-
-div.formBlock input[type=text], div.formBlock input[type=password], div.formBlock textarea {
-  border-radius: 6px;
-  border: 1px solid rgb(80, 80, 80);
-  padding: 8px 8px 6px 8px;
-  margin-bottom: 8px;
-  width: 100%;
-  font-size: 1.2em;
-  box-sizing: border-box;
-  font-family: inherit;
-}
-
-div.formBlock label {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 0.85em;
-  padding: 0 0 0 6px;
-}
-
-div.formBlock {
-  color: var(--dark-grey-text);
+input#search {
   display: inline-block;
-  border: 0px solid black;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: left;
-  width: 310px;
+  border: 1px solid black;
+  border-radius: 7px;
+  padding: 11px 45px 11px 11px;
+  font-size: 1.2em;
+  width: 265px;
+}
+
+input#search + img {
+  display: inline-block;
+  margin-left: -43px;
+  cursor: pointer;
 }
 
 div.listCard {
@@ -128,6 +139,42 @@ div.listCard {
   box-shadow: 3px 3px 3px 1px var(--box-shadow);
 }
 
+input[type=checkbox] {
+  cursor: pointer;
+}
+
+div.centeredContent {
+  text-align: center;
+}
+
+div.formBlock {
+  color: var(--dark-grey-text);
+  display: inline-block;
+  border: 0px solid black;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+  width: 310px;
+}
+
+div.formBlock label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.85em;
+  padding: 0 0 0 6px;
+}
+
+div.formBlock input[type=text], div.formBlock input[type=password], div.formBlock textarea {
+  border-radius: 6px;
+  border: 1px solid rgb(80, 80, 80);
+  padding: 8px 8px 6px 8px;
+  margin-bottom: 8px;
+  width: 100%;
+  font-size: 1.2em;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
 div.validationBlock {
   padding: 6px;
   border: 1px solid var(--primary-green);
@@ -139,123 +186,29 @@ div.validationBlock {
   color: white;
 }
 
-h4 {
-  margin-top: 8px;
-  margin-bottom: 8px;
-}
-
-html {
-  --primary-green: rgb(53, 180, 36);
-  --secondary-green: rgb(63, 211, 43);
-  --checked-color: rgb(55, 148, 36);
-
-  --bg-color: #e8e8e8;
-  --box-shadow: rgb(201, 201, 201);
-  --grey-text: rgb(133, 133, 133);
-  --dark-grey-text: rgb(100, 100, 100);
-  
-
-  font-family: Roboto, Tahoma, Arial, sans-serif;
-  font-size: 16px;
-}
-
-iframe {
+button {
+  text-align: center;
+  background-color: var(--primary-green);
+  border-radius: 5px;
+  padding: 7px 11px;
   border: 0px;
-  padding: 0px;
-  margin: 0px;
-  display: block;
+  color: white;
+  font-family: inherit;
+}
+button:hover {
+  background-color: var(--secondary-green);
 }
 
-iframe#component_topNav {
-  width: 100%;
-  height: 82px;
+/* Checkbox Formatting */
+.css-checkbox {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  width: 1px;
+  padding: 0;
+  border: 0;
 }
-
-input#search + img {
-  display: inline-block;
-  margin-left: -43px;
-  cursor: pointer;
-}
-
-input#search {
-  display: inline-block;
-  border: 1px solid black;
-  border-radius: 7px;
-  padding: 11px 45px 11px 11px;
-  font-size: 1.2em;
-  width: 265px;
-}
-
-input.accordion + a label.accordion h3::after {
-  display: inline-block;
-  margin-left: 10px;
-  background-image: url(\'../images/icons8-collapse-arrow-50.png\');
-  background-size: 16px 16px;
-  width: 16px;
-  height: 16px;
-  content: \"\";
-  transform: rotate(90deg);
-  transition: 0.5s ease;
-}
-
-input.accordion + a label.accordion h3:hover {
-  color: var(--grey-text);
-}
-
-input.accordion#accordionPanel_myListings:checked + a label.accordion h3::after {
-  transform: rotate(180deg);
-  transition: 0.5s ease;
-}
-
-input.accordion#accordionPanel_sources:checked + a label.accordion h3::after {
-  transform: rotate(180deg);
-  transition: 0.5s ease;
-}
-
-/* Radio Buttons */
-input[type=\"radio\"] {
-  height: 1.1em;
-  width: 1.1em;
-  margin-right: 0.5rem;
-  accent-color: var(--checked-color);
-  cursor: pointer;
-}
-
-input[type=checkbox] {
-  cursor: pointer;
-}
-
-/* Accordion Panels */
-label.accordion {
-  cursor: pointer;
-}
-
-ul {
-  margin-top: 8px;
-  margin-bottom: 16px;
-}
-
-ul.cardList {
-  padding: 0px;
-}
-
-/* The Close Button */
-.close {
-  color: #aaaaaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-}.collapsible {
-  display: block;
-}
-
 .css-checkbox + label {
   position: relative;
   cursor: pointer;
@@ -266,7 +219,7 @@ ul.cardList {
   height: 1.2em;
 }
 .css-checkbox + label::before {
-  content: \" \";
+  content: " ";
   display: inline-block;
   vertical-align: middle;
   margin-right: 8px;
@@ -279,19 +232,9 @@ ul.cardList {
   border-radius: 3px;
   box-shadow: none;
 }
-/* Checkbox Formatting */
-.css-checkbox {
-  position: absolute;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  height: 1px;
-  width: 1px;
-  padding: 0;
-  border: 0;
-}
 .css-checkbox:checked + label::after {
-  content: \" \";
-  background-image: url(\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMTczLjg5OCA0MzkuNDA0bC0xNjYuNC0xNjYuNGMtOS45OTctOS45OTctOS45OTctMjYuMjA2IDAtMzYuMjA0bDM2LjIwMy0zNi4yMDRjOS45OTctOS45OTggMjYuMjA3LTkuOTk4IDM2LjIwNCAwTDE5MiAzMTIuNjkgNDMyLjA5NSA3Mi41OTZjOS45OTctOS45OTcgMjYuMjA3LTkuOTk3IDM2LjIwNCAwbDM2LjIwMyAzNi4yMDRjOS45OTcgOS45OTcgOS45OTcgMjYuMjA2IDAgMzYuMjA0bC0yOTQuNCAyOTQuNDAxYy05Ljk5OCA5Ljk5Ny0yNi4yMDcgOS45OTctMzYuMjA0LS4wMDF6Ii8+PC9zdmc+\");
+  content: " ";
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMTczLjg5OCA0MzkuNDA0bC0xNjYuNC0xNjYuNGMtOS45OTctOS45OTctOS45OTctMjYuMjA2IDAtMzYuMjA0bDM2LjIwMy0zNi4yMDRjOS45OTctOS45OTggMjYuMjA3LTkuOTk4IDM2LjIwNCAwTDE5MiAzMTIuNjkgNDMyLjA5NSA3Mi41OTZjOS45OTctOS45OTcgMjYuMjA3LTkuOTk3IDM2LjIwNCAwbDM2LjIwMyAzNi4yMDRjOS45OTcgOS45OTcgOS45OTcgMjYuMjA2IDAgMzYuMjA0bC0yOTQuNCAyOTQuNDAxYy05Ljk5OCA5Ljk5Ny0yNi4yMDcgOS45OTctMzYuMjA0LS4wMDF6Ii8+PC9zdmc+");
   background-repeat: no-repeat;
   background-size: 8px 8px;
   background-position: center center;
@@ -306,6 +249,88 @@ ul.cardList {
   height: 14px;
   width: 14px;
   border-radius: 3px;
+}
+
+/* Radio Buttons */
+input[type="radio"] {
+  height: 1.1em;
+  width: 1.1em;
+  margin-right: 0.5rem;
+  accent-color: var(--checked-color);
+  cursor: pointer;
+}
+
+/* Accordion Panels */
+label.accordion {
+  cursor: pointer;
+}
+
+input.accordion + a label.accordion h3:hover {
+  color: var(--grey-text);
+}
+
+input.accordion + a label.accordion h3::after {
+  display: inline-block;
+  margin-left: 10px;
+  background-image: url('../images/icons8-collapse-arrow-50.png');
+  background-size: 16px 16px;
+  width: 16px;
+  height: 16px;
+  content: "";
+  transform: rotate(90deg);
+  transition: 0.5s ease;
+}
+
+input.accordion#accordionPanel_sources:checked + a label.accordion h3::after {
+  transform: rotate(180deg);
+  transition: 0.5s ease;
+}
+
+input.accordion#accordionPanel_myListings:checked + a label.accordion h3::after {
+  transform: rotate(180deg);
+  transition: 0.5s ease;
+}
+
+#accordionPanel_sources {
+  display: none;
+}
+
+#accordionPanel_myListings {
+  display: none;
+}
+
+.collapsible {
+  display: block;
+}
+
+#accordionPanel_sources + a + .collapsible {
+  overflow: hidden;
+  height: 0;
+
+  -webkit-transition: height 1s ease;
+  -moz-transition: height 1s ease;
+  -ms-transition: height 1s ease;
+  -o-transition: height 1s ease;
+  transition: height 1s ease;
+}
+
+#accordionPanel_myListings + a + .collapsible {
+  overflow: auto;
+  height: 0;
+
+  -webkit-transition: height 1s ease;
+  -moz-transition: height 1s ease;
+  -ms-transition: height 1s ease;
+  -o-transition: height 1s ease;
+  transition: height 1s ease;
+}
+
+#accordionPanel_sources:checked + a + .collapsible {
+  height: 160px; /* needs a numeric value here to keep transition */
+}
+
+#accordionPanel_myListings:checked + a + .collapsible {
+  height: initial; /* needs a numeric value here to keep transition */
 }
 
 /* The Modal (background) */
@@ -331,40 +356,17 @@ ul.cardList {
   /*vertical-align: center;*/
 }
 
-#accordionPanel_myListings + a + .collapsible {
-  overflow: auto;
-  height: 0;
-
-  -webkit-transition: height 1s ease;
-  -moz-transition: height 1s ease;
-  -ms-transition: height 1s ease;
-  -o-transition: height 1s ease;
-  transition: height 1s ease;
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
 }
 
-#accordionPanel_myListings {
-  display: none;
-}
-
-#accordionPanel_myListings:checked + a + .collapsible {
-  height: initial; /* needs a numeric value here to keep transition */
-}
-
-#accordionPanel_sources + a + .collapsible {
-  overflow: hidden;
-  height: 0;
-
-  -webkit-transition: height 1s ease;
-  -moz-transition: height 1s ease;
-  -ms-transition: height 1s ease;
-  -o-transition: height 1s ease;
-  transition: height 1s ease;
-}
-
-#accordionPanel_sources {
-  display: none;
-}
-
-#accordionPanel_sources:checked + a + .collapsible {
-  height: 160px; /* needs a numeric value here to keep transition */
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
 }
