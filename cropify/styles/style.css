@@ -2,7 +2,7 @@
   font-family: Roboto;
   font-style: normal;
   font-weight: 400;
-  src: url(../components/RobotoFont/Roboto-Regular.ttf);
+  src: url('../components/RobotoFont/Roboto-Regular.ttf');
 }
 
 html {
@@ -71,6 +71,24 @@ a {
 
 a:hover {
   color: var(--secondary-green);
+}
+
+a.cardLink {
+  display: inline-block;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 7px;
+  padding: 10px 20px;
+  text-decoration: none;
+  margin-bottom: 6px;
+  width: 200px;
+  text-align: center;
+  color: black;
+}
+
+a.cardLink:hover {
+  color: var(--dark-grey-text);
+  border-color: var(--dark-grey-text);
 }
 
 div#listingsSalesOrders {
@@ -164,7 +182,10 @@ div.formBlock label {
   padding: 0 0 0 6px;
 }
 
-div.formBlock input[type=text], div.formBlock input[type=password], div.formBlock textarea {
+div.formBlock input[type=text], 
+div.formBlock input[type=password], 
+div.formBlock textarea, 
+div.formBlock select {
   border-radius: 6px;
   border: 1px solid rgb(80, 80, 80);
   padding: 8px 8px 6px 8px;
@@ -173,6 +194,12 @@ div.formBlock input[type=text], div.formBlock input[type=password], div.formBloc
   font-size: 1.2em;
   box-sizing: border-box;
   font-family: inherit;
+}
+
+select,
+option {
+  cursor: pointer;
+  background-color: white;
 }
 
 div.validationBlock {
