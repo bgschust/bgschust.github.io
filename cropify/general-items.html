@@ -607,11 +607,6 @@ async function renderGeneralItems() {
   let generalItemsContainer = document.querySelector('ul#generalItems');
   generalItemsContainer.innerHTML = '';
   generalItems.forEach(generalItem => {
-
-    //console.log(generalItem);
-
-    let generalItemA = document.createElement("a");
-    generalItemA.className = 'generalItem';
     let generalItemDiv = document.createElement("div");
     generalItemDiv.classList.add('generalItem','listCard');
     let generalItemCol1 = document.createElement("div");
@@ -624,7 +619,6 @@ async function renderGeneralItems() {
     generalItemP3.className = "description";
     let generalItemCol2 = document.createElement("div");
     generalItemCol2.className = "col2";
-    let generalItemBtn = document.createElement("button");
     let generalItemBr1 = document.createElement("br");
     let generalItemSpan1 = document.createElement("span");
     let generalItemBr2 = document.createElement("br");
@@ -632,11 +626,9 @@ async function renderGeneralItems() {
     generalItemSpan2.className = 'itemCtLabel';
 
     let url = 'specific-items.html' + '?' + 'generalItem_id' + '=' + generalItem.id;
-    generalItemA.setAttribute('href', url);
     generalItemP1.textContent = generalItem.Category[0].value || 'Category not found';
     generalItemP2.textContent = generalItem.Name || 'Name not found';
     generalItemP3.textContent = generalItem['Short Description'] || 'No description.';
-    generalItemBtn.textContent = 'Details';
     generalItemSpan1.textContent = generalItem['Specific Item Count'] || 0;
     if (generalItem['Specific Item Count'] > 1 || generalItem['Specific Item Count'] == 0) {
       generalItemSpan2.textContent = ' items';
@@ -647,16 +639,27 @@ async function renderGeneralItems() {
     generalItemCol1.appendChild(generalItemP1);
     generalItemCol1.appendChild(generalItemP2);
     generalItemCol1.appendChild(generalItemP3);
-    generalItemCol2.appendChild(generalItemBtn);
-    generalItemCol2.appendChild(generalItemBr1);
-    generalItemCol2.appendChild(generalItemSpan1);
-    generalItemCol2.appendChild(generalItemBr2);
-    generalItemCol2.appendChild(generalItemSpan2);
     generalItemDiv.appendChild(generalItemCol1);
-    generalItemDiv.appendChild(generalItemCol2);
-    generalItemA.appendChild(generalItemDiv);
-    generalItemsContainer.appendChild(generalItemA);
 
+    if(generalItem.Active) {
+      let generalItemA = document.createElement("a");
+      generalItemA.className = 'generalItem';
+      generalItemA.setAttribute('href', url);
+      let generalItemBtn = document.createElement("button");
+      generalItemBtn.textContent = 'Details';
+      generalItemCol2.appendChild(generalItemBtn);
+      generalItemCol2.appendChild(generalItemBr1);
+      generalItemCol2.appendChild(generalItemSpan1);
+      generalItemCol2.appendChild(generalItemBr2);
+      generalItemCol2.appendChild(generalItemSpan2);
+      generalItemDiv.appendChild(generalItemCol2);
+      generalItemA.appendChild(generalItemDiv);
+      generalItemsContainer.appendChild(generalItemA);
+    } else {
+      generalItemDiv.classList.add('inactive');
+      generalItemsContainer.appendChild(generalItemDiv);
+    }
+    
   });
   return generalItems;
 }
