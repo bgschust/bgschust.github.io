@@ -122,6 +122,11 @@ a.generalItem {
   text-decoration: none;
 }
 
+div.generalItem.inactive {
+  border-color: var(--dark-grey-text);
+  color: var(--dark-grey-text);
+}
+
 div.generalItem div.col1 {
   display: inline-block;
   width: 80%;
