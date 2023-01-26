@@ -3,13 +3,13 @@ div#cartSummaryContainer>p {
 }
 
 div.marketDiv {
-  border: 1px solid darkgreen;
+  border: 1px solid var(--checked-color);
   border-radius: 5px;
   margin-bottom: 8px;
 }
 
 div.marketTitle {
-  background-color: darkgreen;
+  background-color: var(--checked-color);
   color: white;
   padding: 1px 0px 1px 6px;
 }
@@ -19,13 +19,13 @@ div.marketContent {
 }
 
 div.supplierDiv {
-  border: 1px solid greenyellow;
+  border: 1px solid var(--secondary-green);
   border-radius: 5px;
   margin-bottom: 8px;
 }
 
 div.supplierTitle {
-  background-color: greenyellow;
+  background-color: var(--secondary-green);
   color: white;
   padding: 1px 0px 1px 6px;
 }
@@ -53,4 +53,8 @@ div.cartItem>div.cartItemCol2 {
 
 img.cartItemTrashBtn {
   cursor: pointer;
+}
+
+img.cartItemTrashBtn:hover {
+ opacity: 0.7;
 }
