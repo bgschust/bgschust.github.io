@@ -15,7 +15,7 @@
 
   <div id="mainContainer">
 
-    <h2>Organizations</h2>
+    <h2>My Organizations</h2>
     <table id="myOrganizations">
     </table>
     <br>
@@ -110,6 +110,7 @@
     if (!response.results) {
       organizationList.textContent = response.statusMessage;
     } else {
+      organizationList.innerHTML = '';
       response = response.results;
       response.forEach(record => {
         let tr = document.createElement('tr');
@@ -158,8 +159,9 @@
         tr.appendChild(td1);
         tr.appendChild(td2);
         organizationList.appendChild(tr);
-      })
-    }    
+      });
+      console.log(response);
+    }
   }
   if(getCookie('user')) {
     renderMyOrganizations();
@@ -234,7 +236,13 @@
     let receivingAddress_state = document.querySelector('select#receivingAddress_state').value;
     let receivingAddress_zipCode = document.querySelector('input#receivingAddress_zipCode').value;
     let termsConditions = document.querySelector('input#termsConditions').checked;
-    if('validation' == 'validation') { // implement basic validation check here
+    if(name
+      && getCookie('user')
+      && termsConditions
+      && retailStreetAddress
+      && retailAddress_city
+      && retailAddress_state == "NC"
+      && retailAddress_zipCode.length == 5) { // implement basic validation check here
       let body = {
         "User ID": JSON.parse(getCookie('user')).id,
         "Password": JSON.parse(getCookie('user')).Password,
@@ -255,6 +263,7 @@
         statusBlock.textContent = "Please wait.";
         let response = await submitOrganizationRequest(requestOptions);
         statusBlock.textContent = await JSON.stringify(response.statusMessage);
+        renderMyOrganizations();
       }
       showResponse();
     } else {

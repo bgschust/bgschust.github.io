@@ -34,3 +34,7 @@ td.col2 {
 img.organizationTrashBtn {
   cursor: pointer;
 }
+
+img.organizationTrashBtn:hover {
+  opacity: 0.7;
+}
