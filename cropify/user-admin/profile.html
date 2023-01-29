@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify</title>
+  <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../images/favicon.png">
+  <link rel="stylesheet" href="../public/style.css">
+  <link rel="stylesheet" href="./profile.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="../components/functions.js"></script>
+</head>
+<body>
+
+  <iframe id="component_topNav" src="../components/topNavigation.html"></iframe>
+
+  <div id="mainContainer">
+    <div class="loggedIn">
+      <h3>Profile</h3>
+      <div id="profileSummary">
+        <p><span>First name</span><span> </span><span>Last name</span></p>
+        <p>Email address</p>
+        <p>Zipcode: <span>zipcode</span></p>
+      </div>
+      <br>
+      <a href="../org-admin/my-organizations.html" class="cardLink">Organizations</a><br>
+      <a href="../org-admin/my-availability-profiles.html" class="cardLink">Availability Profiles</a><br>
+      <br>
+      <button id="logOut">Log Out</button>
+      <br><br>
+    </div>
+    <div class="loggedOut">
+      <a href="../public/sign-up.html">Sign up</a><br>
+      <a href="./log-in.html">Log in</a><br>
+    </div>
+  </div>
+
+</body>
+
+<script>
+  document.querySelector('button#logOut').addEventListener('click', function() {
+    setCookie('user', '', 30);
+    window.location.href = '';
+  });
+
+  if (getCookie('user')) {
+    document.querySelector('div.loggedIn').setAttribute('style','display:inherit;');
+    document.querySelector('div.loggedOut').setAttribute('style','display:none;');
+  } else {
+    document.querySelector('div.loggedIn').setAttribute('style','display:none;');
+    document.querySelector('div.loggedOut').setAttribute('style','display:inherit;');
+  }
+</script>
+<script id="getUser">
+  async function getUser() {
+    var headers_getUser = new Headers();
+    headers_getUser.append("Content-Type", "application/json");
+    var requestOptions_getUser = {
+        method: "GET",
+        headers: headers_getUser,
+        redirect: "follow",
+    };
+
+    let queryParams = [
+      {"User_ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password}
+    ];    
+
+    let url = buildURL('https://corsproxy.io/?' // CORS proxy server
+      + 'https://bgschust.app.n8n.cloud/webhook/8b4841f8-ee9b-456c-8627-5498efb022a9', 
+      queryParams);
+    try {
+        let res = await fetch(url, requestOptions_getUser);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderProfile() {
+    let response = await getUser();
+
+    let profileSummary = document.querySelector('div#profileSummary');
+    if (!response.user) {
+      profileSummary.textContent = response.message;
+    } else {
+      profileSummary.querySelectorAll('p')[0].querySelectorAll('span')[0].textContent = response.user['First Name'];
+      profileSummary.querySelectorAll('p')[0].querySelectorAll('span')[2].textContent = response.user['Last Name'];
+      profileSummary.querySelectorAll('p')[1].textContent = response.user['Email Address'];
+      profileSummary.querySelectorAll('p')[2].querySelectorAll('span')[0].textContent = response.user['Zipcode'];
+    }    
+  }
+  if(getCookie('user')) {
+    renderProfile();
+  }
+
+</script>
+
+</html>

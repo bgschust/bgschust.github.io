@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify: Sell an Item</title>
+  <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../images/favicon.png">
+  <link rel="stylesheet" href="../public/style.css">
+  <link rel="stylesheet" href="./sell-item.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="../components/functions.js"></script>
+</head>
+<body>
+
+  <iframe id="component_topNav" src="../components/topNavigation.html"></iframe>
+
+  <div id="mainContainer">
+
+    <div id="listingsSalesOrders">
+      <div class="selected">
+        Listings
+      </div>
+      <div>
+        <a href="../user-admin/orders.html">Orders</a>
+      </div>
+      <div>
+        <a href="../org-admin/sales.html">Sales</a>
+      </div>
+    </div>
+
+    <div id="thisGeneralItem">
+      <h4>
+        <img src="../images/icons8-left-50.png" alt="Back Arrow">
+        <span>Name not Found</span>
+        <span class="generalItem_category">Category not Found</span>
+      </h4>
+      <p>No description found.</p>
+    </div>
+
+    <div class="centeredContent">
+      <h3>Add a Specific Item</h3>
+      <p>This will be listed under the current general item.</p>
+      <div class="formBlock">
+        <div id="specificItem">
+          <label for="name">Item Name</label>
+          <input type="text" id="name"><br>
+          <label for="shortDescription">Short Description</label>
+          <textarea type="text" id="shortDescription"></textarea><br>
+          <h4>Markets</h4>
+          <ul id="marketList"></ul>
+          <br>
+          <button value="">Submit</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="blankSpace"></div>
+    
+    <input type="checkbox" class="accordion" id="accordionPanel_sources">
+    <a href="#accordionPanel_sources" style="text-decoration:none;color:inherit;">
+      <label for="accordionPanel_sources" class="accordion">
+        <h3>Sources</h3>
+      </label>
+    </a>
+    <div class="collapsible">
+      <ol>
+        <li><a target="_blank" href="https://icons8.com/icon/85181/shopping-basket">Shopping Basket</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+        <li><a target="_blank" href="https://icons8.com/icon/85147/male-user">Male User</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+        <li><a target="_blank" href="https://icons8.com/icon/43428/filter-and-sort">Filter and Sort</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+        <li><a target="_blank" href="https://icons8.com/icon/2775/collapse-arrow">Collapse Arrow</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+        <li><a target="_blank" href="https://icons8.com/icon/14079/search">Search</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+        <li><a target="_blank" href="https://icons8.com/icon/7811/left">Left</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+      </ol>
+    </div>
+
+  </div>
+
+</body>
+
+<script id="initialize">
+  const urlParams = new URLSearchParams(window.location.search);
+  let generalItem_id = urlParams.get('generalItem_id');
+
+  document.querySelector('div#thisGeneralItem>h4>img').addEventListener('click', function goBack(){
+    window.location.href = '../public/specific-items.html' + '?generalItem_id=' + generalItem_id;
+  });
+
+  let generalItem_default = {"id":5,"order":"3.99999999999999999999","Name":"Tomato","Short Description":"","Active":false,"Specific Items":[{"id":6,"value":"[Demo] Canned Tomato"}],"Specific Item Count":"1","Group":[{"ids":{"database_table_126754":430},"value":"Edible Harvests"}],"Category":[{"id":498,"value":"Vegetables"}],"Users":[{"ids":{"database_table_4390":4,"database_table_6844":6},"value":"Jeffrey"}]};
+
+  var headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", "Token t48tRPtNQccyc6Q65klBDEP1QJqkwXw0");
+  var requestOptions = {
+      method: "get",
+      headers: headers,
+      redirect: "follow",
+  };
+</script>
+
+<script id="generalItem">
+  async function getGeneralItem() {
+
+    let queryParams = [
+      {"user_field_names": true}
+    ];
+    
+    let url = buildURL(
+      'https://api.baserow.io/api/database/rows/table/6842/' + generalItem_id + '/', 
+      queryParams
+    );
+
+    try {
+        let resGeneralItem = await fetch(url, requestOptions);
+        resGeneralItem = await resGeneralItem.json();
+        return await resGeneralItem;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  let generalItem = async function renderGeneralItem() {
+    let generalItem = {};
+    generalItem = await getGeneralItem();
+    
+    document.querySelectorAll('div#thisGeneralItem>h4>span')[0].textContent = generalItem.Name;
+    document.querySelectorAll('div#thisGeneralItem>h4>span')[1].textContent = 
+      generalItem.Group[0].value + ': ' + generalItem.Category[0].value;
+    document.querySelector('div#thisGeneralItem>p').textContent = generalItem['Short Description'];
+
+    return generalItem;
+  }();
+</script>
+
+<script id="markets">
+  async function getMarkets() {
+    var headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    headers.append("Authorization", "Token t48tRPtNQccyc6Q65klBDEP1QJqkwXw0");
+    var requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+    
+    let queryParams = [
+      {"user_field_names": true},
+      {"size": 200},
+      {"filter__field_875760__single_select_equal": 405899}
+      //{"include": "Name,Short Description,Active,Specific Item Count,Group,Category"}
+    ];
+  
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/'
+      + 'https://api.baserow.io/api/database/rows/table/127809/',
+      queryParams
+    );
+  
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderMarkets() {
+    let response = await getMarkets();
+    let records = response.results;
+
+    let list = document.querySelector('ul#marketList');
+    records.forEach(record => {
+      let listItem = document.createElement('li');
+      
+      console.log(record);
+
+      list.appendChild(listItem);
+    });
+  }
+  renderMarkets();
+
+</script>
+
+</html>
