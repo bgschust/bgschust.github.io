@@ -35,7 +35,7 @@ iframe {
 
 iframe#component_topNav {
   width: 100%;
-  height: 82px;
+  height: 88px;
 }
 
 div#mainContainer {
@@ -185,6 +185,7 @@ div.formBlock label {
   margin-bottom: 4px;
   font-size: 0.85em;
   padding: 0 0 0 6px;
+  cursor: pointer;
 }
 
 div.formBlock input[type=text], 
