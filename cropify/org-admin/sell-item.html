@@ -46,6 +46,14 @@
           <input type="text" id="name"><br>
           <label for="shortDescription">Short Description</label>
           <textarea type="text" id="shortDescription"></textarea><br>
+          <label for="sellingBusiness">Supplying Business</label>
+          <select id="sellingBusiness">
+            <option value="null">No business found.</option>
+          </select>
+
+          <h4>Market Items</h4>
+          <ul id="marketItemList"></ul>
+
           <h4>Markets</h4>
           <ul id="marketList"></ul>
           <br>
@@ -70,6 +78,7 @@
         <li><a target="_blank" href="https://icons8.com/icon/2775/collapse-arrow">Collapse Arrow</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
         <li><a target="_blank" href="https://icons8.com/icon/14079/search">Search</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
         <li><a target="_blank" href="https://icons8.com/icon/7811/left">Left</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
+        <li><a target="_blank" href="https://icons8.com/icon/85479/plus">Plus</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
       </ol>
     </div>
 
@@ -91,7 +100,7 @@
   headers.append("Content-Type", "application/json");
   headers.append("Authorization", "Token t48tRPtNQccyc6Q65klBDEP1QJqkwXw0");
   var requestOptions = {
-      method: "get",
+      method: "GET",
       headers: headers,
       redirect: "follow",
   };
@@ -131,6 +140,112 @@
   }();
 </script>
 
+<script id="getMyOrganizations">
+  async function getMyOrganizations() {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+
+    let queryParams = [
+      {"User ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password}
+    ];
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook/e7a482da-c2a6-4631-8728-a349c7c07290',
+    queryParams);
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderMyOrganizations() {
+    let response = await getMyOrganizations();
+
+    let organizationList = document.querySelector('select#sellingBusiness');
+    if (!response.results) {
+      organizationList.textContent = response.statusMessage;
+    } else {
+      organizationList.innerHTML = '';
+      response.results.forEach(record => {
+        let option = document.createElement('option');
+        option.textContent = record['field_825342']; // Name
+        organizationList.appendChild(option);
+      });
+    }
+  }
+  if(getCookie('user')) {
+    renderMyOrganizations();
+  }
+</script>
+
+<script id="myMarketItems">
+  async function getMyMarketItems() {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+
+    let queryParams = [
+      {"User ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password}
+    ];
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook-test/fdb5ddae-519e-4b13-a1fc-39c614136e90',
+    queryParams);
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderMyMarketItems() {
+    let response = await getMyMarketItems();
+
+    let list = document.querySelector('ul#marketItemList');
+    if (!response.results) {
+      list.textContent = response.statusMessage;
+    } else {
+      list.innerHTML = '';
+      response.results.forEach(record => {
+        let li = document.createElement('li');
+        let p1 = document.createElement('p');
+        let selectAvailabilityProfile = document.createElement('select');
+        let inputPrice = document.createElement('input');
+        let inputQty = document.createElement('input');
+
+        p1.textContent = record['field_825342']; // Market name
+        inputPrice.setAttribute('type', 'number');
+        inputQty.setAttribute('type', 'number');
+
+        li.appendChild(p1);
+        li.appendChild(selectAvailabilityProfile);
+        li.appendChild(inputPrice);
+        li.appendChild(inputQty);
+        list.appendChild(li);
+      });
+    }
+  }
+  if(getCookie('user')) {
+    renderMyMarketItems();
+  }
+</script>
+
 <script id="markets">
   async function getMarkets() {
     var headers = new Headers();
@@ -165,14 +280,29 @@
 
   async function renderMarkets() {
     let response = await getMarkets();
-    let records = response.results;
 
     let list = document.querySelector('ul#marketList');
-    records.forEach(record => {
+    let marketIDList = [];
+    response.results.forEach(record => {
       let listItem = document.createElement('li');
+      let imgPlus = document.createElement('img');
+      let p1 = document.createElement('p');
       
-      console.log(record);
-
+      listItem.id = 'marketID-'+record['ID'];
+      imgPlus.setAttribute('src','../images/icons8-plus-24.png');
+      imgPlus.classList.add('plusBtn');
+      imgPlus.addEventListener('click', function() {
+        let marketID = Number(this.parentNode.id.slice('marketID-'.length));
+        if(marketIDList.indexOf(marketID) < 0) {
+          marketIDList.push(marketID);
+        }
+        console.log(marketIDList);
+      })
+      p1.textContent = record.Name;
+      p1.classList.add('marketName');
+      
+      listItem.appendChild(imgPlus);
+      listItem.appendChild(p1);
       list.appendChild(listItem);
     });
   }

@@ -25,3 +25,24 @@ span.generalItem_category {
   color: var(--grey-text);
 }
 
+ul#marketList {
+  list-style-type: none;
+  padding-left: 10px;
+}
+
+ul#marketList>li {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+
+img.plusBtn {
+  display: inline-block;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+p.marketName {
+  display: inline-block;
+  margin: 9px 0px;
+}
