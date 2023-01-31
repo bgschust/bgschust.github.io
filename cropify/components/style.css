@@ -2,6 +2,15 @@ div#mainContainer {
   width: 100%;
 }
 
+div#cautionBar {
+  display: block;
+  background-color: var(--checked-color);
+  color: white;
+  font-size: 0.8em;
+  line-height: 1.8em;
+  text-align: center;
+}
+
 img#Logo {
   width:150px;
   margin-left: 1.4%;
