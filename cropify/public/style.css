@@ -190,6 +190,7 @@ div.formBlock label {
 
 div.formBlock input[type=text], 
 div.formBlock input[type=password], 
+div.formBlock input[type=number],
 div.formBlock textarea, 
 div.formBlock select {
   border-radius: 6px;
