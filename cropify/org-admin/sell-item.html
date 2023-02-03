@@ -360,8 +360,13 @@
         "Market ID": marketID
       };
       requestOptions.body = JSON.stringify(body);
-      submitMarketItemRequest(requestOptions);
-      renderMyMarketItems();
+      async function showResponse() {
+        let response = await submitMarketItemRequest(requestOptions);
+        if(response.statusMessage == "Market item successfully posted.") {
+          renderMyMarketItems();
+        }
+      }
+      showResponse();
     }
   }
 </script>
