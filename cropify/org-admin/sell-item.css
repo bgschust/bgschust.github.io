@@ -25,6 +25,40 @@ span.generalItem_category {
   color: var(--grey-text);
 }
 
+ul#marketItemList {
+  list-style-type: none;
+  padding-left: 10px;
+}
+
+p.marketName {
+  display: inline-block;
+  margin: 9px 0px 0px 0px;
+}
+
+div.formBlock.marketItem {
+  display: grid;
+  column-gap: 8px;
+}
+
+div.formBlock.marketItem>div.availabilityProfile {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 1;
+}
+div.formBlock.marketItem>div.price {
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 2;
+  grid-row-end: 2;
+}
+div.formBlock.marketItem>div.qty {
+  grid-column-start: 2;
+  grid-column-end: 2;
+  grid-row-start: 2;
+  grid-row-end: 2;
+}
+
 ul#marketList {
   list-style-type: none;
   padding-left: 10px;
@@ -40,9 +74,4 @@ img.plusBtn {
   display: inline-block;
   margin-right: 10px;
   cursor: pointer;
-}
-
-p.marketName {
-  display: inline-block;
-  margin: 9px 0px;
 }
