@@ -233,6 +233,13 @@ button:hover {
   background-color: var(--secondary-green);
 }
 
+img.iconBtn {
+  cursor: pointer;
+}
+img.iconBtn:hover {
+  opacity: 0.8;
+}
+
 /* Checkbox Formatting */
 .css-checkbox {
   position: absolute;
