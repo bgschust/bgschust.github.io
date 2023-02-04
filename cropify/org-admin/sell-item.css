@@ -30,9 +30,15 @@ ul#marketItemList {
   padding-left: 10px;
 }
 
-p.marketName {
+ul#marketItemList>li>div.col1 {
   display: inline-block;
-  margin: 9px 0px 0px 0px;
+  width: 88%;
+}
+
+ul#marketItemList>li>div.col2 {
+  display: inline-block;
+  width: 10%;
+  text-align: right;
 }
 
 div.formBlock.marketItem {
@@ -68,10 +74,19 @@ ul#marketList>li {
   display: flex;
   justify-content: left;
   align-items: center;
+  padding: 4px 0px;
 }
 
 img.plusBtn {
   display: inline-block;
   margin-right: 10px;
   cursor: pointer;
+}
+img.plusBtn:hover {
+  opacity: 0.8;
+}
+
+p.marketName {
+  display: inline-block;
+  margin: 0px 0px 0px 0px;
 }

@@ -224,7 +224,10 @@
       list.innerHTML = '';
       response.results.forEach(record => {
         let li = document.createElement('li');
+        let col1 = document.createElement('div');
         let p1 = document.createElement('p');
+        let col2 = document.createElement('div');
+        let deleteBtn = document.createElement('img');
         let formBlock = document.createElement('div');
         let divAvailabilityProfile = document.createElement('div');
         let labelAvailabilityProfile = document.createElement('label');
@@ -236,11 +239,20 @@
         let labelQty = document.createElement('label');
         let inputQty = document.createElement('input');
 
+        li.id = 'marketItemID-'+record.field_830522;
+        col1.classList.add('col1');
         p1.textContent = record['field_825412'][0]['value']; // Market name
+        col2.classList.add('col2');
+        deleteBtn.setAttribute('src','../images/icons8-delete-24.png');
+        deleteBtn.classList.add('iconBtn');
+        deleteBtn.addEventListener('click', function(){
+          let marketItemID = this.parentNode.parentNode.id.slice('marketItemID-'.length);
+          deleteMarketItem(marketItemID);
+        });
         formBlock.classList.add('formBlock');
         formBlock.classList.add('marketItem');
         divAvailabilityProfile.classList.add('availabilityProfile');
-        labelAvailabilityProfile.textContent = 'Availability Profile';
+        labelAvailabilityProfile.textContent = 'Availability';
         divPrice.classList.add('price');
         inputPrice.setAttribute('type', 'number');
         inputPrice.value = 1.00;
@@ -251,7 +263,10 @@
         inputQty.value = 1.00;
         labelQty.textContent = 'Quantity';
 
-        li.appendChild(p1);
+        col1.appendChild(p1);
+        col2.appendChild(deleteBtn);
+        li.appendChild(col1);
+        li.appendChild(col2);
         divAvailabilityProfile.appendChild(labelAvailabilityProfile);
         divAvailabilityProfile.appendChild(selectAvailabilityProfile);
         divPrice.appendChild(labelPrice);
@@ -265,9 +280,102 @@
         list.appendChild(li);
       });
     }
+    if(response.statusMessage == "Market items found.") {
+      renderMyAvailabilityProfiles();
+    }
+    return response;
   }
   if(getCookie('user')) {
     renderMyMarketItems();
+    /*async function initializeMarketItems(){
+      let res_myMarketItems = await renderMyMarketItems();
+      if(res_myMarketItems.statusMessage == "Market items found.") {
+        renderMyAvailabilityProfiles();
+      }
+    }
+    initializeMarketItems();*/  
+  }
+</script>
+
+<script id="deleteMarketItem">
+  async function deleteMarketItem_inDB(recordID) {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "DELETE",
+        headers: headers,
+        redirect: "follow",
+        body: JSON.stringify({
+          "User ID": JSON.parse(getCookie('user')).id,
+          "Password": JSON.parse(getCookie('user')).Password,
+          "Market Item ID": Number(recordID)
+        })
+    };
+
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+      + 'https://bgschust.app.n8n.cloud/webhook/80e04338-14d8-4e2b-8a70-71e95953d3cf';
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function deleteMarketItem(recordID) {
+    let querySelection = 'li#'+'marketItemID-'+recordID;
+    let record = document.querySelector(querySelection);
+    let res = await deleteMarketItem_inDB(recordID);
+    if(res.statusMessage == "Market item deleted.") {
+      record.remove();
+    } 
+  }
+</script>
+
+<script id="getMyAvailabilityProfiles">
+  async function getMyAvailabilityProfiles() {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+
+    let queryParams = [
+      {"User ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password}
+    ];
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook/0bc395d8-cd7b-414f-a4aa-8431eeb268ce',
+    queryParams);
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderMyAvailabilityProfiles() {
+    let response = await getMyAvailabilityProfiles();
+
+    if (!response.results) {
+      alert("Please add an availability profile under your profile.");
+    } else {
+      document.querySelectorAll('div.availabilityProfile>select').forEach(function(select) {
+        select.innerHTML = '';
+        response.results.forEach(record => {
+          let option = document.createElement('option');
+          option.textContent = record.field_870470;
+          option.value = 'availabityProfile-'+record.field_870631;
+          select.appendChild(option);
+        });
+      });
+    }
   }
 </script>
 
@@ -344,7 +452,7 @@
     }
   }
 
-  function submitMarketItem(marketID){
+  async function submitMarketItem(marketID){
     let headers = new Headers();
     headers.append("Content-Type", "application/json");
     let requestOptions = {
@@ -360,13 +468,20 @@
         "Market ID": marketID
       };
       requestOptions.body = JSON.stringify(body);
-      async function showResponse() {
+      let response = await submitMarketItemRequest(requestOptions);
+      if(response.statusMessage == "Market item successfully posted.") {
+        renderMyMarketItems();
+      }
+      /*async function showResponse() {
         let response = await submitMarketItemRequest(requestOptions);
         if(response.statusMessage == "Market item successfully posted.") {
-          renderMyMarketItems();
+          let res_myMarketItems = renderMyMarketItems();
+          if(res_myMarketItems.statusMessage == "Market items found.") {
+            renderMyAvailabilityProfiles();
+          }
         }
       }
-      showResponse();
+      showResponse();*/
     }
   }
 </script>
