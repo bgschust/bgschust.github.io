@@ -46,8 +46,8 @@
           <input type="text" id="name"><br>
           <label for="shortDescription">Short Description</label>
           <textarea type="text" id="shortDescription"></textarea><br>
-          <label for="sellingBusiness">Supplying Business</label>
-          <select id="sellingBusiness">
+          <label for="supplyingBusiness">Supplying Business</label>
+          <select id="supplyingBusiness">
             <option value="null">No business found.</option>
           </select>
 
@@ -57,7 +57,8 @@
           <h4>Markets</h4>
           <ul id="marketList"></ul>
           <br>
-          <button value="">Submit</button>
+          <div id="statusBlock"></div>
+          <button id="submitSpecificItem">Submit</button>
         </div>
       </div>
     </div>
@@ -170,7 +171,7 @@
   async function renderMyOrganizations() {
     let response = await getMyOrganizations();
 
-    let organizationList = document.querySelector('select#sellingBusiness');
+    let organizationList = document.querySelector('select#supplyingBusiness');
     if (!response.results) {
       organizationList.textContent = response.statusMessage;
     } else {
@@ -178,6 +179,7 @@
       response.results.forEach(record => {
         let option = document.createElement('option');
         option.textContent = record['field_825342']; // Name
+        option.value = record['field_868838']; // organization ID
         organizationList.appendChild(option);
       });
     }
@@ -287,13 +289,6 @@
   }
   if(getCookie('user')) {
     renderMyMarketItems();
-    /*async function initializeMarketItems(){
-      let res_myMarketItems = await renderMyMarketItems();
-      if(res_myMarketItems.statusMessage == "Market items found.") {
-        renderMyAvailabilityProfiles();
-      }
-    }
-    initializeMarketItems();*/  
   }
 </script>
 
@@ -371,7 +366,7 @@
         response.results.forEach(record => {
           let option = document.createElement('option');
           option.textContent = record.field_870470;
-          option.value = 'availabityProfile-'+record.field_870631;
+          option.value = 'availabilityProfile-'+record.field_870631;
           select.appendChild(option);
         });
       });
@@ -472,18 +467,121 @@
       if(response.statusMessage == "Market item successfully posted.") {
         renderMyMarketItems();
       }
-      /*async function showResponse() {
-        let response = await submitMarketItemRequest(requestOptions);
-        if(response.statusMessage == "Market item successfully posted.") {
-          let res_myMarketItems = renderMyMarketItems();
-          if(res_myMarketItems.statusMessage == "Market items found.") {
-            renderMyAvailabilityProfiles();
-          }
-        }
-      }
-      showResponse();*/
     }
   }
+</script>
+
+<script id="submitSpecificItem">
+  async function submitSpecificItemRequest(requestOptions) {   
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook/75b65278-ce3c-4d96-a3f8-f3853c0cd008';
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  document.querySelector('button#submitSpecificItem').addEventListener('click', async function submitSpecificItem(){
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "POST",
+        headers: headers,
+        redirect: "follow",
+    };
+    
+    let statusBlock = document.querySelector('div#statusBlock');
+    let itemName = document.querySelector('input#name').value;
+    let shortDescription = document.querySelector('textarea#shortDescription').value;
+    let supplier = document.querySelector('select#supplyingBusiness').value;
+
+    if(getCookie('user')
+      && itemName.length >= 4
+      && shortDescription.length >= 30
+      && typeof Number(generalItem_id) == 'number'
+      && supplier) 
+    { // implement basic validation here
+      let body = {
+        "User ID": JSON.parse(getCookie('user')).id,
+        "Password": JSON.parse(getCookie('user')).Password,
+        "General Item ID": Number(generalItem_id),
+        "Specific Item Name": itemName,
+        "Short Description": shortDescription,
+        "Supplier": supplier
+      };
+      requestOptions.body = JSON.stringify(body);
+      statusBlock.textContent = "Please wait.";
+      let response = await submitSpecificItemRequest(requestOptions);
+      editMarketItems(response.item.id);
+      statusBlock.textContent = JSON.stringify(response.statusMessage);
+      if(statusBlock.textContent == "Specific item successfully posted.") {
+        // window.location.href = '';
+      }
+    } else {
+      statusBlock.textContent = "Check form errors.";
+    }
+  });
+</script>
+
+<script id="editMarketItems">
+  async function editMarketItemsRequest(requestOptions) {   
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook/63aa8b8d-8580-41eb-b1f0-e339ea9a5b81';
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function editMarketItems(specificItemID){
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "PUT",
+        headers: headers,
+        redirect: "follow",
+    };
+    
+    let statusBlock = document.querySelector('div#statusBlock');
+    let marketItems_nodes = document.querySelector('ul#marketItemList').childNodes;
+    let marketItems = [];
+    marketItems_nodes.forEach(function(marketItemNode) {
+      let marketItem = {};
+      marketItem["Specific Item ID"] = specificItemID;
+      let marketItemID = Number(marketItemNode.id.slice('marketItemID-'.length));
+      marketItem["Market Item ID"] = marketItemID;
+      let availabilityProfileID = Number(marketItemNode.querySelector('div.availabilityProfile>select').value.slice('availabilityProfile-'.length));
+      marketItem["Availability Profile ID"] = availabilityProfileID;
+      let price = Number(marketItemNode.querySelector('div.price>input').value);
+      marketItem["Price (AgG)"] = price;
+      let qty = Number(marketItemNode.querySelector('div.qty>input').value);
+      marketItem["Quantity"] = qty;
+      marketItems.push(marketItem);
+    });
+    //console.log(marketItems);
+    let body = {
+      "User ID": JSON.parse(getCookie('user')).id,
+      "Password": JSON.parse(getCookie('user')).Password,
+      "Market Items": marketItems
+    };
+    requestOptions.body = JSON.stringify(body);
+    if(getCookie('user')) {
+      statusBlock.textContent = "Please wait.";
+      let response = await editMarketItemsRequest(requestOptions);
+      statusBlock.textContent = JSON.stringify(response.statusMessage);
+      if(statusBlock.textContent == "Market items successfully posted.") {
+        // window.location.href = '';
+      }
+    } else {
+      statusBlock.textContent = "You are not logged in.";
+    }
+  };
 </script>
 
 </html>
