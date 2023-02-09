@@ -29,6 +29,9 @@
 
     <h4>Cart Items</h4>
     <div id="cartItemsContainer">Waiting for cart items.</div>
+    <br>
+    <div id="statusBlock"></div>
+    <button id="submitOrder">Submit Order</button>
 
     <div class="blankSpace"></div>
     
@@ -233,6 +236,45 @@
 
     renderCart();
   }
+</script>
+
+<script id="submitOrder">
+  async function submitOrderRequest(requestOptions) {   
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://atusvkd36toxhl1glmt49q0v.hooks.n8n.cloud/webhook-test/7a7f95c7-ca31-47d3-9412-f440f1f8cd93';
+    try {
+      let res = await fetch(url, requestOptions);
+      res = await res.json();
+      return await res;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  document.querySelector('button#submitOrder').addEventListener('click', async function submitOrder(){
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "POST",
+        headers: headers,
+        redirect: "follow",
+    };
+    
+    let statusBlock = document.querySelector('div#statusBlock');
+    if(getCookie('user')) { // implement basic validation check here
+      let body = {
+        "User ID": JSON.parse(getCookie('user')).id,
+        "Password": JSON.parse(getCookie('user')).Password,
+      };
+      requestOptions.body = JSON.stringify(body);
+      
+      statusBlock.textContent = "Please wait.";
+      let response = await submitOrderRequest(requestOptions);
+      statusBlock.textContent = await JSON.stringify(response.statusMessage);
+    } else {
+      statusBlock.textContent = "Please log in or contact support.";
+    }
+  });
 </script>
 
 </html>
