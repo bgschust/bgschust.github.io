@@ -81,12 +81,12 @@
 
     // render cart summary
     let cartSummaryContainer = document.querySelector('div#cartSummaryContainer');
-    cartSummaryContainer.querySelector('p#uniqueItems>span').textContent = response.cartSummary['Unique Items'];
-    cartSummaryContainer.querySelector('p#totalItems>span').textContent = response.cartSummary['Total Basket Item Quantity'];
-    cartSummaryContainer.querySelector('p#subtotal>span').textContent = response.cartSummary['Subtotal (AgG)'];
-    cartSummaryContainer.querySelector('p#transactionFee>span').textContent = response.cartSummary['Transaction Fee (AgG)'];
-    cartSummaryContainer.querySelectorAll('p#timestamps>span')[0].textContent = response.cartSummary['Created Time'];
-    cartSummaryContainer.querySelectorAll('p#timestamps>span')[1].textContent = response.cartSummary['Updated Time'];
+    cartSummaryContainer.querySelector('p#uniqueItems>span').textContent = response.cartSummary['field_830551'];
+    cartSummaryContainer.querySelector('p#totalItems>span').textContent = response.cartSummary['field_830550'];
+    cartSummaryContainer.querySelector('p#subtotal>span').textContent = response.cartSummary['field_831732'];
+    cartSummaryContainer.querySelector('p#transactionFee>span').textContent = response.cartSummary['field_831733'];
+    cartSummaryContainer.querySelectorAll('p#timestamps>span')[0].textContent = response.cartSummary['field_832485'];
+    cartSummaryContainer.querySelectorAll('p#timestamps>span')[1].textContent = new Date(response.cartSummary['field_832486']);
 
     // simplify cart items JSON
     let cartItems = response.cartItems;
