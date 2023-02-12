@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Cropify</title>
+  <title>Cropify - User Admin: Orders</title>
   <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../images/favicon.png">
   <link rel="stylesheet" href="../public/style.css">
+  <link rel="stylesheet" href="./orders.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
   <script src="../components/functions.js"></script>
 </head>
@@ -27,7 +28,140 @@
     </div>
     
     <p>Orders: These are the orders you have made. Click on each for details.</p>
-    <input type="text" placeholder="Search... (not working)">
+    <div id="searchContainer">
+      <input type="text" id="search" placeholder="Search... (not yet functional)">
+      <img src="../images/icons8-search-32.png" alt="searchIcon" class="iconBtn">
+    </div>
+
+    <h3>My Orders</h3>
+    
+    <p class="placeholder">My orders here. Please <a href="./sign-up.html">sign up</a> or <a href="../user-admin/log-in.html">log in</a>.</p>
+    <div id="orderListSummaryContainer">
+      <p id="count"><span>0</span> items</p>
+    </div>
+    <ul id="myOrders" class="wideList"></ul>
+
   </div>
 </body>
+
+<script id="initialization">
+  if(!getCookie('user')) {
+    alert('Please sign up and log in to go to your orders.');
+    window.location.href = './profile.html';
+  } else {
+    document.querySelector('p.placeholder').setAttribute('style','display:none');
+  }
+</script>
+
+<script id="getOrderList">
+  async function getOrderListRequest() {
+    var headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    var requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+    
+    let queryParams = [
+      {"User_ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password}
+    ];
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+      + 'https://atusvkd36toxhl1glmt49q0v.hooks.n8n.cloud/webhook-test/d7c27405-0b31-4ce1-86aa-dc8dad1f9708', 
+      queryParams);
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderOrderList() {
+    //let response = await getOrderListRequest();
+    response = {"summary":{"count":1},"basicOrderList":[{"id":2,"order":"2.00000000000000000000","field_830481":"bgschust@gmail.com's Order","field_830486":[{"id":15,"value":"bgschust@gmail.com"}],"field_830548":[{"id":47,"value":"n8n Entry"},{"id":51,"value":"n8n Entry"},{"id":52,"value":"n8n Entry"},{"id":53,"value":"Manual Entry"}],"field_830550":"8.00","field_830551":"4","field_831732":"19.51","field_831733":"2.09","field_832416":{"id":377739,"value":"Order","color":"red"},"field_832485":"2023-01-12T05:30:00Z","field_832486":"2023-02-10T22:21:16.175000Z","field_902131":"2023-02-10T22:21:16.175000Z","field_902831":[{"id":15,"value":"bgschust@gmail.com"}],"field_902833":[],"field_902852":[],"field_902861":"2","field_903137":[]}]};
+
+    // render summary
+    let summaryContainer = document.querySelector('div#orderListSummaryContainer');
+    summaryContainer.querySelector('p#count>span').textContent = response.summary['count'];
+
+    // simplify records JSON
+    let records = response.basicOrderList;
+    /*records.forEach((record, index) => {
+      cartItems[index].supplierName = item.Supplier[0].value;
+      cartItems[index].supplierID = item.Supplier[0].ids.database_table_127809;
+      cartItems[index].supplierObject = {
+        id: item.Supplier[0].ids.database_table_127809,
+        value: item.Supplier[0].value
+      };
+      cartItems[index].marketName = item.Market[0].value;
+      cartItems[index].marketID = item.Market[0].ids.database_table_127809;
+      cartItems[index].marketObject = {
+        id: item.Market[0].ids.database_table_127809,
+        value: item.Market[0].value
+      };
+    });*/
+
+    // sort records
+    records = _.sortBy(records, 'field_902131');
+    //records = _.sortBy(records, 'secondary sort field');
+    //records = _.sortBy(records, 'tertiary sort field');
+
+    // render records
+    let recordList = document.querySelector('ul#myOrders');
+    recordList.innerHTML = '';
+    records.forEach(function(record){
+      let listItem = document.createElement('li');
+      let title = document.createElement('h4');
+      let orderTime = document.createElement('p');
+      let detailsContainer = document.createElement('div');
+      let detailLink = document.createElement('a');
+      let detailBtn = document.createElement('button');
+      let detailIcon = document.createElement('img');
+      let col1 = document.createElement('div');
+      let col2 = document.createElement('div');
+      let p1 = document.createElement('p');
+      let p2 = document.createElement('p');
+      let p3 = document.createElement('p');
+      let p4 = document.createElement('p');
+      let p5 = document.createElement('p');
+
+      listItem.id = 'basketID-'+record['id'];
+      title.textContent = 'Order #'+record['id'];
+      orderTime.textContent = 'Placed '+ new Date(record['field_902131']);
+      orderTime.id = 'orderTime';
+      detailsContainer.classList.add('detailsContainer');
+      detailBtn.textContent = 'Details';
+      detailIcon.setAttribute('src','../images/icons8-details-48-white.png');
+      detailBtn.insertAdjacentElement('afterbegin', detailIcon);
+      detailBtn.classList.add('iconTextBtn');
+      col2.classList.add('col2');
+      p1.textContent = record['field_830551']+' market items ('+record['field_830550']+' total)'; // item counts
+      p2.textContent = 'Subtotal (AgG): '+record['field_831732']; // subtotal
+      p3.textContent = 'Transaction Fee (AgG): '+record['field_831733']; // subtotal
+      p4.textContent = 'Total (AgG): '+(Number(record['field_831732'])+Number(record['field_831733'])).toFixed(2); // subtotal
+      //p5.textContent = 'Subtotal (AgG): '+record['field_831732']; // subtotal
+
+      listItem.appendChild(title);
+      listItem.appendChild(orderTime);
+      detailLink.appendChild(detailBtn);
+      detailsContainer.appendChild(detailLink);
+      listItem.appendChild(detailsContainer);
+      col2.appendChild(p1);
+      col2.appendChild(p2);
+      col2.appendChild(p3);
+      col2.appendChild(p4);
+      listItem.appendChild(col1);
+      listItem.appendChild(col2);
+      recordList.appendChild(listItem);
+    });
+
+  }
+  renderOrderList();
+
+</script>
+
 </html>
