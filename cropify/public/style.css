@@ -233,6 +233,17 @@ button:hover {
   background-color: var(--secondary-green);
 }
 
+button.iconTextBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+button.iconTextBtn>img {
+  max-width: 22px;
+  max-height: 22px;
+  margin-right: 8px;
+}
+
 img.iconBtn {
   cursor: pointer;
 }
