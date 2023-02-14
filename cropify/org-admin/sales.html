@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Cropify</title>
+  <title>Cropify - Sales [Organization Administration]</title>
   <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../images/favicon.png">
   <link rel="stylesheet" href="../public/style.css">
+  <link rel="stylesheet" href="./style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
   <script src="../components/functions.js"></script>
 </head>
@@ -26,8 +27,194 @@
       </div>
     </div>
     
-    <p>Sales: These are the orders placed for your items. Click on each for details.</p>
-    <input type="text" placeholder="Search... (not working)">
+    <p>Sales: These are the sales you have made. Click on each for details.</p>
+    <div id="searchContainer">
+      <input type="text" id="search" placeholder="Search... (not yet functional)">
+      <img src="../images/icons8-search-32.png" alt="searchIcon" class="iconBtn">
+    </div>
+
+    <h3>My Sales</h3>
+    
+    <p class="placeholder">My sales here. Please <a href="./sign-up.html">sign up</a> or <a href="../user-admin/log-in.html">log in</a>.</p>
+    <div id="salesListSummaryContainer">
+      <label for="organization"></label>
+      <select id="organization">
+        <option>No organizations found.</option>
+      </select>
+      <p id="count"><span>0</span> items</p>
+    </div>
+    <ul id="mySales" class="wideList"></ul>
+
   </div>
 </body>
+
+<script id="initialization">
+  if(!getCookie('user')) {
+    alert('Please sign up and log in to go to your orders.');
+    window.location.href = '../user-admin/profile.html';
+  } else {
+    document.querySelector('p.placeholder').setAttribute('style','display:none');
+  }
+</script>
+
+<script id="getMyOrganizations">
+  async function getMyOrganizations() {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+
+    let queryParams = [
+      {"User ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password}
+    ];
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook/e7a482da-c2a6-4631-8728-a349c7c07290',
+    queryParams);
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderMyOrganizations() {
+    let response = await getMyOrganizations();
+
+    let organizationSelect = document.querySelector('select#organization');
+    if (response.results) {
+      organizationSelect.innerHTML = '';
+      response = response.results;
+      response.forEach(function(record, index){
+        let option = document.createElement('option');
+
+        if(index==0) {
+          let nullOption = document.createElement('option');
+          nullOption.setAttribute('value', null);
+          nullOption.textContent = 'Select an organization...';
+          organizationSelect.appendChild(nullOption);
+        }
+
+        option.setAttribute('value', 'organizationID-' + record.id);
+        option.textContent = record['field_825342']; // name
+        
+        organizationSelect.appendChild(option);
+      });
+    }
+  }
+  if(getCookie('user')) {
+    renderMyOrganizations();
+  }
+</script>
+
+<script id="getSalesList">
+  let organization = document.querySelector('select#organization');
+
+  async function getSalesListRequest() {
+    var headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    var requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+    
+    let organizationID = Number(organization.value.slice('organizationID-'.length));
+    let organizationIDs = [];
+    organizationIDs[0] = organizationID;
+    let queryParams = [
+      {"User_ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password},
+      {"Organization IDs": organizationIDs}
+    ];
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+      + 'https://funny-sloth-52.hooks.n8n.cloud/webhook/4ffd2c37-2f82-409f-ad5e-f11044e52404', 
+      queryParams);
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderSalesList() {
+    let response = await getSalesListRequest();
+    results = response.basicSalesList;
+
+    // render summary
+    let summaryContainer = document.querySelector('div#salesListSummaryContainer');
+    summaryContainer.querySelector('p#count>span').textContent = response.summary['count'];
+
+    // sort records
+    results = _.sortBy(results, 'field_902131'); // time of order
+    results = _.sortBy(results, 'field_911868'); // order
+    //records = _.sortBy(records, 'tertiary sort field');
+    console.log(results);
+
+    // render records
+    let recordList = document.querySelector('ul#mySales');
+    recordList.innerHTML = '';
+    results.forEach(function(record){
+      let listItem = document.createElement('li');
+      let title = document.createElement('h4');
+      let orderTime = document.createElement('p');
+      let detailsContainer = document.createElement('div');
+      let detailLink = document.createElement('a');
+      let detailBtn = document.createElement('button');
+      let detailIcon = document.createElement('img');
+      let col1 = document.createElement('div');
+      let col2 = document.createElement('div');
+      let p1 = document.createElement('p');
+      let p2 = document.createElement('p');
+      let p3 = document.createElement('p');
+      let p4 = document.createElement('p');
+      let p5 = document.createElement('p');
+
+      listItem.id = 'basketID-'+record['id'];
+      title.textContent = 'Order #'+record['id'];
+      orderTime.textContent = 'Placed '+ new Date(record['field_902131']);
+      orderTime.id = 'orderTime';
+      detailsContainer.classList.add('detailsContainer');
+      detailBtn.textContent = 'Details';
+      detailIcon.setAttribute('src','../images/icons8-details-48-white.png');
+      detailBtn.insertAdjacentElement('afterbegin', detailIcon);
+      detailBtn.classList.add('iconTextBtn');
+      col2.classList.add('col2');
+      p1.textContent = record['field_830551']+' market items ('+record['field_830550']+' total)'; // item counts
+      p2.textContent = 'Subtotal (AgG): '+record['field_831732']; // subtotal
+      p3.textContent = 'Transaction Fee (AgG): '+record['field_831733']; // subtotal
+      p4.textContent = 'Total (AgG): '+(Number(record['field_831732'])+Number(record['field_831733'])).toFixed(2); // subtotal
+      //p5.textContent = 'Subtotal (AgG): '+record['field_831732']; // subtotal
+
+      listItem.appendChild(title);
+      listItem.appendChild(orderTime);
+      detailLink.appendChild(detailBtn);
+      detailsContainer.appendChild(detailLink);
+      listItem.appendChild(detailsContainer);
+      col2.appendChild(p1);
+      col2.appendChild(p2);
+      col2.appendChild(p3);
+      col2.appendChild(p4);
+      listItem.appendChild(col1);
+      listItem.appendChild(col2);
+      recordList.appendChild(listItem);
+    });
+    
+  }
+  organization.addEventListener('change', function(event) {
+    renderSalesList();
+  });
+  
+
+</script>
+
 </html>
