@@ -37,7 +37,7 @@
     
     <p class="placeholder">My sales here. Please <a href="./sign-up.html">sign up</a> or <a href="../user-admin/log-in.html">log in</a>.</p>
     <div id="salesListSummaryContainer">
-      <label for="organization"></label>
+      <label for="organization">Organization</label>
       <select id="organization">
         <option>No organizations found.</option>
       </select>
@@ -180,8 +180,8 @@
       let p5 = document.createElement('p');
 
       listItem.id = 'basketID-'+record['id'];
-      title.textContent = 'Order #'+record['id'];
-      orderTime.textContent = 'Placed '+ new Date(record['field_902131']);
+      title.textContent = 'Sale #'+record['id'];
+      orderTime.textContent = 'Order placed '+ new Date(record['field_902131']);
       orderTime.id = 'orderTime';
       detailsContainer.classList.add('detailsContainer');
       detailBtn.textContent = 'Details';
