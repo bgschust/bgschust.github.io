@@ -5,14 +5,16 @@
   <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../images/favicon.png">
-  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="../public/style.css">
+  <link rel="stylesheet" href="../components/components.css">
   <link rel="stylesheet" href="./general-items.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
   <script src="../components/functions.js"></script>
+  <script src="../components/components.js"></script>
 </head>
 <body>
 
-  <iframe id="component_topNav" src="../components/topNavigation.html"></iframe>
+  <div class="component topNavigation"></div>
 
   <div id="mainContainer">
 
@@ -93,25 +95,13 @@
     </div>
 
     <ul id="generalItems" class="cardList"></ul>
-
+    
+    <br>
     <p>Submit an <a href="https://cropify.canny.io/general-item-ideas" target="_blank">idea or suggestion</a> for a general item or make a <a href="https://cropify.canny.io/feature-requests" target="_blank">feature request</a>.</p>
     
-    <input type="checkbox" class="accordion" id="accordionPanel_sources" checked>
-    <a href="#accordionPanel_sources" style="text-decoration:none;color:inherit;">
-      <label for="accordionPanel_sources" class="accordion">
-        <h3>Sources</h3>
-      </label>
-    </a>
-    <div class="collapsible">
-      <ol>
-        <li><a target="_blank" href="https://icons8.com/icon/85181/shopping-basket">Shopping Basket</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
-        <li><a target="_blank" href="https://icons8.com/icon/85147/male-user">Male User</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
-        <li><a target="_blank" href="https://icons8.com/icon/43428/filter-and-sort">Filter and Sort</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
-        <li><a target="_blank" href="https://icons8.com/icon/2775/collapse-arrow">Collapse Arrow</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
-        <li><a target="_blank" href="https://icons8.com/icon/14079/search">Search</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
-      </ol>
-    </div>
   </div>
+
+  <div class="component footer"></div>
 
 </body>
 

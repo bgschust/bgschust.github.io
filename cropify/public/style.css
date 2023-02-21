@@ -12,6 +12,7 @@ html {
 
   --bg-color: #e8e8e8;
   --box-shadow: rgb(201, 201, 201);
+  --text-shadow: rgb(201, 201, 201);
   --grey-text: rgb(133, 133, 133);
   --dark-grey-text: rgb(100, 100, 100);
   
@@ -31,11 +32,6 @@ iframe {
   padding: 0px;
   margin: 0px;
   display: block;
-}
-
-iframe#component_topNav {
-  width: 100%;
-  height: 88px;
 }
 
 div#mainContainer {
@@ -132,6 +128,16 @@ div#searchContainer {
 div.blankSpace {
   display: block;
   height: 110px;
+}
+
+div.bannerBar {
+  display: block;
+  background-color: var(--checked-color);
+  color: white;
+  font-size: 0.8em;
+  line-height: 1.8em;
+  text-align: center;
+  padding: 4px;
 }
 
 input#search {
@@ -333,18 +339,9 @@ input.accordion + a label.accordion h3::after {
   transition: 0.5s ease;
 }
 
-input.accordion#accordionPanel_sources:checked + a label.accordion h3::after {
-  transform: rotate(180deg);
-  transition: 0.5s ease;
-}
-
 input.accordion#accordionPanel_myListings:checked + a label.accordion h3::after {
   transform: rotate(180deg);
   transition: 0.5s ease;
-}
-
-#accordionPanel_sources {
-  display: none;
 }
 
 #accordionPanel_myListings {
@@ -353,17 +350,6 @@ input.accordion#accordionPanel_myListings:checked + a label.accordion h3::after 
 
 .collapsible {
   display: block;
-}
-
-#accordionPanel_sources + a + .collapsible {
-  overflow: hidden;
-  height: 0;
-
-  -webkit-transition: height 1s ease;
-  -moz-transition: height 1s ease;
-  -ms-transition: height 1s ease;
-  -o-transition: height 1s ease;
-  transition: height 1s ease;
 }
 
 #accordionPanel_myListings + a + .collapsible {
@@ -375,10 +361,6 @@ input.accordion#accordionPanel_myListings:checked + a label.accordion h3::after 
   -ms-transition: height 1s ease;
   -o-transition: height 1s ease;
   transition: height 1s ease;
-}
-
-#accordionPanel_sources:checked + a + .collapsible {
-  height: 160px; /* needs a numeric value here to keep transition */
 }
 
 #accordionPanel_myListings:checked + a + .collapsible {

@@ -29,7 +29,7 @@ function getCookie(name) {
   // Loop through the array elements
   for(var i = 0; i < cookieArr.length; i++) {
       var cookiePair = cookieArr[i].split("=");
-      /* Removing whitespace at the beginning of the cookie name
+      /* Removing spaces at the beginning of the cookie name
       and compare it with the given string */
       if(name == cookiePair[0].trim()) {
           // Decode the cookie value and return

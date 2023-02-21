@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Cropify: Sign Up</title>
+  <title>Cropify - Sign Up</title>
   <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../images/favicon.png">
   <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="../components/components.css">
   <link rel="stylesheet" href="./sign-up.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
   <script src="../components/functions.js"></script>
+  <script src="../components/components.js"></script>
 </head>
 <body>
 
-  <iframe id="component_topNav" src="../components/topNavigation.html"></iframe>
+  <div class="component topNavigation"></div>
 
   <div id="mainContainer">
     
     <div class="centeredContent">
+
       <h2>Sign Up</h2>
       <h3>User Registration</h3>
+
       <div class="formBlock">
+        
         <label for="email">Email Address</label>
         <input type="text" id="email"><br>
         <label for="password">Password</label>
@@ -44,9 +49,18 @@
 
         <div id="statusBlock"></div>
         <button class="submitForm registerUser">Register</button>
+
       </div>
+
+      <p>
+        If you already have an account, <br>
+        you can <a href="../user-admin/log-in.html">log in</a>.
+      </p>
+
     </div>
+
     <div class="blankSpace"></div>
+
   </div>
 
 </body>

@@ -6,17 +6,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../images/favicon.png">
   <link rel="stylesheet" href="../public/style.css">
+  <link rel="stylesheet" href="../components/components.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
   <script src="../components/functions.js"></script>
+  <script src="../components/components.js"></script>
 </head>
 <body>
 
-  <iframe id="component_topNav" src="../components/topNavigation.html"></iframe>
+  <div class="component topNavigation"></div>
 
   <div id="mainContainer">
+
     <div class="centeredContent">
+
       <h2>Log In</h2>
       <h3>Sign into your account.</h3>
+
       <div class="formBlock">
         <label for="email">Email Address</label>
         <input type="text" id="email"><br>
@@ -26,7 +31,14 @@
         <div id="statusBlock"></div>
         <button class="submitForm signIn">Sign In</button>
       </div>
+
+      <p>
+        If you do not have an account, <br>
+        you can <a href="../public/sign-up.html">sign up</a>.
+      </p>
+
     </div>
+
   </div>
 
 </body>

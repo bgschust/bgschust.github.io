@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Cropify: Shopping Cart</title>
+  <title>Cropify - Shopping Cart (User Administration)</title>
   <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../images/favicon.png">
   <link rel="stylesheet" href="../public/style.css">
-  <link rel="stylesheet" href="./shopping-cart.css">
+  <link rel="stylesheet" href="../components/components.css">
+  <link rel="stylesheet" href="../user-admin/shopping-cart.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
   <script src="../components/functions.js"></script>
+  <script src="../components/components.js"></script>
 </head>
 <body>
 
-  <iframe id="component_topNav" src="../components/topNavigation.html"></iframe>
+  <div class="component topNavigation"></div>
 
   <div id="mainContainer">
 
@@ -34,11 +36,10 @@
     <button id="submitOrder">Submit Order</button>
 
     <div class="blankSpace"></div>
-    
-    <br><br>
-    <a target="_blank" href="https://icons8.com/icon/99961/delete">Delete</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
 
   </div>
+
+  <div class="component footer"></div>
 
 </body>
 
@@ -109,7 +110,6 @@
     cartItems = _.sortBy(cartItems, 'order');
     cartItems = _.sortBy(cartItems, 'supplierName');
     cartItems = _.sortBy(cartItems, 'marketName');
-    //console.log(cartItems);
 
     // render cart items
     let cartItemsContainer = document.querySelector('div#cartItemsContainer');
@@ -239,7 +239,7 @@
 </script>
 
 <script id="submitOrder">
-  async function submitOrderRequest(requestOptions) {   
+  async function submitOrderRequest(requestOptions) {
     let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
     + 'https://funny-sloth-52.hooks.n8n.cloud/webhook/7a7f95c7-ca31-47d3-9412-f440f1f8cd93';
     try {

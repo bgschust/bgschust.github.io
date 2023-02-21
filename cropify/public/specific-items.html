@@ -6,13 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../images/favicon.png">
   <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="../components/components.css">
   <link rel="stylesheet" href="./specific-items.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
   <script src="../components/functions.js"></script>
+  <script src="../components/components.js"></script>
 </head>
 <body>
 
-  <iframe id="component_topNav" src="../components/topNavigation.html"></iframe>
+  <div class="component topNavigation"></div>
 
   <div id="mainContainer">
 
@@ -49,7 +51,7 @@
       </label>
     </a>
     <div class="collapsible mySpecificItems">
-      <p>My specific items here. Please sign up or log in.</p>
+      <p class="placeholder">My specific items here.  Please <a href="./sign-up.html">sign up</a> or <a href="../user-admin/log-in.html">log in</a>.</p>
       <ul id="mySpecificItems" class="cardList"></ul>
       <button id="sellThisItem" class="outlined">
         <img alt="Dollar Sign" src="../images/icons8-us-dollar-24.png">
@@ -73,24 +75,10 @@
     </div>
     <ul id="specificItems" class="cardList"></ul>
     
-    <input type="checkbox" class="accordion" id="accordionPanel_sources">
-    <a href="#accordionPanel_sources" style="text-decoration:none;color:inherit;">
-      <label for="accordionPanel_sources" class="accordion">
-        <h3>Sources</h3>
-      </label>
-    </a>
-    <div class="collapsible">
-      <ol>
-        <li><a target="_blank" href="https://icons8.com/icon/85181/shopping-basket">Shopping Basket</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
-        <li><a target="_blank" href="https://icons8.com/icon/85147/male-user">Male User</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
-        <li><a target="_blank" href="https://icons8.com/icon/43428/filter-and-sort">Filter and Sort</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
-        <li><a target="_blank" href="https://icons8.com/icon/2775/collapse-arrow">Collapse Arrow</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
-        <li><a target="_blank" href="https://icons8.com/icon/14079/search">Search</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
-        <li><a target="_blank" href="https://icons8.com/icon/7811/left">Left</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
-        <li><a target="_blank" href="https://icons8.com/icon/85801/us-dollar">US Dollar</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a></li>
-      </ol>
-    </div>
   </div>
+
+  <br>
+  <div class="component footer"></div>
 
 </body>
 
@@ -105,11 +93,13 @@
   let generalItem_default = {"id":5,"order":"3.99999999999999999999","Name":"Tomato","Short Description":"","Active":false,"Specific Items":[{"id":6,"value":"[Demo] Canned Tomato"}],"Specific Item Count":"1","Group":[{"ids":{"database_table_126754":430},"value":"Edible Harvests"}],"Category":[{"id":498,"value":"Vegetables"}],"Users":[{"ids":{"database_table_4390":4,"database_table_6844":6},"value":"Jeffrey"}]};
 
   document.querySelector('button#sellThisItem').addEventListener('click', function goToSellItem() {
-    while(!getCookie('user')) {
-      alert('Please sign up and log in to sell an item.');
-      window.location.href = '../user-admin/profile.html';
+    if(getCookie('user')) {
+      window.location.href = '../org-admin/sell-item.html' + '?generalItem_id=' + generalItem_id;
+    } else {
+      if(confirm('Please sign up or log in to sell an item.')) {
+        window.location.href = '../user-admin/profile.html';
+      }
     }
-    window.location.href = '../org-admin/sell-item.html' + '?generalItem_id=' + generalItem_id;
   });
 
   var headers = new Headers();
@@ -273,18 +263,20 @@
       let url = 'specific-item-detail.html' + '?' + 'specificItem_id' + '=' + record.id;
       specificItemBtn.setAttribute('id', url);
       specificItemBtn.addEventListener('click', function openModal(){
-        while(!getCookie('user')) {
-          alert('Please sign up and log in to go to specific item details.');
-          window.location.href = './profile.html';
+        if(getCookie('user')) {
+          let btn_url = this.getAttribute('id');
+          document.querySelector('div#specificItemDetail_modal iframe').setAttribute('src', btn_url);
+          modal.style.display = "block";
+        } else {
+          if(confirm('Please sign up or log in to go to specific item details.')) {
+            window.location.href = '../user-admin/profile.html';
+          }
         }
-        let btn_url = this.getAttribute('id');
-        document.querySelector('div#specificItemDetail_modal iframe').setAttribute('src', btn_url);
-        modal.style.display = "block";
       });
 
-      specificItemP1.textContent =  record['General Item'][0].value || 'General item not found';
-      specificItemP1.textContent += ' from ';
-      specificItemP1.textContent += (record.Producer.length) ? record.Producer[0].value : 'Seller not found.';
+      //specificItemP1.textContent =  record['General Item'][0].value || 'General item not found';
+      //specificItemP1.textContent += ' from ';
+      specificItemP1.textContent += (record.Supplier.length) ? record.Supplier[0].value : 'Seller not found.';
       specificItemP2.textContent = record.Name || 'Name not found';
       specificItemP3.textContent = record['Short Description'] || 'No description.';
       specificItemBtn.textContent = 'Details';
@@ -337,7 +329,7 @@
     let queryParams = [
       {"user_field_names": true},
       {"size": 200},
-      {"include": "Name,Short Description,Active,General Item,Producer,Markets,Prices (AgG)"},
+      {"include": "Name,Short Description,Active,General Item,Supplier,Markets,Prices (AgG)"},
       {'filter__field_818432__link_row_has': generalItem_id}
     ];
     
@@ -359,6 +351,7 @@
     let specificItems = '';
     specificItems = await getSpecificItems();
     (!specificItems) ? specificItems = '' : specificItems;
+    console.log(specificItems);
 
     // browser filtering
     /* if (filter.show_outOfStock == false) {
@@ -382,7 +375,7 @@
     // browser search
     if (searchInput.value != undefined || '') {
       specificItems.forEach(record => {
-        record.searchTargetText = ((record.Producer.length) ? record.Producer[0].value : 'No producer') +
+        record.searchTargetText = ((record.Supplier.length) ? record.Supplier[0].value : 'No producer') +
           + ' ' + _.pluck(record.Markets, 'value').join(',') 
           + ' ' + record.Name 
           + ' ' + record['Short Description'];
@@ -422,18 +415,20 @@
       let url = 'specific-item-detail.html' + '?' + 'specificItem_id' + '=' + record.id;
       specificItemBtn.setAttribute('id', url);
       specificItemBtn.addEventListener('click', function openModal(){
-        while(!getCookie('user')) {
-          alert('Please sign up and log in to go to specific item details.');
-          window.location.href = './profile.html';
+        if(getCookie('user')) {
+          let btn_url = this.getAttribute('id');
+          document.querySelector('div#specificItemDetail_modal iframe').setAttribute('src', btn_url);
+          modal.style.display = "block";
+        } else {
+          if(confirm('Please sign up or log in to go to specific item details.')) {
+            window.location.href = '../user-admin/profile.html';
+          }
         }
-        let btn_url = this.getAttribute('id');
-        document.querySelector('div#specificItemDetail_modal iframe').setAttribute('src', btn_url);
-        modal.style.display = "block";
       });
 
-      specificItemP1.textContent =  record['General Item'][0].value || 'General item not found';
-      specificItemP1.textContent += ' from ';
-      specificItemP1.textContent += (record.Producer.length) ? record.Producer[0].value : 'Seller not found.';
+      //specificItemP1.textContent =  record['General Item'][0].value || 'General item not found';
+      //specificItemP1.textContent += ' from ';
+      specificItemP1.textContent += (record.Supplier.length) ? record.Supplier[0].value : 'Seller not found.';
       specificItemP2.textContent = record.Name || 'Name not found';
       specificItemP3.textContent = record['Short Description'] || 'No description.';
       specificItemBtn.textContent = 'Details';
