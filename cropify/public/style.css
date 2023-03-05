@@ -226,6 +226,22 @@ div.validationBlock {
   color: white;
 }
 
+div.parentItemContainer {
+  margin-top: 30px;
+}
+
+div.parentItemContainer>h2>img {
+  display: inline-block;
+  width: 32px;
+  cursor: pointer;
+  vertical-align: bottom;
+  margin-right: 8px;
+}
+
+div.parentItemContainer>h2>img:hover {
+  opacity: 0.7;
+}
+
 button {
   text-align: center;
   background-color: var(--primary-green);
