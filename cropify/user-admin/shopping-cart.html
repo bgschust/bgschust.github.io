@@ -241,7 +241,7 @@
 <script id="submitOrder">
   async function submitOrderRequest(requestOptions) {
     let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
-    + 'https://funny-sloth-52.hooks.n8n.cloud/webhook/7a7f95c7-ca31-47d3-9412-f440f1f8cd93';
+    + 'https://n8n.cropify.org/webhook/7a7f95c7-ca31-47d3-9412-f440f1f8cd93';
     try {
       let res = await fetch(url, requestOptions);
       res = await res.json();

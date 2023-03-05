@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Cropify - Orders (User Administration)</title>
+  <title>Cropify - Orders</title>
   <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../images/favicon.png">
   <link rel="stylesheet" href="../public/style.css">
   <link rel="stylesheet" href="../components/components.css">
-  <link rel="stylesheet" href="../org-admin/style.css">
+  <link rel="stylesheet" href="../user-admin/style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
   <script src="../components/functions.js"></script>
   <script src="../components/components.js"></script>
@@ -63,7 +63,7 @@
 </script>
 
 <script id="getOrderList">
-  async function getOrderListRequest() {
+  async function getRequest_orderList() {
     var headers = new Headers();
     headers.append("Content-Type", "application/json");
     var requestOptions = {
@@ -78,7 +78,7 @@
     ];
 
     let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
-      + 'https://funny-sloth-52.hooks.n8n.cloud/webhook/d7c27405-0b31-4ce1-86aa-dc8dad1f9708', 
+      + 'https://n8n.cropify.org/webhook/d7c27405-0b31-4ce1-86aa-dc8dad1f9708', 
       queryParams);
     try {
         let res = await fetch(url, requestOptions);
@@ -90,7 +90,7 @@
   }
 
   async function renderOrderList() {
-    let response = await getOrderListRequest();
+    let response = await getRequest_orderList();
     //response = {"summary":{"count":1},"basicOrderList":[{"id":2,"order":"2.00000000000000000000","field_830481":"bgschust@gmail.com's Order","field_830486":[{"id":15,"value":"bgschust@gmail.com"}],"field_830548":[{"id":47,"value":"n8n Entry"},{"id":51,"value":"n8n Entry"},{"id":52,"value":"n8n Entry"},{"id":53,"value":"Manual Entry"}],"field_830550":"8.00","field_830551":"4","field_831732":"19.51","field_831733":"2.09","field_832416":{"id":377739,"value":"Order","color":"red"},"field_832485":"2023-01-12T05:30:00Z","field_832486":"2023-02-10T22:21:16.175000Z","field_902131":"2023-02-10T22:21:16.175000Z","field_902831":[{"id":15,"value":"bgschust@gmail.com"}],"field_902833":[],"field_902852":[],"field_902861":"2","field_903137":[]}]};
 
     // render summary
@@ -99,6 +99,7 @@
 
     // simplify records JSON
     let records = response.basicOrderList;
+    let recordCount = records.length;
     /*records.forEach((record, index) => {
       cartItems[index].supplierName = item.Supplier[0].value;
       cartItems[index].supplierID = item.Supplier[0].ids.database_table_127809;
@@ -115,14 +116,14 @@
     });*/
 
     // sort records
-    records = _.sortBy(records, 'field_902131');
+    //records = _.sortBy(records, 'field_902131');
     //records = _.sortBy(records, 'secondary sort field');
     //records = _.sortBy(records, 'tertiary sort field');
 
     // render records
     let recordList = document.querySelector('ul#myOrders');
     recordList.innerHTML = '';
-    records.forEach(function(record){
+    records.forEach(function(record, index){
       let listItem = document.createElement('li');
       let title = document.createElement('h4');
       let orderTime = document.createElement('p');
@@ -139,10 +140,20 @@
       let p5 = document.createElement('p');
 
       listItem.id = 'basketID-'+record['id'];
+      if(index == recordCount-1) {
+        listItem.classList.add('last');
+      }
       title.textContent = 'Order #'+record['id'];
       orderTime.textContent = 'Placed '+ new Date(record['field_902131']);
       orderTime.id = 'orderTime';
       detailsContainer.classList.add('detailsContainer');
+      let detailURL = buildURL(
+        './order-details.html',
+        [
+          {basketID: record['id']}
+        ]
+      );
+      detailLink.setAttribute('href', detailURL);
       detailBtn.textContent = 'Details';
       detailIcon.setAttribute('src','../images/icons8-details-48-white.png');
       detailBtn.insertAdjacentElement('afterbegin', detailIcon);
