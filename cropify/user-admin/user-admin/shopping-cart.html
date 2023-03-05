@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify - Shopping Cart (User Administration)</title>
+  <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../images/favicon.png">
+  <link rel="stylesheet" href="../public/style.css">
+  <link rel="stylesheet" href="../components/components.css">
+  <link rel="stylesheet" href="../user-admin/shopping-cart.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="../components/functions.js"></script>
+  <script src="../components/components.js"></script>
+</head>
+<body>
+
+  <div class="component topNavigation"></div>
+
+  <div id="mainContainer">
+
+    <h3>Shopping Cart</h3>
+
+    <h4>Cart Summary</h4>
+    <div id="cartSummaryContainer">
+      <p id="uniqueItems">Unique Items: <span>0</span></p>
+      <p id="totalItems">Total Items: <span>0</span></p>
+      <p id="subtotal">Subtotal (AgG): <span>0</span></p>
+      <p id="transactionFee">Transaction Fee (AgG): <span>0</span></p>
+      <p id="timestamps">Created at <span>unknown time</span>. Updated at <span>unknown time</span>.</p>
+    </div>
+
+    <h4>Cart Items</h4>
+    <div id="cartItemsContainer">Waiting for cart items.</div>
+    <br>
+    <div id="statusBlock"></div>
+    <button id="submitOrder">Submit Order</button>
+
+    <div class="blankSpace"></div>
+
+  </div>
+
+  <div class="component footer"></div>
+
+</body>
+
+<script id="initialization">
+  if(!getCookie('user')) {
+    alert('Please sign up and log in to go to the shopping cart.');
+    window.location.href = './profile.html';
+  }
+</script>
+
+<script id="getCart">
+  var headers_getCart = new Headers();
+  headers_getCart.append("Content-Type", "application/json");
+  var requestOptions_getCart = {
+      method: "GET",
+      headers: headers_getCart,
+      redirect: "follow",
+  };
+
+  async function getCart() {
+    let queryParams = [
+      {"User_ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password}
+    ];    
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+      + 'https://bgschust.app.n8n.cloud/webhook/9d74ce68-a26d-4bb2-b267-32933cdf702r', 
+      queryParams);
+    try {
+        let res = await fetch(url, requestOptions_getCart);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderCart() {
+    let response = await getCart();
+
+    // render cart summary
+    let cartSummaryContainer = document.querySelector('div#cartSummaryContainer');
+    cartSummaryContainer.querySelector('p#uniqueItems>span').textContent = response.cartSummary['field_830551'];
+    cartSummaryContainer.querySelector('p#totalItems>span').textContent = response.cartSummary['field_830550'];
+    cartSummaryContainer.querySelector('p#subtotal>span').textContent = response.cartSummary['field_831732'];
+    cartSummaryContainer.querySelector('p#transactionFee>span').textContent = response.cartSummary['field_831733'];
+    cartSummaryContainer.querySelectorAll('p#timestamps>span')[0].textContent = response.cartSummary['field_832485'];
+    cartSummaryContainer.querySelectorAll('p#timestamps>span')[1].textContent = new Date(response.cartSummary['field_832486']);
+
+    // simplify cart items JSON
+    let cartItems = response.cartItems;
+    cartItems.forEach((item, index) => {
+      cartItems[index].supplierName = item.Supplier[0].value;
+      cartItems[index].supplierID = item.Supplier[0].ids.database_table_127809;
+      cartItems[index].supplierObject = {
+        id: item.Supplier[0].ids.database_table_127809,
+        value: item.Supplier[0].value
+      };
+      cartItems[index].marketName = item.Market[0].value;
+      cartItems[index].marketID = item.Market[0].ids.database_table_127809;
+      cartItems[index].marketObject = {
+        id: item.Market[0].ids.database_table_127809,
+        value: item.Market[0].value
+      };
+    });
+
+    // sort cart items
+    cartItems = _.sortBy(cartItems, 'order');
+    cartItems = _.sortBy(cartItems, 'supplierName');
+    cartItems = _.sortBy(cartItems, 'marketName');
+
+    // render cart items
+    let cartItemsContainer = document.querySelector('div#cartItemsContainer');
+    cartItemsContainer.innerHTML = '';
+    _.uniq(_.pluck(cartItems,'marketID')).forEach(marketID => {
+      let thisMarket_cartItems = cartItems.filter(item => {
+        return item.marketObject.id == marketID;
+      });
+
+      let marketDiv = document.createElement('div');
+      marketDiv.className = 'marketDiv';
+      let marketTitle = document.createElement('div');
+      marketTitle.className = 'marketTitle';
+      marketTitle.textContent = thisMarket_cartItems[0].marketName;
+      marketDiv.appendChild(marketTitle);
+      let marketContent = document.createElement('div');
+      marketContent.className = 'marketContent';
+
+      _.uniq(_.pluck(thisMarket_cartItems,'supplierID')).forEach(supplierID => {
+        let thisSupplier_cartItems = thisMarket_cartItems.filter(item => {
+          return item.supplierObject.id == supplierID;
+        });
+
+        let supplierDiv = document.createElement('div');
+        supplierDiv.className = 'supplierDiv';
+        let supplierTitle = document.createElement('div');
+        supplierTitle.className = 'supplierTitle';
+        supplierTitle.textContent = thisSupplier_cartItems[0].supplierName;
+        supplierDiv.appendChild(supplierTitle);
+        let supplierContent = document.createElement('div');
+        supplierContent.className = 'supplierContent';
+
+        thisSupplier_cartItems.forEach(item => {
+          let cartItemDiv = document.createElement('div');
+          cartItemDiv.classList.add('cartItem');
+          let cartItemCol1 = document.createElement('div');
+          cartItemCol1.classList.add('cartItemCol1');
+          let cartItemLine1 = document.createElement('p');
+          let cartItemLine2 = document.createElement('p');
+          let cartItemQty = document.createElement('span');
+          let cartItemPrice = document.createElement('span');
+          let cartItemExtPrice = document.createElement('span');
+          let cartItemCol2 = document.createElement('div');
+          cartItemCol2.classList.add('cartItemCol2');
+          let cartItemTrashIcon = document.createElement('img');
+          cartItemTrashIcon.classList.add('cartItemTrashBtn');
+
+          cartItemDiv.setAttribute('id','basketItemID-'+item.id);
+          cartItemLine1.textContent = item['Specific Item'][0].value;
+          cartItemQty.textContent = item['Basket Quantity'];
+          cartItemPrice.textContent = item['Price (AgG)'] + ' each';
+          cartItemExtPrice.textContent = item['Extended Price (AgG)'] + ' AgG';
+          cartItemTrashIcon.setAttribute('src', '../images/icons8-delete-24.png');
+          cartItemTrashIcon.addEventListener('click', function () {
+            let basketItemID = this.parentNode.parentNode.id;
+            basketItemID = basketItemID.slice('basketItemID-'.length);
+            deleteCartItem(basketItemID);
+          });
+          
+          cartItemLine2.appendChild(cartItemQty);
+          cartItemLine2.innerHTML += ' @ ';
+          cartItemLine2.appendChild(cartItemPrice);
+          cartItemLine2.innerHTML += ' = ';
+          cartItemLine2.appendChild(cartItemExtPrice);
+          cartItemCol1.appendChild(cartItemLine1);
+          cartItemCol1.appendChild(cartItemLine2);
+          cartItemDiv.appendChild(cartItemCol1);
+          cartItemDiv.appendChild(cartItemCol2);
+          cartItemCol2.appendChild(cartItemTrashIcon);
+          supplierContent.appendChild(cartItemDiv);
+        });
+        supplierDiv.appendChild(supplierContent);
+        marketContent.appendChild(supplierDiv);
+      });
+      marketDiv.appendChild(marketContent);
+      cartItemsContainer.appendChild(marketDiv);
+    });
+  }
+  renderCart();
+
+</script>
+
+<script id="deleteCartItem">
+  async function deleteCartItem_inDB(cartItemID) {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "DELETE",
+        headers: headers,
+        redirect: "follow",
+        body: JSON.stringify({
+          "User ID": JSON.parse(getCookie('user')).id,
+          "Password": JSON.parse(getCookie('user')).Password,
+          "Basket-Item ID": Number(cartItemID)
+        })
+    };
+
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+      + 'https://bgschust.app.n8n.cloud/webhook/1070ed1c-34f9-42ae-92bd-41ee32e12b22';
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function deleteCartItem(cartItemID) {
+    let querySelection = 'div#'+'basketItemID-'+cartItemID;
+    let cartItemDiv = document.querySelector(querySelection);
+    let supplierContent = cartItemDiv.parentNode;
+    let marketContent = supplierContent.parentNode.parentNode;
+
+    let res = await deleteCartItem_inDB(cartItemID);
+
+    cartItemDiv.remove();
+    if(!supplierContent.childNodes.length) {
+      supplierContent.parentNode.remove();
+    }
+    if(!marketContent.childNodes.length) {
+      marketContent.parentNode.remove();
+    }
+
+    renderCart();
+  }
+</script>
+
+<script id="submitOrder">
+  async function submitOrderRequest(requestOptions) {
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://n8n.cropify.org/webhook/7a7f95c7-ca31-47d3-9412-f440f1f8cd93';
+    try {
+      let res = await fetch(url, requestOptions);
+      res = await res.json();
+      return await res;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  document.querySelector('button#submitOrder').addEventListener('click', async function submitOrder(){
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "POST",
+        headers: headers,
+        redirect: "follow",
+    };
+    
+    let statusBlock = document.querySelector('div#statusBlock');
+    if(getCookie('user')) { // implement basic validation check here
+      let body = {
+        "User ID": JSON.parse(getCookie('user')).id,
+        "Password": JSON.parse(getCookie('user')).Password,
+      };
+      requestOptions.body = JSON.stringify(body);
+      
+      statusBlock.textContent = "Please wait.";
+      let response = await submitOrderRequest(requestOptions);
+      statusBlock.textContent = await JSON.stringify(response.statusMessage);
+    } else {
+      statusBlock.textContent = "Please log in or contact support.";
+    }
+  });
+</script>
+
+</html>

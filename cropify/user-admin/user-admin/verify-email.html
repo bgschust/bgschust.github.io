@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify - Verify Email</title>
+  <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../images/favicon.png">
+  <link rel="stylesheet" href="../public/style.css">
+  <link rel="stylesheet" href="../components/components.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="../components/functions.js"></script>
+  <script src="../components/components.js"></script>
+</head>
+<body>
+
+  <div class="component topNavigation"></div>
+
+  <div id="mainContainer">
+
+    <h2>Email Verification</h2>
+    <div id="statusBlock">Checking your email verification code...</div>
+
+    <div class="blankSpace"></div>
+
+  </div>
+
+  <div class="component footer"></div>
+
+</body>
+
+<script id="verifyEmail">
+  const urlParams = new URLSearchParams(window.location.search);
+  let verificationCode = urlParams.get('verificationCode');
+  let userID = urlParams.get('userID');
+
+  var headers_verifyEmail = new Headers();
+  headers_verifyEmail.append("Content-Type", "application/json");
+  //headers_verifyEmail.append("Origin", "http://www.cropify.org");
+  var requestOptions_verifyEmail = {
+      method: "PUT",
+      headers: headers_verifyEmail,
+      redirect: "follow"
+  };
+  let body = {
+    verificationCode: verificationCode,
+    userID: userID
+  };
+  requestOptions_verifyEmail.body = JSON.stringify(body);
+
+  async function verifyEmail() {
+    let url = 'https://hammerhead.cropify.org/cors-proxy/'+ // CORS proxy server
+      'https://bgschust.app.n8n.cloud/webhook/b52a4af5-ba54-4805-894c-8595b6cd946a';
+    try {
+        let res = await fetch(url, requestOptions_verifyEmail);
+        console.log(res);
+        res = await res.text();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function showResponse() {
+    let statusBlock = document.querySelector('div#statusBlock');
+    statusBlock.textContent = 'Please wait.';
+    let response = await verifyEmail();
+    statusBlock.textContent = response;
+    if (response == 'Verified.') {
+      statusBlock.innerHTML = "Success! Please proceed to <a href='./log-in.html'>log in</a>.";
+    } else if (response == 'Wrong verification code.') {
+      statusBlock.textContent = 'Your email address could not be verified. Please try again.'
+    }
+  }
+  showResponse();
+
+</script>
+
+</html>
