@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify: My Organizations</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../images/favicon.png">
+  <link rel="stylesheet" href="../public/style.css">
+  <link rel="stylesheet" href="../components/components.css">
+  <link rel="stylesheet" href="./my-organizations.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="../components/functions.js"></script>
+  <script src="../components/components.js"></script>
+</head>
+<body>
+
+  <div class="component topNavigation"></div>
+
+  <div id="mainContainer">
+
+    <h2>My Organizations</h2>
+    <table id="myOrganizations">
+    </table>
+    <br>
+
+    <div class="centeredContent">
+      <h3>Add an Organization</h3>
+      <div class="formBlock">
+        <label for="name">Organization Name</label>
+        <input type="text" id="name">
+        <label for="description">Description</label>
+        <textarea id="description"></textarea>
+        <br><br>
+        <label for="retailStreetAddress">Retail Address</label>
+        <input type="text" id="retailStreetAddress"><br>
+        <div>
+          <div style="display:inline-block;width:52%;">
+            <label for="retailAddress_city">City</label>
+            <input type="text" id="retailAddress_city">
+          </div>
+          <div style="display:inline-block;width:20%;">
+            <label for="retailAddress_state">State</label>
+            <select name="state" id="retailAddress_state">
+              <option value="NC" selected>NC</option>
+            </select>
+          </div>
+          <div style="display:inline-block;width:25%;">
+            <label for="retailAddress_zipCode">Zip Code</label>
+            <input type="text" id="retailAddress_zipCode">
+          </div>
+        </div><br>
+        <label for="receivingStreetAddress">Receiving Address</label>
+        <input type="text" id="receivingStreetAddress"><br>
+        <div>
+          <div style="display:inline-block;width:52%;">
+            <label for="receivingAddress_city">City</label>
+            <input type="text" id="receivingAddress_city">
+          </div>
+          <div style="display:inline-block;width:20%;">
+            <label for="receivingAddress_state">State</label>
+            <select name="receivingAddress_state" id="receivingAddress_state">
+              <option value="NC" selected>NC</option>
+            </select>
+          </div>
+          <div style="display:inline-block;width:25%;">
+            <label for="receivingAddress_zipCode">Zip Code</label>
+            <input type="text" id="receivingAddress_zipCode">
+          </div>
+        </div><br>
+        <input type="checkbox" id="termsConditions">
+        <label for="termsConditions" style="display:inline;">I agree to the <a href="../files/org-terms-conditions.html" target="_blank">organization terms & conditions</a>.</label>
+        <br><br>
+
+        <div id="statusBlock"></div>
+        <button class="submitForm submitOrganization">Submit</button>
+      </div>
+    </div>
+
+    <div class="blankSpace"></div>
+
+  </div>
+
+  <div class="component footer"></div>
+
+</body>
+
+<script id="getMyOrganizations">
+  async function getMyOrganizations() {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+
+    let queryParams = [
+      {"User ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password}
+    ];
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook/e7a482da-c2a6-4631-8728-a349c7c07290',
+    queryParams);
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderMyOrganizations() {
+    let response = await getMyOrganizations();
+
+    let organizationList = document.querySelector('table#myOrganizations');
+    if (!response.results) {
+      organizationList.textContent = response.statusMessage;
+    } else {
+      organizationList.innerHTML = '';
+      response = response.results;
+      response.forEach(record => {
+        let tr = document.createElement('tr');
+        let td1 = document.createElement('td');
+        let p1 = document.createElement('p');
+        let p2 = document.createElement('p');
+        let p3 = document.createElement('p');
+        let p4 = document.createElement('p');
+        let td2 = document.createElement('td');
+        let trashIcon = document.createElement('img');
+
+        tr.setAttribute('id', 'organizationID-' + record.field_868838);
+        p1.textContent = record.field_825342; // name
+        p1.classList.add('organizationName');
+        p2.textContent = record.field_825343; // description
+        td1.classList.add('col1');
+        td1.appendChild(p1);
+        td1.appendChild(p2);
+        if(record.field_868567) {
+          p3.textContent = "Retail address: "
+            + record.field_868567 + ", "
+            + record.field_868568 + ", "
+            + record.field_868569 + ", "
+            + record.field_868570;
+          td1.appendChild(p3);
+        }
+        if(record.field_868571) {
+          p4.textContent = "Receiving address: "
+            + record.field_868571 + ", "
+            + record.field_868572 + ", "
+            + record.field_868573 + ", "
+            + record.field_868574;
+          td1.appendChild(p4);
+        }
+        trashIcon.setAttribute('src','../images/icons8-delete-24.png');
+        td2.classList.add('col2');
+        tr.classList.add('organizationRow');
+        trashIcon.classList.add('organizationTrashBtn');
+        trashIcon.addEventListener('click', function() {
+          let organizationID = this.parentNode.parentNode.id;
+          organizationID = organizationID.slice('organizationID-'.length);
+          deleteOrganization(organizationID);
+        });
+        
+        td2.appendChild(trashIcon);
+        tr.appendChild(td1);
+        tr.appendChild(td2);
+        organizationList.appendChild(tr);
+      });
+      console.log(response);
+    }
+  }
+  if(getCookie('user')) {
+    renderMyOrganizations();
+  }
+</script>
+
+<script id="deleteOrganization">
+  async function deleteOrganization_inDB(organizationID) {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "DELETE",
+        headers: headers,
+        redirect: "follow",
+        body: JSON.stringify({
+          "User ID": JSON.parse(getCookie('user')).id,
+          "Password": JSON.parse(getCookie('user')).Password,
+          "Organization ID": Number(organizationID)
+        })
+    };
+
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+      + 'https://bgschust.app.n8n.cloud/webhook/a54c7249-46b3-4c7d-b7ca-41e1f7d29969';
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function deleteOrganization(organizationID) {
+    let querySelection = 'tr#'+'organizationID-'+organizationID;
+    let organizationRow = document.querySelector(querySelection);
+    let res = await deleteOrganization_inDB(organizationID);
+    organizationRow.remove();
+  }
+</script>
+
+<script id="submitOrganization">
+  async function submitOrganizationRequest(requestOptions) {   
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook/442c3f8d-27ef-42e9-82b7-99d900e16cd9';
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  document.querySelector('button.submitOrganization').addEventListener('click', function submitOrganization(){
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "POST",
+        headers: headers,
+        redirect: "follow",
+    };
+    
+    let statusBlock = document.querySelector('div#statusBlock');
+    let name = document.querySelector('input#name').value;
+    let description = document.querySelector('textarea#description').value;
+    let retailStreetAddress= document.querySelector('input#retailStreetAddress').value;
+    let retailAddress_city = document.querySelector('input#retailAddress_city').value;
+    let retailAddress_state = document.querySelector('select#retailAddress_state').value;
+    let retailAddress_zipCode = document.querySelector('input#retailAddress_zipCode').value;
+    let receivingStreetAddress= document.querySelector('input#receivingStreetAddress').value;
+    let receivingAddress_city = document.querySelector('input#receivingAddress_city').value;
+    let receivingAddress_state = document.querySelector('select#receivingAddress_state').value;
+    let receivingAddress_zipCode = document.querySelector('input#receivingAddress_zipCode').value;
+    let termsConditions = document.querySelector('input#termsConditions').checked;
+    if(name
+      && getCookie('user')
+      && termsConditions
+      && retailStreetAddress
+      && retailAddress_city
+      && retailAddress_state == "NC"
+      && retailAddress_zipCode.length == 5) { // implement basic validation check here
+      let body = {
+        "User ID": JSON.parse(getCookie('user')).id,
+        "Password": JSON.parse(getCookie('user')).Password,
+        "Organization Name": name,
+        "Description": description,
+        "Retail Street Address": retailStreetAddress,
+        "Retail Address City": retailAddress_city,
+        "Retail Address State": retailAddress_state,
+        "Retail Address Zip Code": retailAddress_zipCode,
+        "Receiving Street Address": receivingStreetAddress,
+        "Receiving Address City": receivingAddress_city,
+        "Receiving Address State": receivingAddress_state,
+        "Receiving Address Zip Code": receivingAddress_zipCode,
+        "Terms & Conditions Acceptance": termsConditions
+      };
+      requestOptions.body = JSON.stringify(body);
+      async function showResponse() {
+        statusBlock.textContent = "Please wait.";
+        let response = await submitOrganizationRequest(requestOptions);
+        statusBlock.textContent = await JSON.stringify(response.statusMessage);
+        renderMyOrganizations();
+      }
+      showResponse();
+    } else {
+      statusBlock.textContent = "Check form errors.";
+    }
+  });
+</script>
+
+</html>

@@ -1,0 +1,92 @@
+div#thisGeneralItem {
+  margin-top: 30px;
+}
+
+div#thisGeneralItem>h4>img {
+  display: inline-block;
+  width: 20px;
+  cursor: pointer;
+  vertical-align: bottom;
+  margin-right: 12px;
+}
+
+div#thisGeneralItem>h4>img:hover {
+  opacity: 0.7;
+}
+
+span.generalItem_category {
+  font-weight: normal;
+  font-size: 0.8em;
+  margin-left: 10px;
+  background-color: var(--box-shadow);
+  padding: 4px 8px 4px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--grey-text);
+  color: var(--grey-text);
+}
+
+ul#marketItemList {
+  list-style-type: none;
+  padding-left: 10px;
+}
+
+ul#marketItemList>li>div.col1 {
+  display: inline-block;
+  width: 88%;
+}
+
+ul#marketItemList>li>div.col2 {
+  display: inline-block;
+  width: 10%;
+  text-align: right;
+}
+
+div.formBlock.marketItem {
+  display: grid;
+  column-gap: 8px;
+}
+
+div.formBlock.marketItem>div.availabilityProfile {
+  grid-column-start: 1;
+  grid-column-end: 3;
+  grid-row-start: 1;
+  grid-row-end: 1;
+}
+div.formBlock.marketItem>div.price {
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 2;
+  grid-row-end: 2;
+}
+div.formBlock.marketItem>div.qty {
+  grid-column-start: 2;
+  grid-column-end: 2;
+  grid-row-start: 2;
+  grid-row-end: 2;
+}
+
+ul#marketList {
+  list-style-type: none;
+  padding-left: 10px;
+}
+
+ul#marketList>li {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  padding: 4px 0px;
+}
+
+img.plusBtn {
+  display: inline-block;
+  margin-right: 10px;
+  cursor: pointer;
+}
+img.plusBtn:hover {
+  opacity: 0.8;
+}
+
+p.marketName {
+  display: inline-block;
+  margin: 0px 0px 0px 0px;
+}

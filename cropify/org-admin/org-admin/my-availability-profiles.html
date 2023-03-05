@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify: My Availability Profiles</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../images/favicon.png">
+  <link rel="stylesheet" href="../public/style.css">
+  <link rel="stylesheet" href="../components/components.css">
+  <link rel="stylesheet" href="./my-availability-profiles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="../components/functions.js"></script>
+  <script src="../components/components.js"></script>
+</head>
+<body>
+
+  <div class="component topNavigation"></div>
+
+  <div id="mainContainer">
+
+    <h2>My Availability Profiles</h2>
+    <div id="myAvailabilityProfiles"></div>
+    <br>
+
+    <div class="centeredContent">
+      <h3>Add an Availability Profile</h3>
+      <div class="formBlock">
+        <label for="profileName">Profile Name</label>
+        <input type="text" id="profileName" placeholder="Standard retail hours">
+        <br><br>
+        <label for="monday">Monday</label>
+        <input type="text" id="monday" placeholder="9am to 5pm">
+        <label for="tuesday">Tuesday</label>
+        <input type="text" id="tuesday" placeholder="9am to 5pm">
+        <label for="wednesday">Wednesday</label>
+        <input type="text" id="wednesday" placeholder="9am to 5pm">
+        <label for="thursday">Thursday</label>
+        <input type="text" id="thursday" placeholder="9am to 5pm">
+        <label for="friday">Friday</label>
+        <input type="text" id="friday" placeholder="9am to 5pm">
+        <label for="saturday">Saturday</label>
+        <input type="text" id="saturday" placeholder="9am to 5pm">
+        <label for="sunday">Sunday</label>
+        <input type="text" id="sunday" placeholder="9am to 5pm">
+        <br><br>
+        <label for="timeOff">Upcoming time off</label>
+        <textarea id="timeOff" placeholder="Tell people about your holidays..."></textarea>
+        <br><br>
+        <div id="statusBlock"></div>
+        <button class="submitForm submitAvailabilityProfile">Submit</button>
+      </div>
+    </div>
+
+    <div class="blankSpace"></div>
+
+  </div>
+
+  <div class="component footer"></div>
+
+</body>
+
+<script id="getMyAvailabilityProfiles">
+  async function getMyAvailabilityProfiles() {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+
+    let queryParams = [
+      {"User ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password}
+    ];
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook/0bc395d8-cd7b-414f-a4aa-8431eeb268ce',
+    queryParams);
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderMyAvailabilityProfiles() {
+    let response = await getMyAvailabilityProfiles();
+
+    let list = document.querySelector('div#myAvailabilityProfiles');
+    if (!response.results) {
+      list.textContent = response.statusMessage;
+    } else {
+      list.innerHTML = '';
+      response.results.forEach(record => {
+        let recordContainer = document.createElement('div');
+        let col1 = document.createElement('div');
+        let recordName = document.createElement('p');
+        let monday = document.createElement('p');
+        let tuesday = document.createElement('p');
+        let wednesday = document.createElement('p');
+        let thursday = document.createElement('p');
+        let friday = document.createElement('p');
+        let saturday = document.createElement('p');
+        let sunday = document.createElement('p');
+        let timeOff = document.createElement('p');
+        let col2 = document.createElement('div');
+        let trashIcon = document.createElement('img');
+
+        recordContainer.classList.add('recordContainer');
+        recordContainer.setAttribute('id', 'availabilityProfileID-' + record.field_870631);
+        col1.classList.add('col1');
+        recordName.classList.add('recordName');
+        recordName.textContent = record.field_870470;
+        monday.classList.add('hours');
+        tuesday.classList.add('hours');
+        wednesday.classList.add('hours');
+        thursday.classList.add('hours');
+        friday.classList.add('hours');
+        saturday.classList.add('hours');
+        sunday.classList.add('hours');
+        timeOff.classList.add('timeOff');
+        if (record.field_870489 == null) {
+          record.field_870489 = "Closed";
+        }
+        if (record.field_870490 == null) {
+          record.field_870490 = "Closed";
+        }
+        if (record.field_870491 == null) {
+          record.field_870491 = "Closed";
+        }
+        if (record.field_870492 == null) {
+          record.field_870492 = "Closed";
+        }
+        if (record.field_870493 == null) {
+          record.field_870493 = "Closed";
+        }
+        if (record.field_870494 == null) {
+          record.field_870494 = "Closed";
+        }
+        if (record.field_870497 == null) {
+          record.field_870497 = "Closed";
+        }
+        if (record.field_870471 == null) {
+          record.field_870471 = "None";
+        }
+        monday.innerHTML = "<span>Monday</span><br>"+record.field_870489;
+        tuesday.innerHTML = "<span>Tuesday</span><br>"+record.field_870490;
+        wednesday.innerHTML = "<span>Wednesday</span><br>"+record.field_870491;
+        thursday.innerHTML = "<span>Thursday</span><br>"+record.field_870492;
+        friday.innerHTML = "<span>Friday</span><br>"+record.field_870493;
+        saturday.innerHTML = "<span>Saturday</span><br>"+record.field_870494;
+        sunday.innerHTML = "<span>Sunday</span><br>"+record.field_870497;
+        timeOff.innerHTML = "<span>Upcoming days & time off</span><br>"+record.field_870471;
+        col2.classList.add('col2');
+        trashIcon.setAttribute('src','../images/icons8-delete-24.png');
+        trashIcon.classList.add('trashBtn');
+        trashIcon.addEventListener('click', function() {
+          let recordID = this.parentNode.parentNode.id;
+          recordID = recordID.slice('availabilityProfileID-'.length);
+          deleteAvailabilityProfile(recordID);
+        });
+        
+        col1.appendChild(recordName);
+        col1.appendChild(monday);
+        col1.appendChild(tuesday);
+        col1.appendChild(wednesday);
+        col1.appendChild(thursday);
+        col1.appendChild(friday);
+        col1.appendChild(saturday);
+        col1.appendChild(sunday);
+        col1.appendChild(timeOff);
+        col2.appendChild(trashIcon);
+        recordContainer.appendChild(col1);
+        recordContainer.appendChild(col2);
+        list.appendChild(recordContainer);
+      });
+    }
+  }
+  if(getCookie('user')) {
+    renderMyAvailabilityProfiles();
+  }
+</script>
+
+<script id="deleteAvailabilityProfile">
+  async function deleteAvailabilityProfile_inDB(recordID) {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "DELETE",
+        headers: headers,
+        redirect: "follow",
+        body: JSON.stringify({
+          "User ID": JSON.parse(getCookie('user')).id,
+          "Password": JSON.parse(getCookie('user')).Password,
+          "Availability Profile ID": Number(recordID)
+        })
+    };
+
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+      + 'https://bgschust.app.n8n.cloud/webhook/6b455cb9-0ebe-4215-b697-287640eb40d5';
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function deleteAvailabilityProfile(recordID) {
+    let querySelection = 'div#'+'availabilityProfileID-'+recordID;
+    let record = document.querySelector(querySelection);
+    let res = await deleteAvailabilityProfile_inDB(recordID);
+    record.remove();
+  }
+</script>
+
+<script id="submitAvailabilityProfile">
+  async function submitAvailabilityProfileRequest(requestOptions) {   
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook/c0571117-5717-44e5-9868-4236c7c61d24';
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  document.querySelector('button.submitAvailabilityProfile').addEventListener('click', function submitAvailabilityProfile(){
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "POST",
+        headers: headers,
+        redirect: "follow",
+    };
+    
+    let statusBlock = document.querySelector('div#statusBlock');
+    let availabilityProfileName = document.querySelector('input#profileName').value;
+    let monday = document.querySelector('input#monday').value;
+    let tuesday = document.querySelector('input#tuesday').value;
+    let wednesday = document.querySelector('input#wednesday').value;
+    let thursday = document.querySelector('input#thursday').value;
+    let friday = document.querySelector('input#friday').value;
+    let saturday = document.querySelector('input#saturday').value;
+    let sunday = document.querySelector('input#sunday').value;
+    let timeOff = document.querySelector('textarea#timeOff').value;
+    if(availabilityProfileName
+      && getCookie('user')) { // implement basic validation check here
+      let body = {
+        "User ID": JSON.parse(getCookie('user')).id,
+        "Password": JSON.parse(getCookie('user')).Password,
+        "Availability Profile Name": availabilityProfileName,
+        "Monday": monday,
+        "Tuesday": tuesday,
+        "Wednesday": wednesday,
+        "Thursday": thursday,
+        "Friday": friday,
+        "Saturday": saturday,
+        "Sunday": sunday,
+        "Time Off": timeOff
+      };
+      requestOptions.body = JSON.stringify(body);
+      async function showResponse() {
+        statusBlock.textContent = "Please wait.";
+        let response = await submitAvailabilityProfileRequest(requestOptions);
+        statusBlock.textContent = await JSON.stringify(response.statusMessage);
+        renderMyAvailabilityProfiles();
+      }
+      showResponse();
+    } else {
+      statusBlock.textContent = "Check form errors.";
+    }
+  });
+</script>
+
+</html>

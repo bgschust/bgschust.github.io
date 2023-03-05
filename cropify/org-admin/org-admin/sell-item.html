@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify: Sell an Item</title>
+  <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../images/favicon.png">
+  <link rel="stylesheet" href="../public/style.css">
+  <link rel="stylesheet" href="../components/components.css">
+  <link rel="stylesheet" href="./sell-item.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="../components/functions.js"></script>
+  <script src="../components/components.js"></script>
+</head>
+<body>
+
+  <div class="component topNavigation"></div>
+
+  <div id="mainContainer">
+
+    <div id="listingsSalesOrders">
+      <div class="selected">
+        Listings
+      </div>
+      <div>
+        <a href="../user-admin/orders.html">Orders</a>
+      </div>
+      <div>
+        <a href="../org-admin/sales.html">Sales</a>
+      </div>
+    </div>
+
+    <div id="thisGeneralItem">
+      <h4>
+        <img src="../images/icons8-left-50.png" alt="Back Arrow">
+        <span>Name not Found</span>
+        <span class="generalItem_category">Category not Found</span>
+      </h4>
+      <p>No description found.</p>
+    </div>
+
+    <div class="centeredContent">
+      <h3>Add a Specific Item</h3>
+      <p>This will be listed under the current general item.</p>
+      <div class="formBlock">
+        <div id="specificItem">
+          <label for="name">Item Name</label>
+          <input type="text" id="name"><br>
+          <label for="shortDescription">Short Description</label>
+          <textarea type="text" id="shortDescription"></textarea><br>
+          <label for="supplyingBusiness">Supplying Business</label>
+          <select id="supplyingBusiness">
+            <option value="null">No business found.</option>
+          </select>
+
+          <h4>Market Items</h4>
+          <ul id="marketItemList"></ul>
+
+          <h4>Markets</h4>
+          <ul id="marketList"></ul>
+          <br>
+          <div id="statusBlock"></div>
+          <button id="submitSpecificItem">Submit</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="blankSpace"></div>
+
+  </div>
+
+  <div class="component footer"></div>
+
+</body>
+
+<script id="initialize">
+  const urlParams = new URLSearchParams(window.location.search);
+  let generalItem_id = urlParams.get('generalItem_id');
+
+  document.querySelector('div#thisGeneralItem>h4>img').addEventListener('click', function goBack(){
+    window.location.href = '../public/specific-items.html' + '?generalItem_id=' + generalItem_id;
+  });
+
+  let generalItem_default = {"id":5,"order":"3.99999999999999999999","Name":"Tomato","Short Description":"","Active":false,"Specific Items":[{"id":6,"value":"[Demo] Canned Tomato"}],"Specific Item Count":"1","Group":[{"ids":{"database_table_126754":430},"value":"Edible Harvests"}],"Category":[{"id":498,"value":"Vegetables"}],"Users":[{"ids":{"database_table_4390":4,"database_table_6844":6},"value":"Jeffrey"}]};
+
+  var headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", "Token t48tRPtNQccyc6Q65klBDEP1QJqkwXw0");
+  var requestOptions = {
+      method: "GET",
+      headers: headers,
+      redirect: "follow",
+  };
+</script>
+
+<script id="generalItem">
+  async function getGeneralItem() {
+
+    let queryParams = [
+      {"user_field_names": true}
+    ];
+    
+    let url = buildURL(
+      'https://api.baserow.io/api/database/rows/table/6842/' + generalItem_id + '/', 
+      queryParams
+    );
+
+    try {
+        let resGeneralItem = await fetch(url, requestOptions);
+        resGeneralItem = await resGeneralItem.json();
+        return await resGeneralItem;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  let generalItem = async function renderGeneralItem() {
+    let generalItem = {};
+    generalItem = await getGeneralItem();
+    
+    document.querySelectorAll('div#thisGeneralItem>h4>span')[0].textContent = generalItem.Name;
+    document.querySelectorAll('div#thisGeneralItem>h4>span')[1].textContent = 
+      generalItem.Group[0].value + ': ' + generalItem.Category[0].value;
+    document.querySelector('div#thisGeneralItem>p').textContent = generalItem['Short Description'];
+
+    return generalItem;
+  }();
+</script>
+
+<script id="getMyOrganizations">
+  async function getMyOrganizations() {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+
+    let queryParams = [
+      {"User ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password}
+    ];
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook/e7a482da-c2a6-4631-8728-a349c7c07290',
+    queryParams);
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderMyOrganizations() {
+    let response = await getMyOrganizations();
+
+    let organizationList = document.querySelector('select#supplyingBusiness');
+    if (!response.results) {
+      organizationList.textContent = response.statusMessage;
+    } else {
+      organizationList.innerHTML = '';
+      response.results.forEach(record => {
+        let option = document.createElement('option');
+        option.textContent = record['field_825342']; // Name
+        option.value = record['field_868838']; // organization ID
+        organizationList.appendChild(option);
+      });
+    }
+  }
+  if(getCookie('user')) {
+    renderMyOrganizations();
+  }
+</script>
+
+<script id="myMarketItems">
+  async function getMyMarketItems() {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+
+    let queryParams = [
+      {"User ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password}
+    ];
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook/fdb5ddae-519e-4b13-a1fc-39c614136e90',
+    queryParams);
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderMyMarketItems() {
+    let response = await getMyMarketItems();
+
+    let list = document.querySelector('ul#marketItemList');
+    if (!response.results) {
+      list.textContent = response.statusMessage;
+    } else {
+      list.innerHTML = '';
+      response.results.forEach(record => {
+        let li = document.createElement('li');
+        let col1 = document.createElement('div');
+        let p1 = document.createElement('p');
+        let col2 = document.createElement('div');
+        let deleteBtn = document.createElement('img');
+        let formBlock = document.createElement('div');
+        let divAvailabilityProfile = document.createElement('div');
+        let labelAvailabilityProfile = document.createElement('label');
+        let selectAvailabilityProfile = document.createElement('select');
+        let divPrice = document.createElement('div');
+        let labelPrice = document.createElement('label');
+        let inputPrice = document.createElement('input');
+        let divQty = document.createElement('div');
+        let labelQty = document.createElement('label');
+        let inputQty = document.createElement('input');
+
+        li.id = 'marketItemID-'+record.field_830522;
+        col1.classList.add('col1');
+        p1.textContent = record['field_825412'][0]['value']; // Market name
+        col2.classList.add('col2');
+        deleteBtn.setAttribute('src','../images/icons8-delete-24.png');
+        deleteBtn.classList.add('iconBtn');
+        deleteBtn.addEventListener('click', function(){
+          let marketItemID = this.parentNode.parentNode.id.slice('marketItemID-'.length);
+          deleteMarketItem(marketItemID);
+        });
+        formBlock.classList.add('formBlock');
+        formBlock.classList.add('marketItem');
+        divAvailabilityProfile.classList.add('availabilityProfile');
+        labelAvailabilityProfile.textContent = 'Availability';
+        divPrice.classList.add('price');
+        inputPrice.setAttribute('type', 'number');
+        inputPrice.value = 1.00;
+        inputPrice.step = 0.01;
+        labelPrice.textContent = 'Price (AgG)';
+        divQty.classList.add('qty');
+        inputQty.setAttribute('type', 'number');
+        inputQty.value = 1.00;
+        labelQty.textContent = 'Quantity';
+
+        col1.appendChild(p1);
+        col2.appendChild(deleteBtn);
+        li.appendChild(col1);
+        li.appendChild(col2);
+        divAvailabilityProfile.appendChild(labelAvailabilityProfile);
+        divAvailabilityProfile.appendChild(selectAvailabilityProfile);
+        divPrice.appendChild(labelPrice);
+        divPrice.appendChild(inputPrice);
+        divQty.appendChild(labelQty);
+        divQty.appendChild(inputQty);
+        formBlock.appendChild(divAvailabilityProfile);
+        formBlock.appendChild(divPrice);
+        formBlock.appendChild(divQty);
+        li.appendChild(formBlock);
+        list.appendChild(li);
+      });
+    }
+    if(response.statusMessage == "Market items found.") {
+      renderMyAvailabilityProfiles();
+    }
+    return response;
+  }
+  if(getCookie('user')) {
+    renderMyMarketItems();
+  }
+</script>
+
+<script id="deleteMarketItem">
+  async function deleteMarketItem_inDB(recordID) {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "DELETE",
+        headers: headers,
+        redirect: "follow",
+        body: JSON.stringify({
+          "User ID": JSON.parse(getCookie('user')).id,
+          "Password": JSON.parse(getCookie('user')).Password,
+          "Market Item ID": Number(recordID)
+        })
+    };
+
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+      + 'https://bgschust.app.n8n.cloud/webhook/80e04338-14d8-4e2b-8a70-71e95953d3cf';
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function deleteMarketItem(recordID) {
+    let querySelection = 'li#'+'marketItemID-'+recordID;
+    let record = document.querySelector(querySelection);
+    let res = await deleteMarketItem_inDB(recordID);
+    if(res.statusMessage == "Market item deleted.") {
+      record.remove();
+    } 
+  }
+</script>
+
+<script id="getMyAvailabilityProfiles">
+  async function getMyAvailabilityProfiles() {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+
+    let queryParams = [
+      {"User ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password}
+    ];
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook/0bc395d8-cd7b-414f-a4aa-8431eeb268ce',
+    queryParams);
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderMyAvailabilityProfiles() {
+    let response = await getMyAvailabilityProfiles();
+
+    if (!response.results) {
+      alert("Please add an availability profile under your profile.");
+    } else {
+      document.querySelectorAll('div.availabilityProfile>select').forEach(function(select) {
+        select.innerHTML = '';
+        response.results.forEach(record => {
+          let option = document.createElement('option');
+          option.textContent = record.field_870470;
+          option.value = 'availabilityProfile-'+record.field_870631;
+          select.appendChild(option);
+        });
+      });
+    }
+  }
+</script>
+
+<script id="markets">
+  async function getMarkets() {
+    var headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    headers.append("Authorization", "Token t48tRPtNQccyc6Q65klBDEP1QJqkwXw0");
+    var requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+    
+    let queryParams = [
+      {"user_field_names": true},
+      {"size": 200},
+      {"filter__field_875760__single_select_equal": 405899}
+      //{"include": "Name,Short Description,Active,Specific Item Count,Group,Category"}
+    ];
+  
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/'
+      + 'https://api.baserow.io/api/database/rows/table/127809/',
+      queryParams
+    );
+  
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderMarkets() {
+    let response = await getMarkets();
+
+    let list = document.querySelector('ul#marketList');
+    let marketIDList = [];
+    response.results.forEach(record => {
+      let listItem = document.createElement('li');
+      let imgPlus = document.createElement('img');
+      let p1 = document.createElement('p');
+      
+      listItem.id = 'marketID-'+record['ID'];
+      imgPlus.setAttribute('src','../images/icons8-plus-24.png');
+      imgPlus.classList.add('plusBtn');
+      imgPlus.addEventListener('click', function() {
+        let marketID = Number(this.parentNode.id.slice('marketID-'.length));
+        submitMarketItem(marketID);
+      })
+      p1.textContent = record.Name;
+      p1.classList.add('marketName');
+      
+      listItem.appendChild(imgPlus);
+      listItem.appendChild(p1);
+      list.appendChild(listItem);
+    });
+  }
+  renderMarkets();
+</script>
+
+<script id="submitMarketItem">
+  async function submitMarketItemRequest(requestOptions) {   
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook/bfffb6c4-c28c-46db-ae46-7df7b5f86278';
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function submitMarketItem(marketID){
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "POST",
+        headers: headers,
+        redirect: "follow",
+    };
+    
+    if(getCookie('user')) { // implement basic validation check here
+      let body = {
+        "User ID": JSON.parse(getCookie('user')).id,
+        "Password": JSON.parse(getCookie('user')).Password,
+        "Market ID": marketID
+      };
+      requestOptions.body = JSON.stringify(body);
+      let response = await submitMarketItemRequest(requestOptions);
+      if(response.statusMessage == "Market item successfully posted.") {
+        renderMyMarketItems();
+      }
+    }
+  }
+</script>
+
+<script id="submitSpecificItem">
+  async function submitSpecificItemRequest(requestOptions) {   
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook/75b65278-ce3c-4d96-a3f8-f3853c0cd008';
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  document.querySelector('button#submitSpecificItem').addEventListener('click', async function submitSpecificItem(){
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "POST",
+        headers: headers,
+        redirect: "follow",
+    };
+    
+    let statusBlock = document.querySelector('div#statusBlock');
+    let itemName = document.querySelector('input#name').value;
+    let shortDescription = document.querySelector('textarea#shortDescription').value;
+    let supplier = document.querySelector('select#supplyingBusiness').value;
+
+    if(getCookie('user')
+      && itemName.length >= 4
+      && shortDescription.length >= 30
+      && typeof Number(generalItem_id) == 'number'
+      && supplier) 
+    { // implement basic validation here
+      let body = {
+        "User ID": JSON.parse(getCookie('user')).id,
+        "Password": JSON.parse(getCookie('user')).Password,
+        "General Item ID": Number(generalItem_id),
+        "Specific Item Name": itemName,
+        "Short Description": shortDescription,
+        "Supplier": supplier
+      };
+      requestOptions.body = JSON.stringify(body);
+      statusBlock.textContent = "Please wait.";
+      let response = await submitSpecificItemRequest(requestOptions);
+      editMarketItems(response.item.id);
+      statusBlock.textContent = JSON.stringify(response.statusMessage);
+      if(statusBlock.textContent == "Specific item successfully posted.") {
+        // window.location.href = '';
+      }
+    } else {
+      statusBlock.textContent = "Check form errors.";
+    }
+  });
+</script>
+
+<script id="editMarketItems">
+  async function editMarketItemsRequest(requestOptions) {   
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook/63aa8b8d-8580-41eb-b1f0-e339ea9a5b81';
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function editMarketItems(specificItemID){
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    let requestOptions = {
+        method: "PUT",
+        headers: headers,
+        redirect: "follow",
+    };
+    
+    let statusBlock = document.querySelector('div#statusBlock');
+    let marketItems_nodes = document.querySelector('ul#marketItemList').childNodes;
+    let marketItems = [];
+    marketItems_nodes.forEach(function(marketItemNode) {
+      let marketItem = {};
+      marketItem["Specific Item ID"] = specificItemID;
+      let marketItemID = Number(marketItemNode.id.slice('marketItemID-'.length));
+      marketItem["Market Item ID"] = marketItemID;
+      let availabilityProfileID = Number(marketItemNode.querySelector('div.availabilityProfile>select').value.slice('availabilityProfile-'.length));
+      marketItem["Availability Profile ID"] = availabilityProfileID;
+      let price = Number(marketItemNode.querySelector('div.price>input').value);
+      marketItem["Price (AgG)"] = price;
+      let qty = Number(marketItemNode.querySelector('div.qty>input').value);
+      marketItem["Quantity"] = qty;
+      marketItems.push(marketItem);
+    });
+    //console.log(marketItems);
+    let body = {
+      "User ID": JSON.parse(getCookie('user')).id,
+      "Password": JSON.parse(getCookie('user')).Password,
+      "Market Items": marketItems
+    };
+    requestOptions.body = JSON.stringify(body);
+    if(getCookie('user')) {
+      statusBlock.textContent = "Please wait.";
+      let response = await editMarketItemsRequest(requestOptions);
+      statusBlock.textContent = JSON.stringify(response.statusMessage);
+      if(statusBlock.textContent == "Market items successfully posted.") {
+        // window.location.href = '';
+      }
+    } else {
+      statusBlock.textContent = "You are not logged in.";
+    }
+  };
+</script>
+
+</html>

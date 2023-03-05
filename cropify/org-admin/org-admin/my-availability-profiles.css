@@ -1,0 +1,56 @@
+div#myAvailabilityProfiles {
+  display: block;
+}
+
+div.recordContainer {
+  display: grid;
+  margin-bottom: 0.4em;
+}
+
+div.col1 {
+  /*display: grid;*/
+  border: 0px solid black;
+  grid-column-start: 1;
+  grid-column-end: 5;
+}
+
+p.recordName {
+  font-weight: bold;
+  display: block;
+  margin: 0em 0em;
+}
+
+p.hours {
+  display: inline-block;
+  margin: 0.2em 1em 0.2em 0em;
+}
+
+p.hours>span {
+  color: var(--dark-grey-text);
+}
+
+p.timeOff {
+  display: block;
+  margin: 0.2em 0em;
+}
+
+p.timeOff>span {
+  color: var(--dark-grey-text);
+}
+
+div.col2 {
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  border: 0px solid black;
+  grid-column-start: 6;
+  grid-column-end: 6;
+}
+
+img.trashBtn {
+  cursor: pointer;
+}
+
+img.trashBtn:hover {
+  opacity: 0.7;
+}
