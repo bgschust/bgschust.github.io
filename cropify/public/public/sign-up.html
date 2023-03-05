@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify - Sign Up</title>
+  <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../images/favicon.png">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="../components/components.css">
+  <link rel="stylesheet" href="./sign-up.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="../components/functions.js"></script>
+  <script src="../components/components.js"></script>
+</head>
+<body>
+
+  <div class="component topNavigation"></div>
+
+  <div id="mainContainer">
+    
+    <div class="centeredContent">
+
+      <h2>Sign Up</h2>
+      <h3>User Registration</h3>
+
+      <div class="formBlock">
+        
+        <label for="email">Email Address</label>
+        <input type="text" id="email"><br>
+        <label for="password">Password</label>
+        <input type="password" id="password"><br>
+        <label for="passwordConfirmation">Confirm Password</label>
+        <input type="password" id="passwordConfirmation"><br>
+        <div id="passwordValidationBlock"></div>
+        <div>
+          <div style="display:inline-block;">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName">
+          </div>
+          <div style="display:inline-block;">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName">
+          </div>
+        </div>
+        <label for="zipcode">Zipcode</label>
+        <input type="text" id="zipcode"><br>
+        <input type="checkbox" id="termsConditions">
+        <label for="termsConditions">I accept the <a href="../files/terms-conditions.html" target="_blank">terms & conditions</a>.</label><br><br>
+
+        <div id="statusBlock"></div>
+        <button class="submitForm registerUser">Register</button>
+
+      </div>
+
+      <p>
+        If you already have an account, <br>
+        you can <a href="../user-admin/log-in.html">log in</a>.
+      </p>
+
+    </div>
+
+    <div class="blankSpace"></div>
+
+  </div>
+
+</body>
+
+<script id="validation">
+  let passwordValidationStatus = 'invalid';
+
+  document.querySelector('input#password').addEventListener('input', validatePassword);
+  document.querySelector('input#passwordConfirmation').addEventListener('input', validatePassword);
+  function validatePassword() {
+    let passwordValidationBlock = document.querySelector('div#passwordValidationBlock');
+    passwordValidationBlock.classList.add('validationBlock');
+
+    let password = document.querySelector('input#password');
+    let passwordConfirmation = document.querySelector('input#passwordConfirmation');
+    let regEx = /^[0-9a-zA-Z]+$/;
+
+    if (this.value.match(regEx) 
+        && this.value.length <= 32 
+        && this.value.length >=8 
+        && password.value == passwordConfirmation.value) {
+      passwordValidationStatus = 'valid';
+      passwordValidationBlock.setAttribute('style','display:none;');
+    } else {
+      passwordValidationBlock.setAttribute('style','display:inherit;');
+      passwordValidationBlock.innerHTML = 'Invalid password: <br>';
+    }
+
+    if(!this.value.match(regEx)) {
+      passwordValidationStatus = 'invalid';
+      let alphanumericStatus = document.createElement('p');
+      alphanumericStatus.setAttribute('id','passwordValidation_alphanumericStatus');
+      alphanumericStatus.innerHTML = "&#x26A0; No special characters allowed. Alphanumeric only (i.e. a-z, A-Z, 0-9).";
+      passwordValidationBlock.appendChild(alphanumericStatus);
+    } else {
+      let passwordValidation_alphanumericStatus = document.querySelector('p#passwordValidation_alphanumericStatus');
+      passwordValidation_alphanumericStatus ? passwordValidation_alphanumericStatus.remove() : '';
+    }
+    if (this.value.length > 32 || this.value.length < 8) {
+      passwordValidationStatus = 'invalid';
+      let lengthStatus = document.createElement('p');
+      lengthStatus.setAttribute('id','passwordValidation_lengthStatus');
+      lengthStatus.innerHTML = "&#x26A0; Wrong length. Password should be 8-32 characters long.";
+      passwordValidationBlock.appendChild(lengthStatus);
+    } else {
+      let passwordValidation_lengthStatus = document.querySelector('p#passwordValidation_lengthStatus');
+      passwordValidation_lengthStatus ? passwordValidation_lengthStatus.remove() : '';
+    }
+    passwordValidation();
+  }
+  function passwordValidation() {
+    if (password.value !== passwordConfirmation.value) {
+      passwordValidationStatus = 'invalid';
+      let confirmStatus = document.createElement('p');
+      confirmStatus.setAttribute('id','passwordValidation_confirmStatus');
+      confirmStatus.innerHTML = "&#x26A0; Passwords do not match.";
+      passwordValidationBlock.appendChild(confirmStatus);
+    } else {
+      let passwordValidation_confirmStatus = document.querySelector('p#passwordValidation_confirmStatus');
+      passwordValidation_confirmStatus ? passwordValidation_confirmStatus.remove() : '';
+    }
+  }
+
+</script>
+
+<script id="registerUser">
+  var headers_registerUser = new Headers();
+  headers_registerUser.append("Content-Type", "application/json");
+  var requestOptions_registerUser = {
+      method: "POST",
+      headers: headers_registerUser,
+      redirect: "follow",
+  };
+
+  async function registerUser() {
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://bgschust.app.n8n.cloud/webhook/6d76236d-62ea-436c-8724-56eab00603a5';
+    try {
+        let res = await fetch(url, requestOptions_registerUser);
+        res = await res.text();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  document.querySelector('button.registerUser').addEventListener('click', function submitRegistration(){
+    let statusBlock = document.querySelector('div#statusBlock');
+    let email = document.querySelector('input#email').value;
+    let termsConditions = document.querySelector('input#termsConditions').checked;
+    let zipCode = document.querySelector('input#zipcode').value;
+    if(email
+        && passwordValidationStatus === 'valid' 
+        && termsConditions === true
+        && zipCode.length === 5) {
+      let body = {
+        "Email Address": document.querySelector('input#email').value,
+        "Password": document.querySelector('input#password').value,
+        "Password Confirmation": document.querySelector('input#passwordConfirmation').value,
+        "First Name": document.querySelector('input#firstName').value,
+        "Last Name": document.querySelector('input#lastName').value,
+        "Zipcode": zipCode,
+        "Terms & Conditions Acceptance": termsConditions
+      };
+      requestOptions_registerUser.body = JSON.stringify(body);
+      async function showResponse() {
+        statusBlock.textContent = "Please wait.";
+        let response = await registerUser();
+        statusBlock.textContent = await response;
+      }
+      showResponse();
+    } else {
+      statusBlock.textContent = "Check form errors.";
+    }
+  });
+</script>
+
+</html>

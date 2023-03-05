@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify - General Items</title>
+  <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../images/favicon.png">
+  <link rel="stylesheet" href="../public/style.css">
+  <link rel="stylesheet" href="../components/components.css">
+  <link rel="stylesheet" href="./general-items.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="../components/functions.js"></script>
+  <script src="../components/components.js"></script>
+</head>
+<body>
+
+  <div class="component topNavigation"></div>
+
+  <div id="mainContainer">
+
+    <div id="listingsSalesOrders">
+      <div class="selected">
+        Listings
+      </div>
+      <div>
+        <a href="../user-admin/orders.html">Orders</a>
+      </div>
+      <div>
+        <a href="../org-admin/sales.html">Sales</a>
+      </div>
+    </div>
+    
+    <p>General Items: These are the general items on the marketplace.</p>
+
+    <div id="searchContainer">
+      <input type="text" id="search" placeholder="Search...">
+      <img src="../images/icons8-search-32.png" alt="searchIcon">
+    </div>
+
+    <input type="checkbox" class="accordion" id="accordionPanel_myListings" checked>
+    <a href="#accordionPanel_myListings" style="text-decoration:none;color:inherit;">
+      <label for="accordionPanel_myListings" class="accordion">
+        <h3>My Listings</h3>
+      </label>
+    </a>
+    <div class="collapsible myGeneralItems">
+      <p>My general items here. Please <a href="./sign-up.html">sign up</a> or <a href="../user-admin/log-in.html">log in</a>.</p>
+      <ul id="myGeneralItems" class="cardList"></ul>
+    </div>
+
+    <h3>Community Listings</h3>
+    <div class="filterContainer">
+
+      <h4>Item Groups</h4>
+      <ul id="groups"></ul>
+      <h4>Categories</h4>
+      <ul id="categories"></ul>
+
+      <div class="filterDisplayContainer">
+        <table>
+          <tr>
+            <td>
+              <img src="../images/icons8-filter-and-sort-50.png" alt="List Filters">
+            </td>
+            <td>
+              <div id="groupsFilter">
+                <label>Group</label><br />
+                <input type="text" id="groupFilterInput" value="[1,2]" style="display:none;">
+                <div><span>Initial Groups</span></div>
+              </div>
+              <div id="categoriesFilter">
+                <label>Categories</label>
+                <button>Reset</button><br />
+                <input type="text" id="categoriesFilterInput" value="[3,4,5]" style="display:none;">
+                <div><span>Initial Categories</span></div>
+              </div>
+              <div id="outOfStockFilter">
+                <label for="outOfStockFilterCheckbox" style="cursor:pointer;">Show out-of-stock items?</label><br />
+                <input type="checkbox" id="outOfStockFilterCheckbox">
+              </div>
+              <form id="sortGeneralItems">
+                <label for="sort">Sort: </label><br />
+                <select id="sort" name="cars">
+                  <option value="default">Default</option>
+                  <option value="nameAsc">Name: A to Z</option>
+                  <option value="nameDesc">Name: Z to A</option>
+                  <option value="specItemCtAsc">Specific Item Count: Ascending</option>
+                  <option value="specItemCtDesc">Specific Item Count: Descending</option>
+                </select>
+              </form>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <ul id="generalItems" class="cardList"></ul>
+    
+    <br>
+    <p>Submit an <a href="https://cropify.canny.io/general-item-ideas" target="_blank">idea or suggestion</a> for a general item or make a <a href="https://cropify.canny.io/feature-requests" target="_blank">feature request</a>.</p>
+    
+  </div>
+
+  <div class="component footer"></div>
+
+</body>
+
+<script id="initialize">
+let groupsDefault = [{"id":1,"order":"1.00000000000000000000","Name":"Edible Harvests","Notes":"","Active":false,"General Items":[{"id":5,"value":"Tomato"},{"id":1,"value":"Apple"},{"id":2,"value":"Orange"},{"id":3,"value":"Pear"}],"General Items - Categories":[],"Parent Category":[{"id":9,"value":"Group"}]},{"id":10,"order":"10.00000000000000000000","Name":"Farm Services","Notes":"","Active":false,"General Items":[],"General Items - Categories":[],"Parent Category":[{"id":9,"value":"Group"}]},{"id":2,"order":"2.00000000000000000000","Name":"Artisan Foods & Beverages","Notes":"","Active":false,"General Items":[{"id":6,"value":"Sauerkraut"},{"id":7,"value":"Soft Pretzel"}],"General Items - Categories":[],"Parent Category":[{"id":9,"value":"Group"}]}];
+let categoriesDefault = [{"id":1,"order":"1.00000000000000000000","Name":"Edible Harvests","Notes":"","Active":false,"General Items":[{"id":5,"value":"Tomato"},{"id":1,"value":"Apple"},{"id":2,"value":"Orange"},{"id":3,"value":"Pear"}],"General Items - Categories":[]},{"id":2,"order":"2.00000000000000000000","Name":"Artisan Foods & Beverages","Notes":"","Active":false,"General Items":[{"id":6,"value":"Sauerkraut"},{"id":7,"value":"Soft Pretzel"}],"General Items - Categories":[]},{"id":3,"order":"3.00000000000000000000","Name":"Vegetables","Notes":"","Active":false,"General Items":[],"General Items - Categories":[{"id":5,"value":"Tomato"}]},{"id":4,"order":"4.00000000000000000000","Name":"Fruit","Notes":"","Active":false,"General Items":[],"General Items - Categories":[{"id":1,"value":"Apple"},{"id":2,"value":"Orange"},{"id":3,"value":"Pear"}]},{"id":5,"order":"5.00000000000000000000","Name":"Fermented Foods","Notes":"","Active":false,"General Items":[],"General Items - Categories":[{"id":6,"value":"Sauerkraut"}]},{"id":6,"order":"6.00000000000000000000","Name":"Baked Goods","Notes":"","Active":false,"General Items":[],"General Items - Categories":[{"id":7,"value":"Soft Pretzel"}]}];
+let generalItemsDefault = [{"id":1,"order":"1.00000000000000000000","Name":"Apple","Notes":"My fuji bag.","Active":true},{"id":2,"order":"2.00000000000000000000","Name":"Orange","Notes":null,"Active":false},{"id":3,"order":"3.00000000000000000000","Name":"Pear","Notes":null,"Active":false},{"id":4,"order":"4.00000000000000000000","Name":"","Notes":"","Active":false}];
+
+const filterDefault = {
+  group: [430],
+  groupObjects: [{id: 430, value: 'Edible Harvests'}],
+  categories: [484,485,498,493],
+  categoryObjects: [{id: 484, value:'Eggs & Dairy'},{id: 485, value:'Fruit'},{id: 498, value:'Vegetables'},{id: 493, value:'Omnivore Meat'}],
+  show_outOfStock: false,
+};
+let filter = {};
+Object.assign(filter, filterDefault);
+
+let sortBy = 'default';
+
+// assign filter defaults to HTML inputs
+document.querySelector('input#groupFilterInput').value = JSON.stringify(filter.group);
+document.querySelector('input#categoriesFilterInput').value = JSON.stringify(filter.categories);
+</script>
+
+<script id="myListings">
+  async function getMyGeneralItems() {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    //headers.append("Authorization", "Password "+JSON.parse(getCookie('user')).Password);
+    var requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+
+    let queryParams = [
+      {"User ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password}
+    ];
+
+    // database filtering
+    /*if (typeof filter.categories == 'object') {
+      filter.categories.forEach(function URLfilterCategories(value, index, arr) {
+        queryParams.push({'filter__field_819247__link_row_has': value});
+        if (index < filter.categories.length - 1) {
+          queryParams.push({'filter_type': 'OR'});
+        }
+      });
+    }*/
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+      + 'https://bgschust.app.n8n.cloud/webhook/zNI1jPdEnQ1zqtEWezcTNr1qV2LNFyVTPH0N', 
+      queryParams
+    );
+
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res.results;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderMyGeneralItems() {
+    let records = '';
+    records = await getMyGeneralItems();
+    (!records) ? records = [] : records;
+    
+    // browser filtering
+    /*if (filter.show_outOfStock == false) {
+      generalItems = generalItems.filter(function filterShow_outOfStock(record){
+        return record['Specific Item Count'] > 0;
+      });
+    }*/
+    
+    // browser sorting
+    records.forEach(record => {
+      record.order = Number(record.order);
+    });
+
+    /*if(sortBy == ('default' || undefined)){
+      generalItems = _.sortBy(generalItems, 'order');
+    } else if(sortBy=='nameAsc') {
+      generalItems = _.sortBy(generalItems, 'Name');
+    } else if(sortBy=='nameDesc') {
+      generalItems = _.sortBy(generalItems, 'Name').reverse();
+    } else if(sortBy=='specItemCtAsc'){
+      generalItems = _.sortBy(
+        _.sortBy(generalItems, 'Name'), 
+        'Specific Item Count'
+      )
+    } else if(sortBy=='specItemCtDesc'){
+      generalItems = _.sortBy(
+        _.sortBy(generalItems, 'Name').reverse(), 
+        'Specific Item Count'
+      ).reverse();
+    }*/
+    
+
+    // browser search
+    /*if (searchInput.value != undefined || '') {
+      generalItems.forEach(record => {
+        record.searchTargetText = record.Category[0].value + ' ' + record.Name + ' ' + record['Short Description'];
+        record.searchTargetText = record.searchTargetText.toLowerCase();
+      });
+      generalItems = generalItems.filter(function filterSearch(record){
+        return record.searchTargetText.indexOf(searchInput.value.toLowerCase()) >= 0;
+      });
+    }*/
+
+    let listContainer = document.querySelector('ul#myGeneralItems');
+    listContainer.innerHTML = '';
+    records.forEach(record => {
+      let generalItemA = document.createElement("a");
+      generalItemA.className = 'generalItem';
+      let generalItemDiv = document.createElement("div");
+      generalItemDiv.classList.add('generalItem','listCard');
+      let generalItemCol1 = document.createElement("div");
+      generalItemCol1.className = "col1";
+      let generalItemP1 = document.createElement("p");
+      generalItemP1.className = "categoryName";
+      let generalItemP2 = document.createElement("p");
+      generalItemP2.className = "generalItem_Name";
+      let generalItemP3 = document.createElement("p");
+      generalItemP3.className = "description";
+      let generalItemCol2 = document.createElement("div");
+      generalItemCol2.className = "col2";
+      let generalItemBtn = document.createElement("button");
+      let generalItemBr1 = document.createElement("br");
+      let generalItemSpan1 = document.createElement("span");
+      let generalItemBr2 = document.createElement("br");
+      let generalItemSpan2 = document.createElement("span");
+      generalItemSpan2.className = 'itemCtLabel';
+
+      let url = 'specific-items.html' + '?' + 'generalItem_id' + '=' + record.id;
+      generalItemA.setAttribute('href', url);
+      generalItemP1.textContent = record.Category[0].value || 'Category not found';
+      generalItemP2.textContent = record.Name || 'Name not found';
+      generalItemP3.textContent = record['Short Description'] || 'No description.';
+      generalItemBtn.textContent = 'Details';
+      generalItemSpan1.textContent = record['Specific Item Count'] || 0;
+      if (record['Specific Item Count'] > 1 || record['Specific Item Count'] == 0) {
+        generalItemSpan2.textContent = ' items';
+      } else {
+        generalItemSpan2.textContent = ' item';
+      }
+
+      generalItemCol1.appendChild(generalItemP1);
+      generalItemCol1.appendChild(generalItemP2);
+      generalItemCol1.appendChild(generalItemP3);
+      generalItemCol2.appendChild(generalItemBtn);
+      generalItemCol2.appendChild(generalItemBr1);
+      generalItemCol2.appendChild(generalItemSpan1);
+      generalItemCol2.appendChild(generalItemBr2);
+      generalItemCol2.appendChild(generalItemSpan2);
+      generalItemDiv.appendChild(generalItemCol1);
+      generalItemDiv.appendChild(generalItemCol2);
+      generalItemA.appendChild(generalItemDiv);
+      listContainer.appendChild(generalItemA);
+
+    });
+
+    let statusBlock = document.querySelector('div.myGeneralItems>p');
+    if(records.length) {
+      statusBlock.textContent = '';
+      statusBlock.setAttribute('style','display:none;');
+    } else {
+      statusBlock.textContent = 'No items found.';
+    }
+
+    return records;
+  }
+  if(getCookie('user')) {
+    renderMyGeneralItems()
+  }
+</script>
+
+<script id="groups">
+var headers_groups = new Headers();
+headers_groups.append("Content-Type", "application/json");
+headers_groups.append("Authorization", "Token t48tRPtNQccyc6Q65klBDEP1QJqkwXw0");
+var requestOptionsGroups = {
+    method: "get",
+    headers: headers_groups,
+    redirect: "follow",
+};
+
+async function getGroups() {
+  let queryParams = [
+    {"user_field_names": true},
+    {"size": 100},
+    {"filter__field_819526__link_row_has": 347},
+  ];
+  
+  let query = '';
+  queryParams.forEach(function URIencode(item, index, arr){
+    let k = Object.keys(item)[0];
+    let v = item[k];
+    query += encodeURIComponent(k)+'='+encodeURIComponent(v);
+    if (index < queryParams.length - 1) {
+      query += '&';
+    }
+  });
+  if (query) {
+    query = '?'+ query;
+  }
+
+  let url = 'https://api.baserow.io/api/database/rows/table/126754/' + query;
+  
+  try {
+      let res = await fetch(url, requestOptionsGroups);
+      res = await res.json();
+      return await res.results;
+  } catch (error) {
+      console.log(error);
+  }
+}
+
+async function renderGroups() {
+  let groups = [];
+  groups = await getGroups();
+  (groups.length == 0) ? groups = groupsDefault : groups;
+  
+  // browser sorting
+  groups = _.sortBy(groups, 'Name');
+  
+  groupsContainer.innerHTML = '';
+  groups.forEach(record => {
+    if (filter.group.indexOf(record.id) >= 0 
+        && _.pluck(filter.groupObjects, 'id').indexOf(record.id) == -1) {
+      filter.groupObjects.push({id: record.id, value: record.Name});
+    }
+    filter.groupNames = _.pluck(filter.groupObjects, 'value').sort().join(', ');
+    document.querySelector('div#groupsFilter>div>span').textContent = filter.groupNames;
+
+    let groupLabel = document.createElement("label");
+    groupLabel.className = 'iconSelector';
+    let groupSpan1 = document.createElement("span");
+    let groupBr = document.createElement("br");
+    let groupSpan2 = document.createElement("span");
+    let groupBr2 = document.createElement("br");
+    let groupImg = document.createElement("img");
+    let groupRadioBtn = document.createElement("input");
+    groupRadioBtn.setAttribute('type', 'radio');
+    groupRadioBtn.setAttribute('name', 'group');
+    groupRadioBtn.className = 'iconSelector';
+    groupRadioBtn.checked = false;
+    if (filter.group[0] == record.id) {
+      groupRadioBtn.checked = true;
+    }
+    let groupPseudoLabel = document.createElement("label");
+    groupPseudoLabel.className = 'groupPseudoLabel';
+
+    let recordSimple = JSON.stringify({id: record['id'], value: record['Name']});
+    groupRadioBtn.setAttribute('id', recordSimple);
+    groupPseudoLabel.textContent = '';
+    groupPseudoLabel.setAttribute('for', recordSimple);
+    groupLabel.setAttribute('for', recordSimple);
+
+    groupSpan1.textContent = record['Line 1'] || 'Null';
+    groupSpan2.textContent = record['Line 2'] || 'Null';
+    let imgSrc = record.Image[0].url;
+    groupImg.setAttribute('src', imgSrc);
+
+    groupLabel.appendChild(groupSpan1);
+    groupLabel.appendChild(groupBr);
+    groupLabel.appendChild(groupSpan2);
+    groupLabel.appendChild(groupBr2);
+    groupLabel.appendChild(groupImg);
+    groupLabel.appendChild(groupRadioBtn);
+    groupLabel.appendChild(groupPseudoLabel);
+    groupsContainer.appendChild(groupLabel);
+
+  });
+  return groups;
+}
+</script>
+
+<script id="categories">
+var headers_categories = new Headers();
+headers_categories.append("Content-Type", "application/json");
+headers_categories.append("Authorization", "Token t48tRPtNQccyc6Q65klBDEP1QJqkwXw0");
+var requestOptionsCategories = {
+    method: "get",
+    headers: headers_categories,
+    redirect: "follow",
+};
+
+async function getCategories() {
+  let queryParams = [
+    {"user_field_names": true},
+    {'filter__field_822699__equal': 'General Item Group'},
+    {"size": 200},
+  ];
+
+  // database filtering
+  /* if (typeof filter.group == 'object') {
+    filter.group.forEach(function URLfilterGroups(value, index, arr) {
+      queryParams.push({'filter__field_822692__link_row_has': 347});
+      if (index < filter.group.length - 1) {
+        queryParams.push({'filter_type': 'OR'});
+      }
+    });
+  } */
+  
+  let query = '';
+  queryParams.forEach(function URIencode(item, index, arr){
+    let k = Object.keys(item)[0];
+    let v = item[k];
+    query += encodeURIComponent(k)+'='+encodeURIComponent(v);
+    if (index < queryParams.length - 1) {
+      query += '&';
+    }
+  });
+  if (query) {
+    query = '?'+ query;
+  }
+
+  let url = 'https://api.baserow.io/api/database/rows/table/126754/' + query;
+  
+  try {
+      let res = await fetch(url, requestOptionsCategories);
+      res = await res.json();
+      return await res.results;
+  } catch (error) {
+      console.log(error);
+  }
+}
+
+async function renderCategories() {
+  let categories = '';
+  categories = await getCategories();
+  (!categories) ? categories = categoriesDefault : categories;
+  
+  // update filter display for categories
+  categories.forEach(category => {
+    if (filter.categories.indexOf(category.id) >= 0 
+        && _.pluck(filter.categoryObjects, 'id').indexOf(category.id) == -1) {
+      filter.categoryObjects.push({id: category.id, value: category.Name});
+    } else if(filter.categories.indexOf(category.id) >= 0
+    && _.pluck(filter.categoryObjects, 'id').indexOf(category.id) >= 0) {
+      // this is to dynamically remove objects from filter.categoryObjects (unfinished)
+    } else {
+    }
+  });
+  filter.categoryNames = _.pluck(filter.categoryObjects, 'value').sort().join(', ');
+  document.querySelector('div#categoriesFilter>div>span').textContent = filter.categoryNames;
+
+  // browser filtering
+  if (filter.group.length > 0) {
+    categories = categories.filter(function filterByGroup(record){
+      let id = 0;
+      if (record['Parent Category'].length == 0 || undefined) {
+        id = 'Null';
+      } else {
+        id = record['Parent Category'][0]['id'];
+      }  
+      return id == filter.group[0];
+    });
+  }
+
+  // browser sorting
+  categories = _.sortBy(categories, 'Name');
+
+  categoriesContainer.innerHTML = '';
+  categories.forEach(category => {
+    let categoryLi = document.createElement("li");
+    categoryLi.className = 'categoryLi';
+    let categoryCheckbox = document.createElement("input");
+    categoryCheckbox.className = 'css-checkbox';
+    let categoryLabel = document.createElement("label");
+
+    categoryCheckbox.setAttribute('type','checkbox');
+    categoryCheckbox.checked = false;
+    if (filter.categories.indexOf(category.id) >= 0) {
+      categoryCheckbox.checked = true;
+    }
+    let categoryBasic = JSON.stringify({id: category['id'], value: category['Name']});
+    categoryCheckbox.setAttribute('id', categoryBasic);
+    categoryLabel.textContent = category['Name'] || 'Null';
+    categoryLabel.setAttribute('for', categoryBasic);
+
+    categoryLi.appendChild(categoryCheckbox);
+    categoryLi.appendChild(categoryLabel);
+    categoriesContainer.appendChild(categoryLi);
+
+  });
+  return categories;
+}
+</script>
+
+<script id="generalItems">
+var headers_generalItems = new Headers();
+headers_generalItems.append("Content-Type", "application/json");
+headers_generalItems.append("Authorization", "Token t48tRPtNQccyc6Q65klBDEP1QJqkwXw0");
+var requestOptionsGeneralItems = {
+    method: "get",
+    headers: headers_generalItems,
+    redirect: "follow",
+};
+
+async function getGeneralItems() {
+
+  let queryParams = [
+    {"user_field_names": true},
+    {"size": 200},
+    {"include": "Name,Short Description,Active,Specific Item Count,Group,Category"}
+  ];
+
+  // database filtering
+  if (typeof filter.categories == 'object') {
+    filter.categories.forEach(function URLfilterCategories(value, index, arr) {
+      queryParams.push({'filter__field_819247__link_row_has': value});
+      if (index < filter.categories.length - 1) {
+        queryParams.push({'filter_type': 'OR'});
+      }
+    });
+  }
+  
+  let query = '';
+  queryParams.forEach(function URIencode(item, index, arr){
+    let k = Object.keys(item)[0];
+    let v = item[k];
+    query += encodeURIComponent(k)+'='+encodeURIComponent(v);
+    if (index < queryParams.length - 1) {
+      query += '&';
+    }
+  });
+  if (query) {
+    query = '?'+ query;
+  }
+
+  let url = 'https://api.baserow.io/api/database/rows/table/6842/' + query;
+
+  try {
+      let resGeneralItems = await fetch(url, requestOptionsGeneralItems);
+      resGeneralItems = await resGeneralItems.json();
+      return await resGeneralItems.results;
+  } catch (error) {
+      console.log(error);
+  }
+}
+
+async function renderGeneralItems() {
+  let generalItems = '';
+  generalItems = await getGeneralItems();
+  (!generalItems) ? generalItems = generalItemsDefault : generalItems;
+  
+  // browser filtering
+  if (filter.show_outOfStock == false) {
+    generalItems = generalItems.filter(function filterShow_outOfStock(record){
+      return record['Specific Item Count'] > 0;
+    });
+  }
+  
+  // browser sorting
+  generalItems.forEach(record => {
+    record.order = Number(record.order);
+  }); // convert order to number
+
+  if(sortBy == ('default' || undefined)){
+    generalItems = _.sortBy(generalItems, 'order');
+  } else if(sortBy=='nameAsc') {
+    generalItems = _.sortBy(generalItems, 'Name');
+  } else if(sortBy=='nameDesc') {
+    generalItems = _.sortBy(generalItems, 'Name').reverse();
+  } else if(sortBy=='specItemCtAsc'){
+    generalItems = _.sortBy(
+      _.sortBy(generalItems, 'Name'), 
+      'Specific Item Count'
+    )
+  } else if(sortBy=='specItemCtDesc'){
+    generalItems = _.sortBy(
+      _.sortBy(generalItems, 'Name').reverse(), 
+      'Specific Item Count'
+    ).reverse();
+  }
+  
+
+  // browser search
+  if (searchInput.value != undefined || '') {
+    generalItems.forEach(record => {
+      record.searchTargetText = record.Category[0].value + ' ' + record.Name + ' ' + record['Short Description'];
+      record.searchTargetText = record.searchTargetText.toLowerCase();
+    });
+    generalItems = generalItems.filter(function filterSearch(record){
+      return record.searchTargetText.indexOf(searchInput.value.toLowerCase()) >= 0;
+    });
+  }
+
+  let generalItemsContainer = document.querySelector('ul#generalItems');
+  generalItemsContainer.innerHTML = '';
+  generalItems.forEach(generalItem => {
+    let generalItemDiv = document.createElement("div");
+    generalItemDiv.classList.add('generalItem','listCard');
+    let generalItemCol1 = document.createElement("div");
+    generalItemCol1.className = "col1";
+    let generalItemP1 = document.createElement("p");
+    generalItemP1.className = "categoryName";
+    let generalItemP2 = document.createElement("p");
+    generalItemP2.className = "generalItem_Name";
+    let generalItemP3 = document.createElement("p");
+    generalItemP3.className = "description";
+    let generalItemCol2 = document.createElement("div");
+    generalItemCol2.className = "col2";
+    let generalItemBr1 = document.createElement("br");
+    let generalItemSpan1 = document.createElement("span");
+    let generalItemBr2 = document.createElement("br");
+    let generalItemSpan2 = document.createElement("span");
+    generalItemSpan2.className = 'itemCtLabel';
+
+    let url = 'specific-items.html' + '?' + 'generalItem_id' + '=' + generalItem.id;
+    generalItemP1.textContent = generalItem.Category[0].value || 'Category not found';
+    generalItemP2.textContent = generalItem.Name || 'Name not found';
+    generalItemP3.textContent = generalItem['Short Description'] || 'No description.';
+    generalItemSpan1.textContent = generalItem['Specific Item Count'] || 0;
+    if (generalItem['Specific Item Count'] > 1 || generalItem['Specific Item Count'] == 0) {
+      generalItemSpan2.textContent = ' items';
+    } else {
+      generalItemSpan2.textContent = ' item';
+    }
+
+    generalItemCol1.appendChild(generalItemP1);
+    generalItemCol1.appendChild(generalItemP2);
+    generalItemCol1.appendChild(generalItemP3);
+    generalItemDiv.appendChild(generalItemCol1);
+
+    if(generalItem.Active) {
+      let generalItemA = document.createElement("a");
+      generalItemA.className = 'generalItem';
+      generalItemA.setAttribute('href', url);
+      let generalItemBtn = document.createElement("button");
+      generalItemBtn.textContent = 'Details';
+      generalItemCol2.appendChild(generalItemBtn);
+      generalItemCol2.appendChild(generalItemBr1);
+      generalItemCol2.appendChild(generalItemSpan1);
+      generalItemCol2.appendChild(generalItemBr2);
+      generalItemCol2.appendChild(generalItemSpan2);
+      generalItemDiv.appendChild(generalItemCol2);
+      generalItemA.appendChild(generalItemDiv);
+      generalItemsContainer.appendChild(generalItemA);
+    } else {
+      generalItemDiv.classList.add('inactive');
+      generalItemsContainer.appendChild(generalItemDiv);
+    }
+    
+  });
+  return generalItems;
+}
+</script>
+
+<script id="processFilters">
+// initially render lists
+let groups = renderGroups();
+let categories = renderCategories();
+let generalItems = renderGeneralItems();
+
+// change filter inputs to reflect checkbox and radio button clicks
+let groupsContainer = document.querySelector('ul#groups');
+groupsContainer.addEventListener('change', adjustGroups);
+function adjustGroups(event){
+  filter.groupObjects = [];
+  filter.groupObjects.push(JSON.parse(event.target.id));
+  filter.group = _.pluck(filter.groupObjects,'id');
+  filter.groupNames = _.pluck(filter.groupObjects, 'value').sort().join(', ');
+  document.querySelector('div#groupsFilter>div>span').textContent = filter.groupNames;
+  filterGroupInput.value = JSON.stringify(filter.group);
+  renderCategories();
+}
+let categoriesContainer = document.querySelector('ul#categories');
+categoriesContainer.addEventListener('change', adjustCategories);
+function adjustCategories(event){
+  filter.categoryObjects = _.sortBy(filter.categoryObjects, 'id');
+  filter.categories = _.pluck(filter.categoryObjects,'id');
+  if (event.target.checked) {
+    filter.categoryObjects.push(JSON.parse(event.target.id));
+  } else if (!event.target.checked) {
+    let i = filter.categories.indexOf(JSON.parse(event.target.id).id);
+    if(i >= 0) {
+      filter.categoryObjects.splice(i,1);
+    }
+  }
+  filter.categoryObjects = _.sortBy(filter.categoryObjects, 'id');
+  filter.categories = _.pluck(filter.categoryObjects,'id');
+  filter.categoryNames = _.pluck(filter.categoryObjects, 'value').sort().join(', ');
+  document.querySelector('div#categoriesFilter>div>span').textContent = filter.categoryNames;
+  filterCategoriesInput.value = JSON.stringify(filter.categories);
+  renderGeneralItems();
+  return filter;
+}
+
+// get filter input values and re-render
+let filterGroupInput = document.querySelectorAll('div.filterDisplayContainer div input')[0];
+filter.group = JSON.parse(filterGroupInput.value);
+filterGroupInput.addEventListener('change', function filterGroups() {
+  filter.group = JSON.parse(filterGroupInput.value);
+  if (filter.group.length >= 1) {
+    renderCategories();
+  }
+});
+let filterCategoriesInput = document.querySelectorAll('div.filterDisplayContainer div input')[1];
+filter.categories = JSON.parse(filterCategoriesInput.value);
+filterCategoriesInput.addEventListener('change', function getFilterCategories() {
+  filter.categories = JSON.parse(filterCategoriesInput.value);
+  if (filter.categories.length >= 1) {
+    renderGeneralItems();
+  }
+});
+document.querySelector('div#categoriesFilter button').addEventListener('click', resetCategories); 
+function resetCategories() {
+  filter.group = filterDefault.group;
+  filter.groupObjects = filterDefault.groupObjects;
+  filter.groupNames = _.pluck(filter.groupObjects, 'value');
+  filterGroupInput.value = JSON.stringify(filter.group);
+  filter.categories = filterDefault.categories;
+  filter.categoryObjects = filterDefault.categoryObjects;
+  filter.categoryNames = _.pluck(filter.categoryObjects, 'value');
+  filterCategoriesInput.value = JSON.stringify(filter.categories);
+  renderGroups();
+  renderCategories();
+  renderGeneralItems();
+}
+let filterShowOutOfStockCheckbox = document.querySelectorAll('div.filterDisplayContainer div input')[2];
+filter.show_outOfStock = filterShowOutOfStockCheckbox.checked;
+filterShowOutOfStockCheckbox.addEventListener('change', function getFilterCheckbox() {
+  filter.show_outOfStock = filterShowOutOfStockCheckbox.checked;
+  renderGeneralItems();
+});
+
+// get sort input values and re-render
+let sortGeneralItems = document.querySelector('form#sortGeneralItems>select');
+function getSorted()  {
+  sortBy = sortGeneralItems.value;
+  renderGeneralItems();
+}
+sortGeneralItems.addEventListener('change', getSorted);
+
+// get search input value and re-render
+let searchInput = document.querySelector('input#search');
+searchInput.addEventListener('change', getSearched);
+function getSearched() {
+  renderGeneralItems();
+}
+</script>
+
+</html>
