@@ -14,7 +14,7 @@
 <body>
 
   <h3 id="specificItem_Name">Specific Item Name</h3>
-  <p>Produced by <span id="Producer">Producer not found</span>.</p>
+  <p>Supplied by <span id="Supplier">Supplier not found</span>.</p>
 
   <h4>Fulfillment Method</h4>
   <input type="radio" id="selfPickup" name="fulfillmentMethod" value="selfPickup" checked>
@@ -46,10 +46,9 @@
 </script>
 
 <script id="specificItem">
-  async function getSpecificItem() {
-
+  async function getRequest_specificItem() {
     let queryParams = [
-      {"user_field_names": true}
+      //{"user_field_names": true}
     ];
     
     let url = buildURL(
@@ -68,16 +67,16 @@
 
   if (specificItem_id != null || undefined) {
     let specificItem = async function renderSpecificItem() {
-    let specificItem = {};
-    specificItem = await getSpecificItem();
-    
-    document.querySelector('#specificItem_Name').textContent = specificItem.Name;
-    if(specificItem.Producer && specificItem.Producer.length > 0) {
-      document.querySelector('span#Producer').textContent = specificItem.Producer[0].value
-    }
-    
-    return specificItem;
-  }();
+      let specificItem = {};
+      specificItem = await getRequest_specificItem();
+      
+      document.querySelector('#specificItem_Name').textContent = specificItem['field_29959'];
+      if(specificItem['field_825346'] && specificItem['field_825346'].length > 0) {
+        document.querySelector('span#Supplier').textContent = specificItem['field_825346'][0].value
+      }
+      
+      return specificItem;
+    }();
   }
   
 </script>
