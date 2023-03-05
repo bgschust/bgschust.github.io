@@ -41,3 +41,19 @@ ul#myOrders>li>div.detailsContainer {
   display: flex;
   /*align-items: right; declaration dropped*/
 }
+
+div#myOrderBasket {
+  margin-top: 30px;
+}
+
+div#myOrderBasket>h2>img {
+  display: inline-block;
+  width: 32px;
+  cursor: pointer;
+  vertical-align: bottom;
+  margin-right: 8px;
+}
+
+div#myOrderBasket>h2>img:hover {
+  opacity: 0.7;
+}
