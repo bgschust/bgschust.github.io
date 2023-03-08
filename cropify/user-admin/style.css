@@ -57,3 +57,7 @@ div#myOrderBasket>h2>img {
 div#myOrderBasket>h2>img:hover {
   opacity: 0.7;
 }
+
+div#basketSummary>p {
+  margin: 0;
+}
