@@ -98,11 +98,6 @@ div#listingsSalesOrders {
   box-shadow: 3px 3px 3px 1px var(--box-shadow);
 }
 
-div#listingsSalesOrders a {
-  text-decoration: none;
-  color: inherit;
-}
-
 div#listingsSalesOrders div {
   background-color: inherit;
   display: inline-block;
@@ -116,6 +111,12 @@ div#listingsSalesOrders div {
 div#listingsSalesOrders div.selected {
   background-color: rgb(155, 255, 56);
   color: black;
+  cursor: default;
+}
+
+div#listingsSalesOrders a {
+  text-decoration: none;
+  color: inherit;
 }
 
 div#searchContainer {
@@ -255,6 +256,13 @@ img.iconBtn {
 }
 img.iconBtn:hover {
   opacity: 0.8;
+}
+
+img.iconBtn.backBtn {
+  width: 32px;
+  display: inline-block;
+  vertical-align: bottom;
+  margin-right: 8px;
 }
 
 /* Checkbox Formatting */
