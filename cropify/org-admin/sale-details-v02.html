@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify - Sale Details</title>
+  <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../images/favicon.png">
+  <link rel="stylesheet" href="../public/style.css">
+  <link rel="stylesheet" href="../components/components.css">
+  <link rel="stylesheet" href="../user-admin/style.css">
+  <link rel="stylesheet" href="../user-admin/shopping-cart.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="../components/functions.js"></script>
+  <script src="../components/components.js"></script>
+  <script src="../components/authentication.js"></script>
+</head>
+<body>
+
+  <div class="component topNavigation"></div>
+
+  <div id="mainContainer">
+
+    <div id="listingsSalesOrders">
+      <div>
+        <a href="../public/general-items.html">Listings</a>
+      </div>
+      <div>
+        <a href="../user-admin/orders.html">Orders</a>
+      </div>
+      <div class="selected">
+        <a href="../org-admin/sales.html">Sales</a>
+      </div>
+    </div>
+    
+    <p>Sale Details: view your items sold or donated to a customer.</p>
+    
+    <div id="mySaleBasket" class="parentItemContainer">
+      <h2>
+        <img src="../images/icons8-left-50.png" alt="Back Arrow" class="iconBtn backBtn" />
+        <span>Sale not Found</span>
+      </h2>
+      <div id="basketSummary">
+        <p id="uniqueItems">Unique Items: <span>0</span></p>
+        <p id="totalItems">Total Items: <span>0</span></p>
+        <p id="subtotal">Subtotal (AgG): <span>0</span></p>
+        <p id="transactionFee">Transaction Fee (AgG): <span>0</span></p>
+        <p id="timestamp">Ordered at <span>unknown time</span>.</p>
+      </div>
+    </div>
+
+    <br />
+
+    <div id="searchContainer">
+      <input type="text" id="search" placeholder="Search... (not yet functional)">
+      <img src="../images/icons8-search-32.png" alt="searchIcon" class="iconBtn" />
+    </div>
+
+    <h3>Basket Items</h3>
+    
+    <p class="placeholder">My sale details will be here.
+      <!-- Please <a href="../public/sign-up.html">sign up</a> or <a href="../user-admin/log-in.html">log in</a>. -->
+    </p>
+    
+    <ul id="myOrder_basketItems" class="cardList"></ul>
+
+    <br />
+
+  </div>
+
+  <div class="component footer"></div>
+
+</body>
+
+<script id="initialize">
+  document.querySelector('div.parentItemContainer .iconBtn.backBtn').addEventListener('click', function goBack(){
+    //window.location.href = './sales.html'; // parent folder in breadcrumbs
+    history.go(-1);
+  });
+
+  const urlParams = new URLSearchParams(window.location.search);
+  let basket_ID = urlParams.get('basketID');
+
+  var headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", ""); // for Cropify secure+ requests
+  var requestOptions = {
+      method: "get",
+      headers: headers,
+      redirect: "follow",
+  };  
+</script>
+
+<script id="parentItem_saleDetails">
+  async function getRequest_saleDetailsHTML(authToken) {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    headers.append("Authorization", "Token "+authToken);
+    let requestOptions = {
+      method: "get",
+      headers: headers,
+      redirect: "follow",
+    };
+
+    let queryParams = [
+      {"User_ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password},
+      {"Basket_ID": basket_ID}
+    ];
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+      + 'https://n8n.cropify.org/webhook-test/w5ot3ri6q-dgfh1zfrgesoweiphg', 
+      queryParams);
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.text();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function infuseHTML_saleDetails(authToken) {
+    let resp = await getRequest_saleDetailsHTML(authToken);
+    console.log(resp);
+
+    let basketSummary_json = {};
+    let basketItems = [];
+    if(response.statusMessage == "Sale retrieved.") {
+      basketSummary_json = response.basketSummary;
+      basketItems = response.basketItems.results;
+    };
+    
+    document.querySelector('div#mySaleBasket>h2>span').textContent = "Sale #"+basketSummary_json.id;
+    
+    // process empties
+    let transactionFee = "0.00";
+    if(basketSummary_json['field_831733']) {
+      transactionFee = basketSummary_json['field_831733'];
+    }
+
+    // render sale summary
+    let basketSummaryContainer = document.querySelector('div#basketSummary');
+    basketSummaryContainer.querySelector('p#uniqueItems>span').textContent = basketSummary_json['field_830551'];
+    basketSummaryContainer.querySelector('p#totalItems>span').textContent = basketSummary_json['field_830550'];
+    basketSummaryContainer.querySelector('p#subtotal>span').textContent = basketSummary_json['field_831732'];
+    basketSummaryContainer.querySelector('p#transactionFee>span').textContent = transactionFee;
+    basketSummaryContainer.querySelector('p#timestamp>span').textContent = basketSummary_json['field_902131'];
+  
+    //// render sale basket items
+
+    // clear placeholder
+    let placeholder = document.querySelector('p.placeholder');
+    placeholder.textContent = '';
+
+    // simplify records
+    //let basketItems = response.basketItems_json.results;
+    basketItems.forEach((record, index) => {
+      basketItems[index].supplierName = record.field_832807[0].value;
+      basketItems[index].supplierID = record.field_905043;//Supplier[0].ids.database_table_127809;
+      basketItems[index].supplierObject = {
+        id: record.field_905043,
+        value: record.field_832807[0].value
+      };
+      basketItems[index].marketName = record.field_831722[0].value;
+      basketItems[index].marketID = record.field_905053;//Market[0].ids.database_table_127809;
+      basketItems[index].marketObject = {
+        id: record.field_905053,
+        value: record.field_831722[0].value
+      };
+    });
+
+    // sort records
+    basketItems = _.sortBy(basketItems, 'order');
+    basketItems = _.sortBy(basketItems, 'supplierName');
+    basketItems = _.sortBy(basketItems, 'marketName');
+    
+    // render records
+    let basketItemsList = document.querySelector('ul#myOrder_basketItems');
+    basketItemsList.innerHTML = '';
+    _.uniq(_.pluck(basketItems,'marketID')).forEach(marketID => {
+      let thisMarket_basketItems = basketItems.filter(item => {
+        return item.marketObject.id == marketID;
+      });
+
+      let marketDiv = document.createElement('div');
+      marketDiv.className = 'marketDiv';
+      let marketTitle = document.createElement('div');
+      marketTitle.className = 'marketTitle';
+      marketTitle.textContent = thisMarket_basketItems[0].marketName;
+      marketDiv.appendChild(marketTitle);
+      let marketContent = document.createElement('div');
+      marketContent.className = 'marketContent';
+
+      _.uniq(_.pluck(thisMarket_basketItems,'supplierID')).forEach(supplierID => {
+        let thisSupplier_basketItems = thisMarket_basketItems.filter(item => {
+          return item.supplierObject.id == supplierID;
+        });
+
+        let supplierDiv = document.createElement('div');
+        supplierDiv.className = 'supplierDiv';
+        let supplierTitle = document.createElement('div');
+        supplierTitle.className = 'supplierTitle';
+        supplierTitle.textContent = thisSupplier_basketItems[0].supplierName;
+        supplierDiv.appendChild(supplierTitle);
+        let supplierContent = document.createElement('div');
+        supplierContent.className = 'supplierContent';
+
+        thisSupplier_basketItems.forEach(item => {
+          let cartItemDiv = document.createElement('div');
+          cartItemDiv.classList.add('cartItem');
+          let cartItemCol1 = document.createElement('div');
+          cartItemCol1.classList.add('cartItemCol1');
+          let cartItemLine1 = document.createElement('p');
+          let cartItemLine2 = document.createElement('p');
+          let cartItemQty = document.createElement('span');
+          let cartItemPrice = document.createElement('span');
+          let cartItemExtPrice = document.createElement('span');
+          let cartItemCol2 = document.createElement('div');
+          cartItemCol2.classList.add('cartItemCol2');
+          let cartItemTrashIcon = document.createElement('img');
+          cartItemTrashIcon.classList.add('cartItemTrashBtn');
+
+          cartItemDiv.setAttribute('id','basketItemID-'+item.id);
+          cartItemLine1.textContent = item['field_830552'][0].value;
+          cartItemQty.textContent = item['field_830490'];
+          cartItemPrice.textContent = item['field_831730'] + ' each';
+          cartItemExtPrice.textContent = item['field_831731'] + ' AgG';
+          
+          cartItemLine2.appendChild(cartItemQty);
+          cartItemLine2.innerHTML += ' @ ';
+          cartItemLine2.appendChild(cartItemPrice);
+          cartItemLine2.innerHTML += ' = ';
+          cartItemLine2.appendChild(cartItemExtPrice);
+          cartItemCol1.appendChild(cartItemLine1);
+          cartItemCol1.appendChild(cartItemLine2);
+          cartItemDiv.appendChild(cartItemCol1);
+          cartItemDiv.appendChild(cartItemCol2);
+          supplierContent.appendChild(cartItemDiv);
+        });
+        supplierDiv.appendChild(supplierContent);
+        marketContent.appendChild(supplierDiv);
+      });
+      marketDiv.appendChild(marketContent);
+      basketItemsList.appendChild(marketDiv);
+    });
+  };
+</script>
+
+<script id="getBasketItems">
+  /*async function getRequest_basketItems(authToken) {
+    var headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    headers.append("Authorization", "Token "+authToken);
+    var requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+
+    let queryParams = [
+      {"User_ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password},
+      {"Basket_ID": basket_ID}
+    ];
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+      + 'https://n8n.cropify.org/webhook/f01bc80a-4782-4e34-884e-89c7083d09e9',
+      queryParams);
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }*/
+
+  async function renderBasketItems(authToken) {
+    let response = await getRequest_basketItems(authToken);
+
+    
+  }
+</script>
+
+<script id="execute">
+  async function execute() {
+    let authToken = "";
+    authToken = await getRequest_userSharedToken("getRequest_saleDetailsHTML");
+
+    if(authToken) {
+      authToken = authToken["Authorization Token"];
+      infuseHTML_saleDetails(authToken);
+    }
+  }
+  execute();
+</script>
+
+</html>

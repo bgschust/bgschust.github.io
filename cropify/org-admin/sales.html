@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Cropify - Sales (Organization Administration)</title>
+  <title>Cropify - Sales (Org. Administration)</title>
   <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../images/favicon.png">
   <link rel="stylesheet" href="../public/style.css">
   <link rel="stylesheet" href="../components/components.css">
+  <link rel="stylesheet" href="../user-admin/style.css">
   <link rel="stylesheet" href="./style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
   <script src="../components/functions.js"></script>
@@ -29,7 +30,7 @@
       </div>
     </div>
     
-    <p>Sales: These are the sales you have made. Click on each for details.</p>
+    <p>Sales: These are the sales you have made as a supplier. Click on each for details.</p>
     <div id="searchContainer">
       <input type="text" id="search" placeholder="Search... (not yet functional)">
       <img src="../images/icons8-search-32.png" alt="searchIcon" class="iconBtn">
@@ -45,6 +46,7 @@
       </select>
       <p id="count"><span>0</span> items</p>
     </div>
+
     <ul id="mySales" class="wideList"></ul>
 
   </div>
@@ -124,7 +126,7 @@
 <script id="getSalesList">
   let organization = document.querySelector('select#organization');
 
-  async function getSalesListRequest() {
+  async function getRequest_sales() {
     var headers = new Headers();
     headers.append("Content-Type", "application/json");
     var requestOptions = {
@@ -143,7 +145,7 @@
     ];
 
     let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
-      + 'https://funny-sloth-52.hooks.n8n.cloud/webhook/4ffd2c37-2f82-409f-ad5e-f11044e52404', 
+      + 'https://n8n.cropify.org/webhook/ca058e16-76ae-40dc-80cf-e04927f3ac4f', 
       queryParams);
     try {
         let res = await fetch(url, requestOptions);
@@ -155,23 +157,25 @@
   }
 
   async function renderSalesList() {
-    let response = await getSalesListRequest();
-    results = response.basicSalesList;
+    let response = await getRequest_sales();
 
     // render summary
     let summaryContainer = document.querySelector('div#salesListSummaryContainer');
     summaryContainer.querySelector('p#count>span').textContent = response.summary['count'];
 
+    // simplify records JSON
+    let records = response.basicSalesList;
+    let recordCount = records.length;
+
     // sort records
-    results = _.sortBy(results, 'field_902131'); // time of order
-    results = _.sortBy(results, 'field_911868'); // order
+    //records = _.sortBy(records, 'primary sort field');
+    //records = _.sortBy(records, 'secondary sort field');
     //records = _.sortBy(records, 'tertiary sort field');
-    console.log(results);
 
     // render records
     let recordList = document.querySelector('ul#mySales');
     recordList.innerHTML = '';
-    results.forEach(function(record){
+    records.forEach(function(record, index){
       let listItem = document.createElement('li');
       let title = document.createElement('h4');
       let orderTime = document.createElement('p');
@@ -188,10 +192,20 @@
       let p5 = document.createElement('p');
 
       listItem.id = 'basketID-'+record['id'];
+      if(index == recordCount-1) {
+        listItem.classList.add('last');
+      }
       title.textContent = 'Sale #'+record['id'];
-      orderTime.textContent = 'Order placed '+ new Date(record['field_902131']);
+      orderTime.textContent = 'Ordered '+ new Date(record['field_902131']);
       orderTime.id = 'orderTime';
       detailsContainer.classList.add('detailsContainer');
+      let detailURL = buildURL(
+        './sale-details.html',
+        [
+          {basketID: record['id']}
+        ]
+      );
+      detailLink.setAttribute('href', detailURL);
       detailBtn.textContent = 'Details';
       detailIcon.setAttribute('src','../images/icons8-details-48-white.png');
       detailBtn.insertAdjacentElement('afterbegin', detailIcon);
@@ -216,7 +230,7 @@
       listItem.appendChild(col2);
       recordList.appendChild(listItem);
     });
-    
+
   }
   organization.addEventListener('change', function(event) {
     renderSalesList();
