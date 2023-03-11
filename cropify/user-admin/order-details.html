@@ -31,7 +31,7 @@
       </div>
     </div>
     
-    <p>Order Details: view your purchases for an order. Donations received may also appear here.</p>
+    <p>Order Details: view your purchases for an order. Donations claimed may also appear here.</p>
     
     <div id="myOrderBasket" class="parentItemContainer">
       <h2>
@@ -54,7 +54,7 @@
       <img src="../images/icons8-search-32.png" alt="searchIcon" class="iconBtn" />
     </div>
 
-    <h3>Market Items</h3>
+    <h3>Basket Items</h3>
     
     <p class="placeholder">My order details will be here. 
       <!-- Please <a href="../public/sign-up.html">sign up</a> or <a href="../user-admin/log-in.html">log in</a>. -->
@@ -148,9 +148,9 @@
 
   async function renderOrderSummary(authToken) {
     let orderBasket = {};
-    let getRequest_order = await getRequest_basket(authToken);
-    if(getRequest_order.statusMessage = "Order retrieved.") {
-      orderBasket = getRequest_order.orderSummary;
+    let response = await getRequest_basket(authToken);
+    if(response.statusMessage == "Order retrieved.") {
+      orderBasket = response.orderSummary;
     };
     
     document.querySelector('div#myOrderBasket>h2>span').textContent = "Order #"+orderBasket.id;
