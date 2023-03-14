@@ -104,20 +104,17 @@
   }
 
   let marketItems = async function renderMarketItems() {
-    let records = [];
-    records = await getMarketItems();
+    let response = await getMarketItems();
     
-    if (records.length > 0) {
-      // browser sorting
-      records.forEach(record => {
-        record.MarketName = record.Market[0].value;
-      });
-      records = _.sortBy(records, 'MarketName');
-    }
+    // browser sorting
+    response.forEach(record => {
+      record.MarketName = record.Market[0].value;
+    });
+    response = _.sortBy(response, 'MarketName');
 
-    // rendering
+    // render market items
     document.querySelector('h4.markets+p').innerHTML = '';
-    records.forEach(record => {
+    response.forEach(record => {
       let recordDiv = document.createElement('div');
       let recordRadioBtn = document.createElement('input');
       recordRadioBtn.setAttribute('type','radio');
@@ -145,7 +142,7 @@
       document.querySelector('h4.markets+p').append(recordDiv);
     });
     
-    return records;
+    return response;
   }();
 </script>
 
