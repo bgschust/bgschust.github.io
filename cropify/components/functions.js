@@ -1,3 +1,36 @@
+function breadcrumbs(breadcrumbArray, containerSelector) {
+  var breadcrumbArray = breadcrumbArray || [{ // default
+    Text: 'Metro: Unknown',
+    URL: '../public/service-coverage.html'
+  }];
+
+  let breadcrumbTrail = document.createElement('div');
+  breadcrumbTrail.classList.add('breadcrumbTrail');
+  breadcrumbArray.forEach(function(object, index) {
+    let crumb = document.createElement('span');
+    let link = document.createElement('a');
+    let arrow = document.createElement('img');
+    
+    if(object.URL) {
+      link.textContent = object.Text;
+      link.setAttribute('href', object.URL);
+    } else {
+      crumb.textContent = object.Text;
+    }
+    arrow.setAttribute('src','../images/icons8-right-arrow-60.png');
+
+    crumb.appendChild(link);
+    breadcrumbTrail.appendChild(crumb);
+    if(index < breadcrumbArray.length - 1) {
+      breadcrumbTrail.appendChild(arrow);
+    }
+  });
+
+  var containerSelector = containerSelector || 'div.breadcrumbContainer';
+  let container = document.querySelector(containerSelector);
+  container.appendChild(breadcrumbTrail);
+}
+
 function buildURL(baseURL, queryParams) {
   let query = '';
   queryParams.forEach(function URIencode(item, index, arr){
