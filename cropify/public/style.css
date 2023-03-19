@@ -119,6 +119,21 @@ div#listingsSalesOrders a {
   color: inherit;
 }
 
+div.breadcrumbTrail {
+  display: flex;
+  align-items: center;
+  font-size: 0.83em;
+}
+
+div.breadcrumbTrail>span {
+  text-align: center;
+}
+
+div.breadcrumbTrail>img {
+  height: 12px;
+  padding: 0 8px 0 8px;
+}
+
 div#searchContainer {
   display: flex;
   flex-wrap: wrap;
