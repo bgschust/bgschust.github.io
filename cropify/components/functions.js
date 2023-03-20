@@ -1,3 +1,19 @@
+function loading(querySelectee) {
+  let container = document.querySelector(querySelectee);
+  container.classList.add('loading');
+  let loadingIcon = document.createElement('img');
+  loadingIcon.setAttribute('src','../images/loading-spinner-1s-200px.svg');
+  loadingIcon.classList.add('loadingIcon');
+  container.append(loadingIcon);
+}
+
+function finishedLoading(querySelectee) {
+  let container = document.querySelector(querySelectee);
+  let loadingIcon = container.querySelector('img.loadingIcon');
+  loadingIcon.remove();
+  container.classList.remove('loading');
+}
+
 function breadcrumbs(breadcrumbArray, containerSelector) {
   var breadcrumbArray = breadcrumbArray || [{ // default
     Text: 'Metro: Unknown',

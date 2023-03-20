@@ -1,0 +1,97 @@
+<html>
+  <style>
+    html {
+      --dark-green: rgb(53, 180, 36);
+      --grey: #d3d3d3;
+      --darker-grey: #b5b5b5;
+      font-family: Tahoma, sans-serif;
+      font-size: 0.8em;
+    }
+
+    div.checkpointBar {
+      margin: 0 10% 0 10%;
+    }
+
+    hr#barLine {
+      height: 8px;
+      background-color: var(--dark-green);
+      border: 0;
+      margin: 0 2.2% 0 2.2%;
+    }
+
+    div.checkpointsContainer {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      top: -22px;
+    }
+
+    div.checkpoint {
+      display: flex;
+      flex-direction: column;
+      border: 0px solid beige;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    div.checkpoint.youAreHere
+      >p.circle {
+        width: 16px;
+        height: 16px;
+        border: 3px solid var(--grey);
+        outline: 6px solid var(--dark-green);
+        margin-top: 6px;
+    }
+
+    div.checkpoint.upcoming
+      >p.circle {
+        background-color: var(--darker-grey);
+    }
+
+    p.circle {
+      width: 30px;
+      height: 30px;
+      background-color: var(--dark-green);
+      border-radius: 50%;
+      display: inline-block;
+      align-content: center;
+      margin: 2px 0 12px 0;
+    }
+
+    p.label {
+      display: inline-block;
+      margin: 0 0 0 0;
+    }
+  </style>
+  <body>
+
+    <div class="checkpointBarContainer">
+      <br /><br />
+      <div class="checkpointBar">
+        <hr id="barLine" />
+        <div class="checkpointsContainer">
+          <div class="checkpoint">
+            <p class="circle"></p>
+            <p class="label">Basics</p>
+          </div>
+          <div class="checkpoint">
+            <p class="circle"></p>
+            <p class="label">Details</p>
+          </div>
+          <div class="checkpoint youAreHere">
+            <p class="circle"></p>
+            <p class="label">Shipping</p>
+          </div>
+          <div class="checkpoint upcoming">
+            <p class="circle"></p>
+            <p class="label">Finish</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p>
+      Design copyrighted 2020-present by Brian Schuster for Cropify. Code copyrighted 2023-present.
+    </p>
+
+  </body>
+</html>
