@@ -28,3 +28,78 @@ ul#mySales>li>div.detailsContainer {
 p#orderedByUserAtTime {
   padding-top: 8px;
 }
+
+/*html {
+  --dark-green: rgb(53, 180, 36);
+  --grey: #d3d3d3;
+  --darker-grey: #b5b5b5;
+  font-family: Tahoma, sans-serif;
+  font-size: 0.8em;
+}*/
+
+div.checkpointBar {
+  --dark-green: rgb(53, 180, 36);
+  --grey: #d3d3d3;
+  --darker-grey: #b5b5b5;
+  margin: 0 10% 0 10%;
+  font-size: 0.8em;
+  font-family: Tahoma, sans-serif;
+}
+
+hr.barLine {
+  height: 8px;
+  background-color: var(--darker-grey);
+  border: 0;
+  margin: 0 2.2% 0 2.2%;
+  border-right: 0vw solid var(--darker-grey);
+}
+
+div.checkpointsContainer {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  top: -22px;
+}
+
+div.checkpoint {
+  display: flex;
+  flex-direction: column;
+  border: 0px solid beige;
+  align-items: center;
+  justify-content: flex-start;
+  max-width: 5em;
+}
+
+div.checkpoint.youAreHere
+  >p.circle {
+    width: 16px;
+    height: 16px;
+    border: 3px solid var(--grey);
+    outline: 6px solid var(--dark-green);
+    margin-top: 6px;
+    margin-bottom: 1.21em;
+}
+
+div.checkpoint.youAreHere {
+  font-weight: bold;
+}
+
+div.checkpoint.upcoming
+  >p.circle {
+    background-color: var(--darker-grey);
+}
+
+p.circle {
+  width: 30px;
+  height: 30px;
+  background-color: var(--dark-green);
+  border-radius: 50%;
+  display: inline-block;
+  align-content: center;
+  margin: 2px 0 12px 0;
+}
+
+p.label {
+  display: inline-block;
+  margin: 0 0 0 0;
+}

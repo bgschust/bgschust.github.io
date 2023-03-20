@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../images/favicon.png">
   <link rel="stylesheet" href="../public/style.css">
+  <link rel="stylesheet" href="../org-admin/style.css">
   <link rel="stylesheet" href="../components/components.css">
   <link rel="stylesheet" href="./sell-item.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
@@ -40,7 +41,34 @@
     </div>
 
     <div class="centeredContent">
+
       <h3>Add a Specific Item</h3>
+
+      <div class="checkpointBarContainer">
+        <br /><br />
+        <div class="checkpointBar">
+          <hr class="barLine completed" />
+          <div class="checkpointsContainer">
+            <div class="checkpoint youAreHere">
+              <p class="circle"></p>
+              <p class="label">Basics</p>
+            </div>
+            <div class="checkpoint upcoming">
+              <p class="circle"></p>
+              <p class="label">Markets</p>
+            </div>
+            <div class="checkpoint upcoming">
+              <p class="circle"></p>
+              <p class="label">Payment & Deliveries</p>
+            </div>
+            <div class="checkpoint upcoming">
+              <p class="circle"></p>
+              <p class="label">Finish</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <p>This will be listed under the current general item.</p>
       <div class="formBlock">
         <div id="specificItem">
@@ -58,11 +86,12 @@
 
           <h4>Markets</h4>
           <ul id="marketList"></ul>
-          <br>
+          <br />
           <div id="statusBlock"></div>
           <button id="submitSpecificItem">Submit</button>
         </div>
       </div>
+      
     </div>
 
     <div class="blankSpace"></div>
