@@ -156,6 +156,20 @@ div.bannerBar {
   padding: 4px;
 }
 
+.loading {
+  filter: blur(5px);
+  position: relative;
+  overflow: hidden;
+}
+
+img.loadingIcon {
+  position: absolute;
+  top: -1em;
+  left: 43%;
+  filter: blur(0px);
+  width: 5em;
+}
+
 input#search {
   display: inline-block;
   border: 1px solid black;

@@ -185,7 +185,9 @@ document.querySelector('input#categoriesFilterInput').value = JSON.stringify(fil
 
   async function renderMyGeneralItems() {
     let records = '';
+    loading('div.myGeneralItems');
     records = await getMyGeneralItems();
+    finishedLoading('div.myGeneralItems');
     (!records) ? records = [] : records;
     
     // browser filtering
