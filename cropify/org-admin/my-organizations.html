@@ -6,6 +6,7 @@
   <link rel="icon" type="image/png" href="../images/favicon.png">
   <link rel="stylesheet" href="../public/style.css">
   <link rel="stylesheet" href="../components/components.css">
+  <link rel="stylesheet" href="../org-admin/style.css">
   <link rel="stylesheet" href="./my-organizations.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
   <script src="../components/functions.js"></script>
@@ -47,7 +48,12 @@
             <label for="retailAddress_zipCode">Zip Code</label>
             <input type="text" id="retailAddress_zipCode">
           </div>
-        </div><br>
+        </div><br />
+        <button id="copyPaste-retailAddress" class="outlined iconTextButton">
+          <span>Copy-paste</span>
+        </button>
+        <br />
+        <br />
         <label for="receivingStreetAddress">Receiving Address</label>
         <input type="text" id="receivingStreetAddress"><br>
         <div>
@@ -82,6 +88,28 @@
   <div class="component footer"></div>
 
 </body>
+
+<script id="copyPaste-retailAddress">
+  function copyPaste(inputsToCopy_querySelecteeArray, inputsForPaste_querySelecteeArray) {
+    var inputsToCopy_querySelecteeArray = inputsToCopy_querySelecteeArray || 
+      ['input#retailStreetAddress'];
+    var inputsForPaste_querySelecteeArray = inputsForPaste_querySelecteeArray || [];
+
+    inputsToCopy_querySelecteeArray.forEach(function (item, index) {
+      let inputValue = document.querySelector(item).value;
+      let inputForPaste_querySelectee = inputsForPaste_querySelecteeArray[index];
+      let inputToPasteInto = document.querySelector(inputForPaste_querySelectee);
+      inputToPasteInto.value = inputValue;
+    });
+  }
+  let copyPaste_retailAddress_button = document.querySelector('button#copyPaste-retailAddress');
+  copyPaste_retailAddress_button.addEventListener('click', function() {
+    copyPaste(
+      ['input#retailStreetAddress', 'input#retailAddress_city', 'select#retailAddress_state', 'input#retailAddress_zipCode'],
+      ['input#receivingStreetAddress', 'input#receivingAddress_city', 'select#receivingAddress_state', 'input#receivingAddress_zipCode']
+    );
+  });
+</script>
 
 <script id="getMyOrganizations">
   async function getMyOrganizations() {
@@ -167,7 +195,6 @@
         tr.appendChild(td2);
         organizationList.appendChild(tr);
       });
-      console.log(response);
     }
   }
   if(getCookie('user')) {

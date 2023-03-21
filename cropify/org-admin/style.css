@@ -1,3 +1,11 @@
+body {
+  --dark-green: rgb(55, 148, 36);
+  --grey: #d3d3d3;
+  --darker-grey: #b5b5b5;
+  --dark-grey: #7c7c7c;
+  --light-black: #494949;
+}
+
 ul#mySales>li>h4 {
   grid-column: 1 / span 5;
   grid-row: 1 / span 1;
@@ -28,14 +36,6 @@ ul#mySales>li>div.detailsContainer {
 p#orderedByUserAtTime {
   padding-top: 8px;
 }
-
-/*html {
-  --dark-green: rgb(53, 180, 36);
-  --grey: #d3d3d3;
-  --darker-grey: #b5b5b5;
-  font-family: Tahoma, sans-serif;
-  font-size: 0.8em;
-}*/
 
 div.checkpointBar {
   --dark-green: rgb(53, 180, 36);
@@ -102,4 +102,45 @@ p.circle {
 p.label {
   display: inline-block;
   margin: 0 0 0 0;
+}
+
+button#copyPaste-retailAddress {
+  background-color: var(--grey);
+  border: 1px solid var(--dark-grey);
+  color: var(--light-black);
+}
+
+button#copyPaste-retailAddress:hover {
+  background-color: var(--dark-grey);
+  border: 1px solid var(--dark-grey);
+  color: white;
+}
+
+button.iconTextButton {
+  display: inline-flex;
+  align-items: center; 
+  line-height: 1.6em;
+  padding: 2px 14px 2px 10px;
+  border-radius: 16px;
+  background-image: url('../images/icons8-transfer-24-light-black.png');
+  background-repeat: no-repeat;
+  background-position-x: 10px;
+  background-position-y: 4px;
+  background-size: 18px;
+}
+
+button.iconTextButton:hover {
+  background-image: url('../images/icons8-transfer-24-white.png');
+  color: white;
+}
+
+button.iconTextButton>img {
+  margin-bottom: 0px;
+  margin-right: 5px;
+  width: 18px;
+}
+
+button.iconTextButton>span {
+  margin: 0 0 1px 25px;
+  color: inherit;
 }
