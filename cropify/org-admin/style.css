@@ -30,7 +30,7 @@ ul#mySales>li>div.detailsContainer {
   grid-column: 6 / span 1;
   grid-row: 1 / span 2;
   display: flex;
-  align-items: right;
+  /*align-items: right;*/
 }
 
 p#orderedByUserAtTime {
@@ -104,13 +104,13 @@ p.label {
   margin: 0 0 0 0;
 }
 
-button#copyPaste-retailAddress {
+button.grey {
   background-color: var(--grey);
   border: 1px solid var(--dark-grey);
   color: var(--light-black);
 }
 
-button#copyPaste-retailAddress:hover {
+button.grey:hover {
   background-color: var(--dark-grey);
   border: 1px solid var(--dark-grey);
   color: white;
