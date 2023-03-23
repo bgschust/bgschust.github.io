@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../images/favicon.png">
   <link rel="stylesheet" href="../public/style.css">
-  <link rel="stylesheet" href="../components/components.css">
+  <link rel="stylesheet" href="../components/style.css">
   <link rel="stylesheet" href="../user-admin/shopping-cart.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
   <script src="../components/functions.js"></script>
@@ -26,7 +26,7 @@
       <p id="totalItems">Total Items: <span>0</span></p>
       <p id="subtotal">Subtotal (AgG): <span>0</span></p>
       <p id="transactionFee">Transaction Fee (AgG): <span>0</span></p>
-      <p id="timestamps">Created at <span>unknown time</span>. Updated at <span>unknown time</span>.</p>
+      <p id="timestamps">Created <span>unknown time</span>.<span> Updated </span><span>unknown time</span>.</p>
     </div>
 
     <h4>Cart Items</h4>
@@ -86,8 +86,16 @@
     cartSummaryContainer.querySelector('p#totalItems>span').textContent = response.cartSummary['field_830550'];
     cartSummaryContainer.querySelector('p#subtotal>span').textContent = response.cartSummary['field_831732'];
     cartSummaryContainer.querySelector('p#transactionFee>span').textContent = response.cartSummary['field_831733'];
-    cartSummaryContainer.querySelectorAll('p#timestamps>span')[0].textContent = response.cartSummary['field_832485'];
-    cartSummaryContainer.querySelectorAll('p#timestamps>span')[1].textContent = new Date(response.cartSummary['field_832486']);
+    let createdDatetime = new Date(response.cartSummary['field_832485']).toString();
+    console.log(new Date(response.cartSummary['field_832485']));
+    cartSummaryContainer.querySelectorAll('p#timestamps>span')[0].textContent = 
+      createdDatetime.slice(0,'Sat Mar 11 2023 10:30:28'.length);
+    if(!response.cartSummary['field_832486']) {
+      cartSummaryContainer.querySelectorAll('p#timestamps>span')[1].textContent = '';
+      cartSummaryContainer.querySelectorAll('p#timestamps>span')[2].textContent = '.';
+    } else {
+      cartSummaryContainer.querySelectorAll('p#timestamps>span')[2].textContent = new Date(response.cartSummary['field_832486']);
+    }
 
     // simplify cart items JSON
     let cartItems = response.cartItems;
