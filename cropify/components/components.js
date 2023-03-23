@@ -1,10 +1,13 @@
 async function getComponentRequest(componentName) {
   let headers = new Headers();
   headers.append("Content-Type", "text/html");
+  //headers.append("Origin", window.location.href);
   let requestOptions = {
       method: "GET",
       headers: headers,
       redirect: "follow",
+      //mode: 'cors',
+      //origin: window.location.href
   };
 
   let url = '../components/'
