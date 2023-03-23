@@ -62,6 +62,12 @@ button.outlined {
   background-color: white;
 }
 
+button.rounded {
+  border-radius: 50vh;
+  line-height: 1.6em;
+  padding: 2px 12px 2px 12px;
+}
+
 a {
   color: var(--primary-green);
 }
@@ -107,6 +113,10 @@ div#listingsSalesOrders div {
   border-radius: 18px;
   color: var(--grey-text);
   font-weight:bold;
+}
+
+div#listingsSalesOrders div:hover {
+  color: var(--dark-grey-text);
 }
 
 div#listingsSalesOrders div.selected {
@@ -183,6 +193,29 @@ input#search {
 input#search + img {
   display: inline-block;
   margin-left: -43px;
+  cursor: pointer;
+}
+
+div.filterSearchBar {
+  display: flex;
+  align-items: center;
+}
+
+div.filterSearchBar
+  >input {
+  display: inline-block;
+  border: 1px solid black;
+  border-radius: 7px;
+  padding: 11px 58px 11px 11px;
+  font-size: 1.2em;
+  width: 265px;
+}
+
+div.filterSearchBar
+  >img {
+  display: inline-block;
+  width: 42px;
+  margin: 0 0 0 -50px;
   cursor: pointer;
 }
 
@@ -441,4 +474,21 @@ input.accordion#accordionPanel_myListings:checked + a label.accordion h3::after 
   color: #000;
   text-decoration: none;
   cursor: pointer;
+}
+
+/* General item filters */
+button#categories-selectAll {
+  background-image: url('../images/icons8-checked-checkbox-24-black.png');
+}
+
+button#categories-selectAll:hover {
+  background-image: url('../images/icons8-checked-checkbox-24-white.png');
+}
+
+button#categories-clearSelection {
+  background-image: url('../images/icons8-x-coordinate-24-black.png');
+}
+
+button#categories-clearSelection:hover {
+  background-image: url('../images/icons8-x-coordinate-24-white.png');
 }

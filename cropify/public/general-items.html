@@ -5,8 +5,9 @@
   <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/png" href="../images/favicon.png">
+  <link rel="stylesheet" href="../org-admin/style.css">
   <link rel="stylesheet" href="../public/style.css">
-  <link rel="stylesheet" href="../components/components.css">
+  <link rel="stylesheet" href="../components/style.css">
   <link rel="stylesheet" href="./general-items.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
   <script src="../components/functions.js"></script>
@@ -36,7 +37,7 @@
     <p>General Items: These are the general items on the marketplace.</p>
 
     <div id="searchContainer">
-      <input type="text" id="search" placeholder="Search...">
+      <input type="text" id="search" placeholder="Try filter-search below...">
       <img src="../images/icons8-search-32.png" alt="searchIcon">
     </div>
 
@@ -57,13 +58,28 @@
       <h4>Item Groups</h4>
       <ul id="groups"></ul>
       <h4>Categories</h4>
+      <div>
+        <button id="categories-selectAll" class="outlined iconTextButton grey"
+          title="Select all categories in this group.">
+          <span>Select all</span>
+        </button>
+        <button id="categories-clearSelection" class="outlined iconTextButton grey"
+          title="De-select all categories in this group.">
+          <span>Clear</span>
+        </button>
+        <button id="categories-default" class="outlined rounded grey"
+          title="Select the default categories for this group.">
+          <span>Default</span>
+        </button>
+      </div>
       <ul id="categories"></ul>
 
       <div class="filterDisplayContainer">
         <table>
           <tr>
             <td>
-              <img src="../images/icons8-filter-and-sort-50.png" alt="List Filters">
+              <img src="../images/icons8-filter-and-sort-50.png" alt="List-Filter Summary Icon"
+                title="Filter Summary" />
             </td>
             <td>
               <div id="groupsFilter">
@@ -95,6 +111,13 @@
           </tr>
         </table>
       </div>
+
+      <br /><br />
+      <div class="filterSearchBar">
+        <input type="text" placeholder="Filter-search..." />
+        <img src="../images/filter-search-icon-47x36-black.png" alt="Filter-search icon" />
+      </div>
+
     </div>
 
     <ul id="generalItems" class="cardList"></ul>
@@ -601,8 +624,17 @@ async function renderGeneralItems() {
   }
   
 
-  // browser search
-  if (searchInput.value != undefined || '') {
+  // browser filter-search
+  if (filterSearchInput.value != undefined || '') {
+    generalItems.forEach(record => {
+      record.searchTargetText = record.Category[0].value + ' ' + record.Name + ' ' + record['Short Description'];
+      record.searchTargetText = record.searchTargetText.toLowerCase();
+    });
+    generalItems = generalItems.filter(function filterSearch(record){
+      return record.searchTargetText.indexOf(filterSearchInput.value.toLowerCase()) >= 0;
+    });
+  }
+  /*if (searchInput.value != undefined || '') {
     generalItems.forEach(record => {
       record.searchTargetText = record.Category[0].value + ' ' + record.Name + ' ' + record['Short Description'];
       record.searchTargetText = record.searchTargetText.toLowerCase();
@@ -610,7 +642,7 @@ async function renderGeneralItems() {
     generalItems = generalItems.filter(function filterSearch(record){
       return record.searchTargetText.indexOf(searchInput.value.toLowerCase()) >= 0;
     });
-  }
+  }*/
 
   let generalItemsContainer = document.querySelector('ul#generalItems');
   generalItemsContainer.innerHTML = '';
@@ -673,6 +705,57 @@ async function renderGeneralItems() {
 }
 </script>
 
+<script id="categoryFilterButtons">
+  let button_categories_selectAll = document.querySelector('button#categories-selectAll');
+  button_categories_selectAll.addEventListener('click', categories_selectAll);
+  function categories_selectAll() {
+    let categories = document.querySelectorAll('ul#categories>li>input[type=checkbox]');
+    categories.forEach(function(item, index) {
+      item.checked = true;
+      let event = {
+        target: {
+          id: item.id,
+          checked: true
+        }
+      };
+      adjustCategories(event);
+    });
+    renderGeneralItems();    
+  }
+
+  let button_categories_clearAll = document.querySelector('button#categories-clearSelection');
+  button_categories_clearAll.addEventListener('click', categories_clearSelection);
+  function categories_clearSelection() {
+    let categories = document.querySelectorAll('ul#categories>li>input[type=checkbox]');
+    categories.forEach(function(item, index) {
+      item.checked = false;
+      let event = {
+        target: {
+          id: item.id,
+          checked: false
+        }
+      };
+      adjustCategories(event);
+    });
+    renderGeneralItems();    
+  }
+
+  let button_categories_default = document.querySelector('button#categories-default');
+  button_categories_default.addEventListener('click', setCategories_groupDefault);
+  function setCategories_groupDefault() {
+    filter.group = filterDefault.group;
+    filter.groupObjects = filterDefault.groupObjects;
+    filter.groupNames = _.pluck(filter.groupObjects, 'value');
+    filterGroupInput.value = JSON.stringify(filter.group);
+    filter.categories = filterDefault.categories;
+    filter.categoryObjects = filterDefault.categoryObjects;
+    filter.categoryNames = _.pluck(filter.categoryObjects, 'value');
+    filterCategoriesInput.value = JSON.stringify(filter.categories);
+    renderCategories();
+    renderGeneralItems();
+  }
+</script>
+
 <script id="processFilters">
 // initially render lists
 let groups = renderGroups();
@@ -692,12 +775,19 @@ function adjustGroups(event){
   renderCategories();
 }
 let categoriesContainer = document.querySelector('ul#categories');
-categoriesContainer.addEventListener('change', adjustCategories);
+categoriesContainer.addEventListener('change', function(event) {
+  adjustCategories(event);
+  renderGeneralItems();
+});
 function adjustCategories(event){
   filter.categoryObjects = _.sortBy(filter.categoryObjects, 'id');
   filter.categories = _.pluck(filter.categoryObjects,'id');
+  let categoryIdPos = filter.categories.indexOf(JSON.parse(event.target.id).id);
   if (event.target.checked) {
-    filter.categoryObjects.push(JSON.parse(event.target.id));
+    let categoryObject = JSON.parse(event.target.id);
+    if(categoryIdPos < 0) {
+      filter.categoryObjects.push(categoryObject);
+    }
   } else if (!event.target.checked) {
     let i = filter.categories.indexOf(JSON.parse(event.target.id).id);
     if(i >= 0) {
@@ -709,7 +799,6 @@ function adjustCategories(event){
   filter.categoryNames = _.pluck(filter.categoryObjects, 'value').sort().join(', ');
   document.querySelector('div#categoriesFilter>div>span').textContent = filter.categoryNames;
   filterCategoriesInput.value = JSON.stringify(filter.categories);
-  renderGeneralItems();
   return filter;
 }
 
@@ -760,8 +849,15 @@ function getSorted()  {
 sortGeneralItems.addEventListener('change', getSorted);
 
 // get search input value and re-render
-let searchInput = document.querySelector('input#search');
+/*let searchInput = document.querySelector('input#search');
 searchInput.addEventListener('change', getSearched);
+function getSearched() {
+  renderGeneralItems();
+}*/
+
+// listen to changes in filter-search input
+let filterSearchInput = document.querySelector('div.filterSearchBar>input[type=text]');
+filterSearchInput.addEventListener('change', getSearched);
 function getSearched() {
   renderGeneralItems();
 }
