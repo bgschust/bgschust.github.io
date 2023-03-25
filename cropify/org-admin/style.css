@@ -144,3 +144,9 @@ button.iconTextButton>span {
   margin: 0 0 1px 25px;
   color: inherit;
 }
+
+input[readonly] {
+  background-color: var(--dark-grey);
+  color: white;
+  appearance: textfield;
+}

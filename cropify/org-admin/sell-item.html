@@ -252,6 +252,9 @@
         let divPrice = document.createElement('div');
         let labelPrice = document.createElement('label');
         let inputPrice = document.createElement('input');
+        let divCalcPrice = document.createElement('div');
+        let labelCalcPrice = document.createElement('label');
+        let inputCalcPrice = document.createElement('input');
         let divQty = document.createElement('div');
         let labelQty = document.createElement('label');
         let inputQty = document.createElement('input');
@@ -275,6 +278,11 @@
         inputPrice.value = 1.00;
         inputPrice.step = 0.01;
         labelPrice.textContent = 'Price (AgG)';
+        divCalcPrice.classList.add('calcPrice');
+        inputCalcPrice.setAttribute('type', 'number');
+        inputCalcPrice.setAttribute('readonly', true);
+        inputCalcPrice.value = 1;
+        labelCalcPrice.textContent = 'Price (USD)';
         divQty.classList.add('qty');
         inputQty.setAttribute('type', 'number');
         inputQty.value = 1.00;
@@ -288,10 +296,13 @@
         divAvailabilityProfile.appendChild(selectAvailabilityProfile);
         divPrice.appendChild(labelPrice);
         divPrice.appendChild(inputPrice);
+        divCalcPrice.appendChild(labelCalcPrice);
+        divCalcPrice.appendChild(inputCalcPrice);
         divQty.appendChild(labelQty);
         divQty.appendChild(inputQty);
         formBlock.appendChild(divAvailabilityProfile);
         formBlock.appendChild(divPrice);
+        formBlock.appendChild(divCalcPrice);
         formBlock.appendChild(divQty);
         li.appendChild(formBlock);
         list.appendChild(li);
@@ -303,7 +314,57 @@
     return response;
   }
   if(getCookie('user')) {
-    renderMyMarketItems();
+    renderMyMarketItems_withEventListeners();
+    async function renderMyMarketItems_withEventListeners() {
+      let myMarketItems = await renderMyMarketItems();
+
+      // get request catalog item price for transaction tokens
+      let tokenCatalogItems = await getRequest_tokenCatalogItems();
+      let transactionToken_USDperAgG = tokenCatalogItems.results.transactionToken_USDperAgG;
+
+      // event listener for AgG price inputs
+      if(myMarketItems) {
+        document.querySelectorAll('div.price').forEach(function(item) {
+          ['keyup','change'].forEach( function(event) {
+              item.addEventListener(event, eventAction, false);
+          });
+          function eventAction() {
+            let inputPriceValue = item.querySelector('input[type=number]').value;
+            let calcPriceValue = inputPriceValue*transactionToken_USDperAgG;
+            item.parentNode.querySelector('div.calcPrice>input').value = calcPriceValue.toFixed(2);
+          }
+        });
+      }
+    }
+  }
+</script>
+
+<script id="tokenExchange">
+  async function getRequest_tokenCatalogItems() {
+    let headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    headers.append("Authorization", JSON.stringify([
+      {"User ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password}
+    ]));
+    let requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow"
+    };
+
+    let queryParams = [];
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+    + 'https://n8n.cropify.org/webhook/22684723-1c5d-494c-87c5-728cfca3228f',
+    queryParams);
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
   }
 </script>
 

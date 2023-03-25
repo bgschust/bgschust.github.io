@@ -47,8 +47,7 @@ div.formBlock.marketItem {
 }
 
 div.formBlock.marketItem>div.availabilityProfile {
-  grid-column-start: 1;
-  grid-column-end: 3;
+  grid-column: 1 / span 3;
   grid-row-start: 1;
   grid-row-end: 1;
 }
@@ -58,9 +57,13 @@ div.formBlock.marketItem>div.price {
   grid-row-start: 2;
   grid-row-end: 2;
 }
+div.formBlock.marketItem>div.calcPrice {
+  grid-column: 2;
+  grid-row: 2;
+}
 div.formBlock.marketItem>div.qty {
-  grid-column-start: 2;
-  grid-column-end: 2;
+  grid-column-start: 3;
+  grid-column-end: 3;
   grid-row-start: 2;
   grid-row-end: 2;
 }
