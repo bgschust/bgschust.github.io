@@ -24,7 +24,12 @@
         <p>Email address</p>
         <p>Zipcode: <span>zipcode</span></p>
       </div>
-      <br>
+      <br />
+      <h4>Account Balance</h4>
+      <div class="accountBalances">
+        <p id="transactionAccountBalance">Transaction account: <span class="AgG-value"></span></p>
+      </div>
+      <br />
       <a href="../org-admin/my-organizations.html" class="cardLink">Organizations</a><br>
       <a href="../org-admin/my-availability-profiles.html" class="cardLink">Availability Profiles</a><br>
       <br>
@@ -87,6 +92,8 @@
     let response = await getUser();
 
     let profileSummary = document.querySelector('div#profileSummary');
+    let accountBalances = document.querySelector('div.accountBalances');
+
     if (!response.user) {
       profileSummary.textContent = response.message;
     } else {
@@ -94,7 +101,9 @@
       profileSummary.querySelectorAll('p')[0].querySelectorAll('span')[2].textContent = response.user['Last Name'];
       profileSummary.querySelectorAll('p')[1].textContent = response.user['Email Address'];
       profileSummary.querySelectorAll('p')[2].querySelectorAll('span')[0].textContent = response.user['Zipcode'];
-    }    
+      
+      accountBalances.querySelector('p#transactionAccountBalance>span').textContent = (response.user['Transaction account balance (AgG)'] || 0) + ' AgG';
+    }
   }
   if(getCookie('user')) {
     renderProfile();

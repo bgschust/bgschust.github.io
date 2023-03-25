@@ -87,7 +87,6 @@
     cartSummaryContainer.querySelector('p#subtotal>span').textContent = response.cartSummary['field_831732'];
     cartSummaryContainer.querySelector('p#transactionFee>span').textContent = response.cartSummary['field_831733'];
     let createdDatetime = new Date(response.cartSummary['field_832485']).toString();
-    console.log(new Date(response.cartSummary['field_832485']));
     cartSummaryContainer.querySelectorAll('p#timestamps>span')[0].textContent = 
       createdDatetime.slice(0,'Sat Mar 11 2023 10:30:28'.length);
     if(!response.cartSummary['field_832486']) {
