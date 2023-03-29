@@ -275,12 +275,15 @@
         labelAvailabilityProfile.textContent = 'Availability';
         divPrice.classList.add('price');
         inputPrice.setAttribute('type', 'number');
+        inputPrice.setAttribute('min', 0.25);
+        inputPrice.setAttribute('max', 25);
         inputPrice.value = 1.00;
         inputPrice.step = 0.01;
         labelPrice.textContent = 'Price (AgG)';
         divCalcPrice.classList.add('calcPrice');
         inputCalcPrice.setAttribute('type', 'number');
         inputCalcPrice.setAttribute('readonly', true);
+        inputCalcPrice.setAttribute('title', 'This is a calculated field.');
         inputCalcPrice.value = 1;
         labelCalcPrice.textContent = 'Price (USD)';
         divQty.classList.add('qty');
@@ -628,6 +631,7 @@
     let marketItems_nodes = document.querySelector('ul#marketItemList').childNodes;
     let marketItems = [];
     marketItems_nodes.forEach(function(marketItemNode) {
+      let marketItemNodeClone = marketItemNode.cloneNode(true);
       let marketItem = {};
       marketItem["Specific Item ID"] = specificItemID;
       let marketItemID = Number(marketItemNode.id.slice('marketItemID-'.length));
@@ -636,6 +640,8 @@
       marketItem["Availability Profile ID"] = availabilityProfileID;
       let price = Number(marketItemNode.querySelector('div.price>input').value);
       marketItem["Price (AgG)"] = price;
+      let calcPrice = Number(marketItemNodeClone.querySelector('div.calcPrice>input').value);
+      marketItem["Price (USD)"] = calcPrice;
       let qty = Number(marketItemNode.querySelector('div.qty>input').value);
       marketItem["Quantity"] = qty;
       marketItems.push(marketItem);
