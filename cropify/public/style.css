@@ -492,3 +492,8 @@ button#categories-clearSelection {
 button#categories-clearSelection:hover {
   background-image: url('../images/icons8-x-coordinate-24-white.png');
 }
+
+/* Breadcrumbs */
+.breadcrumbsTyped {
+  color: var(--grey-text);
+}
