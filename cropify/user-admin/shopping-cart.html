@@ -11,6 +11,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
   <script src="../components/functions.js"></script>
   <script src="../components/components.js"></script>
+  <script src="../components/tokens.js"></script>
 </head>
 <body>
 
@@ -24,8 +25,8 @@
     <div id="cartSummaryContainer">
       <p id="uniqueItems">Unique Items: <span>0</span></p>
       <p id="totalItems">Total Items: <span>0</span></p>
-      <p id="subtotal">Subtotal (AgG): <span>0</span></p>
-      <p id="transactionFee">Transaction Fee (AgG): <span>0</span></p>
+      <p id="subtotal">Subtotal: <span>0 AgG</span> / <span>0 USD</span></p>
+      <p id="transactionFee">Transaction Fee: <span>0 AgG</span></p>
       <p id="timestamps">Created <span>unknown time</span>.<span> Updated </span><span>unknown time</span>.</p>
     </div>
 
@@ -84,8 +85,8 @@
     let cartSummaryContainer = document.querySelector('div#cartSummaryContainer');
     cartSummaryContainer.querySelector('p#uniqueItems>span').textContent = response.cartSummary['field_830551'];
     cartSummaryContainer.querySelector('p#totalItems>span').textContent = response.cartSummary['field_830550'];
-    cartSummaryContainer.querySelector('p#subtotal>span').textContent = response.cartSummary['field_831732'];
-    cartSummaryContainer.querySelector('p#transactionFee>span').textContent = response.cartSummary['field_831733'];
+    cartSummaryContainer.querySelector('p#subtotal>span').textContent = response.cartSummary['field_831732'] + ' AgG';
+    cartSummaryContainer.querySelector('p#transactionFee>span').textContent = response.cartSummary['field_831733'] + ' AgG';
     let createdDatetime = new Date(response.cartSummary['field_832485']).toString();
     cartSummaryContainer.querySelectorAll('p#timestamps>span')[0].textContent = 
       createdDatetime.slice(0,'Sat Mar 11 2023 10:30:28'.length);
@@ -194,8 +195,45 @@
       marketDiv.appendChild(marketContent);
       cartItemsContainer.appendChild(marketDiv);
     });
+    return response;
   }
-  renderCart();
+
+  if(getCookie('user')) {
+    renderCart_withCalcPrices();
+    async function renderCart_withCalcPrices() {
+      let cart = await renderCart();
+      //console.log(cart);
+
+      // get-request catalog item price for transaction tokens
+      /* price is already set on the market item, but this will dynamically update USD price in the cart */
+      let tokenCatalogExchangeRates = await getRequest_tokenCatalogItems();
+      let transactionToken_USDperAgG = Number(tokenCatalogExchangeRates.results.transactionToken_USDperAgG).toFixed(2);
+
+      // convert AgG prices to USD
+      if(cart) {
+        let subtotalUSD = cart.cartSummary['field_1010203'];
+        cart.cartItems.forEach(function(cartItem, index){
+          let extPriceAgG = Number(cartItem['Extended Price (AgG)']);
+          let extPriceUSD = Number(extPriceAgG*transactionToken_USDperAgG);
+          cartItem['Extended Price (USD)'] = extPriceUSD.toFixed(2);
+          if(cartItem['Payment Method'].id == 528013) { // pay USD
+            subtotalUSD = subtotalUSD + extPriceUSD;
+            let cartItemDiv = document.querySelector('div#basketItemID-'+cartItem['id']);
+            let cartItem_payment = document.createElement('p');
+            cartItem_payment.textContent = cartItem['Payment Method'].value + ': $' + extPriceUSD.toFixed(2);
+            cartItemDiv.querySelector('div.cartItemCol1').appendChild(cartItem_payment);
+            //console.log(cartItemDiv);
+          }
+        });
+        cart.cartSummary['field_1010203'] = subtotalUSD.toFixed(2);
+        let cartSummaryContainer = document.querySelector('div#cartSummaryContainer');
+        cartSummaryContainer.querySelectorAll('p#subtotal>span')[1].textContent = cart.cartSummary['field_1010203'] + ' USD';
+        //console.log(cart);
+      }
+
+      return cart;
+    }
+  }
 
 </script>
 

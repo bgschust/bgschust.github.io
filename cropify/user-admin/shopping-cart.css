@@ -36,12 +36,19 @@ div.supplierContent {
 
 div.cartItem {
   display: grid;
+  margin-bottom: 5px;
 }
 
 div.cartItem>div.cartItemCol1 {
   grid-column-start: 1;
   grid-column-end: 5;
 }
+
+div.cartItem
+  >div.cartItemCol1
+  >p {
+    margin: 3px 0 3px 0;
+  }
 
 div.cartItem>div.cartItemCol2 {
   grid-column-start: 6;
