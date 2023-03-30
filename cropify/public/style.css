@@ -240,6 +240,10 @@ div.centeredContent {
   text-align: center;
 }
 
+label {
+  cursor: pointer;
+}
+
 div.formBlock {
   color: var(--dark-grey-text);
   display: inline-block;
