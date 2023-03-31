@@ -91,8 +91,7 @@
 
   async function renderOrderList() {
     let response = await getRequest_orderList();
-    //response = {"summary":{"count":1},"basicOrderList":[{"id":2,"order":"2.00000000000000000000","field_830481":"bgschust@gmail.com's Order","field_830486":[{"id":15,"value":"bgschust@gmail.com"}],"field_830548":[{"id":47,"value":"n8n Entry"},{"id":51,"value":"n8n Entry"},{"id":52,"value":"n8n Entry"},{"id":53,"value":"Manual Entry"}],"field_830550":"8.00","field_830551":"4","field_831732":"19.51","field_831733":"2.09","field_832416":{"id":377739,"value":"Order","color":"red"},"field_832485":"2023-01-12T05:30:00Z","field_832486":"2023-02-10T22:21:16.175000Z","field_902131":"2023-02-10T22:21:16.175000Z","field_902831":[{"id":15,"value":"bgschust@gmail.com"}],"field_902833":[],"field_902852":[],"field_902861":"2","field_903137":[]}]};
-
+    
     // render summary
     let summaryContainer = document.querySelector('div#orderListSummaryContainer');
     summaryContainer.querySelector('p#count>span').textContent = response.summary['count'];
@@ -100,20 +99,6 @@
     // simplify records JSON
     let records = response.basicOrderList;
     let recordCount = records.length;
-    /*records.forEach((record, index) => {
-      cartItems[index].supplierName = item.Supplier[0].value;
-      cartItems[index].supplierID = item.Supplier[0].ids.database_table_127809;
-      cartItems[index].supplierObject = {
-        id: item.Supplier[0].ids.database_table_127809,
-        value: item.Supplier[0].value
-      };
-      cartItems[index].marketName = item.Market[0].value;
-      cartItems[index].marketID = item.Market[0].ids.database_table_127809;
-      cartItems[index].marketObject = {
-        id: item.Market[0].ids.database_table_127809,
-        value: item.Market[0].value
-      };
-    });*/
 
     // sort records
     //records = _.sortBy(records, 'field_902131');
@@ -160,10 +145,10 @@
       detailBtn.classList.add('iconTextBtn');
       col2.classList.add('col2');
       p1.textContent = record['field_830551']+' market items ('+record['field_830550']+' total)'; // item counts
-      p2.textContent = 'Subtotal (AgG): '+record['field_831732']; // subtotal
-      p3.textContent = 'Transaction Fee (AgG): '+record['field_831733']; // subtotal
-      p4.textContent = 'Total (AgG): '+(Number(record['field_831732'])+Number(record['field_831733'])).toFixed(2); // subtotal
-      //p5.textContent = 'Subtotal (AgG): '+record['field_831732']; // subtotal
+      p2.textContent = 'Subtotal: ' + record['field_831732'] + ' AgG / ' + record['field_1010203'] + ' USD'; // subtotal
+      p3.textContent = 'Transaction Fee: ' + record['field_831733'] + ' AgG'; // transaction fee
+      p4.textContent = 'Total (AgG): '+(Number(record['field_831732'])+Number(record['field_831733'])).toFixed(2); // total
+      //p5.textContent = 'Subtotal (AgG): '+record['field_831732']; // applicable subtotal for amounts paid & owed in each currency
 
       listItem.appendChild(title);
       listItem.appendChild(orderTime);

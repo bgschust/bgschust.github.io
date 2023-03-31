@@ -41,8 +41,8 @@
       <div id="basketSummary">
         <p id="uniqueItems">Unique Items: <span>0</span></p>
         <p id="totalItems">Total Items: <span>0</span></p>
-        <p id="subtotal">Subtotal (AgG): <span>0</span></p>
-        <p id="transactionFee">Transaction Fee (AgG): <span>0</span></p>
+        <p id="subtotal">Subtotal: <span>0</span></p>
+        <p id="transactionFee">Transaction Fee: <span>0</span></p>
         <p id="timestamp">Ordered at <span>unknown time</span>.</p>
       </div>
     </div>
@@ -159,8 +159,8 @@
     let basketSummaryContainer = document.querySelector('div#basketSummary');
     basketSummaryContainer.querySelector('p#uniqueItems>span').textContent = orderBasket['field_830551'];
     basketSummaryContainer.querySelector('p#totalItems>span').textContent = orderBasket['field_830550'];
-    basketSummaryContainer.querySelector('p#subtotal>span').textContent = orderBasket['field_831732'];
-    basketSummaryContainer.querySelector('p#transactionFee>span').textContent = orderBasket['field_831733'];
+    basketSummaryContainer.querySelector('p#subtotal>span').textContent = orderBasket['field_831732'] + ' AgG / ' + orderBasket['field_1010203'] + ' USD';
+    basketSummaryContainer.querySelector('p#transactionFee>span').textContent = orderBasket['field_831733'] + ' AgG';
     basketSummaryContainer.querySelector('p#timestamp>span').textContent = orderBasket['field_902131'];
   };
 </script>
@@ -292,6 +292,19 @@
       marketDiv.appendChild(marketContent);
       basketItemsList.appendChild(marketDiv);
     });
+    return basketItems;
+  }
+  async function renderBasketItems_withPayments(authToken) {
+    let basketItems = await renderBasketItems(authToken);
+    basketItems.forEach(function(basketItem, index) {
+      if(basketItem['field_830492'].value == 'Pay at Pick-Up (USD)') {
+        let basketItemDiv = document.querySelector('div#basketItemID-'+basketItem.id);
+        let basketItemP3 = document.createElement('p');
+        basketItemP3.textContent = 'Pay at Pick-Up (USD): $' + basketItem['field_1010164'];
+        let cartItemCol1 = basketItemDiv.querySelector('div.cartItemCol1');
+        cartItemCol1.appendChild(basketItemP3);
+      }
+    });
   }
 </script>
 
@@ -303,7 +316,7 @@
     if(authToken) {
       authToken = authToken["Authorization Token"];
       renderOrderSummary(authToken);
-      renderBasketItems(authToken);
+      renderBasketItems_withPayments(authToken);
     }
   }
   execute();
