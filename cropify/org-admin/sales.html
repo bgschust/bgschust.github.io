@@ -212,10 +212,10 @@
       detailBtn.classList.add('iconTextBtn');
       col2.classList.add('col2');
       p1.textContent = record['field_830551']+' market items ('+record['field_830550']+' total)'; // item counts
-      p2.textContent = 'Subtotal (AgG): '+record['field_831732']; // subtotal
-      p3.textContent = 'Transaction Fee (AgG): '+record['field_831733']; // subtotal
-      p4.textContent = 'Total (AgG): '+(Number(record['field_831732'])+Number(record['field_831733'])).toFixed(2); // subtotal
-      //p5.textContent = 'Subtotal (AgG): '+record['field_831732']; // subtotal
+      p2.textContent = 'Subtotal Value: ' + record['field_831732'] + ' AgG / ' + record['field_1010203'] + ' USD';
+      p3.textContent = 'Transaction Fee (AgG): '+record['field_831733']; 
+      p4.textContent = 'Total (AgG): '+(Number(record['field_831732'])+Number(record['field_831733'])).toFixed(2);
+      //p5.textContent = 'Subtotal (AgG): '+record['field_831732'];
 
       listItem.appendChild(title);
       listItem.appendChild(orderTime);

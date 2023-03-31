@@ -43,7 +43,7 @@
       <div id="basketSummary">
         <p id="uniqueItems">Unique Items: <span>0</span></p>
         <p id="totalItems">Total Items: <span>0</span></p>
-        <p id="subtotal">Subtotal (AgG): <span>0</span></p>
+        <p id="subtotal">Subtotal: <span>0</span></p>
         <p id="transactionFee">Transaction Fee (AgG): <span>0</span></p>
         <p id="orderedByUserAtTime">Ordered by <span>an unknown user</span> at <span>an unknown time</span>.</p>
       </div>
@@ -142,7 +142,7 @@
     let basketSummaryContainer = document.querySelector('div#basketSummary');
     basketSummaryContainer.querySelector('p#uniqueItems>span').textContent = basketSummary_json['field_830551'];
     basketSummaryContainer.querySelector('p#totalItems>span').textContent = basketSummary_json['field_830550'];
-    basketSummaryContainer.querySelector('p#subtotal>span').textContent = basketSummary_json['field_831732'];
+    basketSummaryContainer.querySelector('p#subtotal>span').textContent = basketSummary_json['field_831732'] + ' AgG / ' + basketSummary_json['field_1010203'] + ' USD';
     basketSummaryContainer.querySelector('p#transactionFee>span').textContent = transactionFee;
     basketSummaryContainer.querySelectorAll('p#orderedByUserAtTime>span')[0].textContent = 
       basketSummary_json['field_968262'] + ', ' + basketSummary_json['field_968261'] + ' (' + basketSummary_json['field_968263'] + ')';
@@ -245,42 +245,19 @@
       marketDiv.appendChild(marketContent);
       basketItemsList.appendChild(marketDiv);
     });
+    return basketItems;
   };
-</script>
-
-<script id="getBasketItems">
-  /*async function getRequest_basketItems(authToken) {
-    var headers = new Headers();
-    headers.append("Content-Type", "application/json");
-    headers.append("Authorization", "Token "+authToken);
-    var requestOptions = {
-        method: "GET",
-        headers: headers,
-        redirect: "follow",
-    };
-
-    let queryParams = [
-      {"User_ID": JSON.parse(getCookie('user')).id},
-      {"Password": JSON.parse(getCookie('user')).Password},
-      {"Basket_ID": basket_ID}
-    ];
-
-    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
-      + 'https://n8n.cropify.org/webhook/f01bc80a-4782-4e34-884e-89c7083d09e9',
-      queryParams);
-    try {
-        let res = await fetch(url, requestOptions);
-        res = await res.json();
-        return await res;
-    } catch (error) {
-        console.log(error);
-    }
-  }*/
-
-  async function renderBasketItems(authToken) {
-    let response = await getRequest_basketItems(authToken);
-
-    
+  async function renderBasket_withPayments(authToken) {
+    let basketItems = await renderSaleDetails(authToken);
+    basketItems.forEach(function(basketItem, index) {
+      if(basketItem['field_830492'].value == 'Pay at Pick-Up (USD)') {
+        let basketItemDiv = document.querySelector('div#basketItemID-'+basketItem.id);
+        let basketItemP3 = document.createElement('p');
+        basketItemP3.textContent = 'Collect at Pick-Up (USD): $' + basketItem['field_1010164'];
+        let cartItemCol1 = basketItemDiv.querySelector('div.cartItemCol1');
+        cartItemCol1.appendChild(basketItemP3);
+      }
+    });
   }
 </script>
 
@@ -291,7 +268,7 @@
 
     if(authToken) {
       authToken = authToken["Authorization Token"];
-      renderSaleDetails(authToken);
+      renderBasket_withPayments(authToken);
     }
   }
   execute();
