@@ -63,8 +63,9 @@ function validateFormInputs(formSelectee, submitSelectee) {
       let validationBlock = document.createElement('p');
       validationBlock.classList.add('validationBlock');
       validationBlock.setAttribute('for', validationBlockId);
-
+      let validationBlock_statusSpan = document.createElement('span');
       validationBlock.innerHTML = validationBlockName+": <br />";
+      validationBlock.appendChild(validationBlock_statusSpan);
 
       if(!groupDiv) {
         if (['text', 'email'].indexOf(inputNode.getAttribute('type')) >= 0) {
@@ -79,7 +80,8 @@ function validateFormInputs(formSelectee, submitSelectee) {
 
     function modifyValidationBlock(validationBlockId, validation) {
       let validationBlock = form.querySelector('p.validationBlock[for='+validationBlockId+']');
-      validationBlock.innerHTML += 'Yo yo hey ';
+      let validationBlock_statusSpan = validationBlock.querySelector('span');
+      validationBlock_statusSpan.innerHTML = validation.status;
     }
 
     return formValidation;
@@ -89,233 +91,53 @@ function validateFormInputs(formSelectee, submitSelectee) {
 function validateInput (inputNode) {
   let validation = {status: '', check: ''};
   if (!inputNode.checkValidity()) {
+    // check if required and min, max lengths
     validation.check = 'fail';
+    validation.status = '&#8226; '+inputNode.getAttribute('name')+' is required and/or has character length restriction(s).';
   } else {
-    validation.check = 'pass';
+    let inputType = inputNode.getAttribute('type');
+    if (['text', 'textarea', 'email', 'password', 'tel', 'url'].indexOf(inputType) >= 0) {
+      if(inputNode.classList.contains('zipCode')) {
+        // validate to U.S. zip code standards
+        let zip5Length = (inputNode.value.length >= 5) ? 5 : inputNode.value.length;
+        let zip5 = inputNode.value.slice(0, zip5Length);
+        if (!zip5.match(/[0-9]/g) || zip5.match(/[0-9]/g).length != 5) {
+          validation.check = 'fail';
+          validation.status += '&#8226; '+'U.S. zip codes only, please.<br />'
+        }
+        // handle extended zip codes
+        if (inputNode.value.length > 5) {
+          if (inputNode.value.charAt(5) != '-') {
+            validation.check = 'fail';
+            validation.status += '&#8226; '+'If you are entering an extended zip code, please include a hyphen (dash).<br />'
+          } else if (inputNode.value.length != 10) {
+            validation.check = 'fail';
+            validation.status += '&#8226; '+'U.S. extended zip codes must be 10 characters long. You can also use a standard zip code.<br />'
+          } else {
+            let plus4 = inputNode.value.slice(6, inputNode.value.length);
+            if (!plus4.match(/[0-9]/g) || plus4.match(/[0-9]/g).length != 4) {
+              validation.check = 'fail';
+              validation.status += '&#8226; '+'U.S. zip code plus four (zip+4) must have only integers after the dash.<br />'  
+            }
+          }
+        }
+      }
+      if(inputNode.classList.contains('postalCode')) {
+        // validate for postal codes that may not be in the U.S.
+      }
+      if(inputType == 'email') {
+        let host = inputNode.value.slice(inputNode.value.indexOf('@')+1);
+        if (host.indexOf('.') < 0) {
+          validation.check = 'fail';
+          validation.status += '&#8226; '+'Not an acceptable email pattern: missing top-level domain.<br />';
+        }
+      }
+    } else if (false) {
+
+    } else {
+      validation.check = 'pass';
+    }
   }
+  if(validation.check != 'fail') { validation.check = 'pass'; }
   return validation;
 }
-
-function validateInputs(inputGroup) {
-
-  let input = form.querySelector(querySelectee);
-  let inputType = input.getAttribute('type');
-
-  let status = labelText + ': <br />';
-  let validationCheck = '';
-
-  if (input.required && !input.value) {
-    // if required field is empty
-    status = 'This field is required.';
-    validationCheck = 'Fail';
-  } else {
-    if(['text', 'textarea', 'email', 'password', 'tel', 'url'].indexOf(inputType) >= 0) {
-      // length check
-      let minlength = input.getAttribute('minlength');
-      let maxlength = input.getAttribute('maxlength');
-      if(input.value.length < minlength || input.value.length >= maxlength) {
-        validationCheck = 'Fail';
-        status += 'Field should be ' + minlength + '-' + maxlength + ' characters long.' + '<br />';
-      } else {
-        status += 'Length is acceptable (' + minlength + '-' + maxlength + ' characters).' + '<br />';
-      }
-      // acceptable character check
-      if(inputType == 'email') {
-        if(input.checkValidity() == false) {
-          validationCheck = 'Fail';
-          status += 'Does not match standard email pattern.<br />';
-        } else { 
-          // extra validation
-          let host = input.value.slice(input.value.indexOf('@')+1);
-          if (host.indexOf('.') < 0) {
-            validationCheck = 'Fail';
-            status += 'Does not match acceptable email pattern: missing top-level domain.<br />';
-          }
-        }
-      } else if (inputType == 'password') {
-
-      }
-    } else if (inputType == 'number') {
-
-    } else if (inputType == 'textarea') {
-
-    } else if (inputType == 'password') {
-
-    } else if (inputType == 'email') {
-
-    } else if (inputType == 'tel') {
-
-    }
-  }
-  if (validationCheck == '') {
-    validationCheck = 'Pass';
-  }
-
-  let validationStatus = {status: status, validationCheck: validationCheck};
-  return validationStatus;
-}
-
-/*function validateInput(input) {
-  let form = document.querySelector(formSelectee);
-
-  let input = form.querySelector(querySelectee);
-  let inputType = input.getAttribute('type');
-
-  let status = labelText + ': <br />';
-  let validationCheck = '';
-
-  if (input.required && !input.value) {
-    // if required field is empty
-    status = 'This field is required.';
-    validationCheck = 'Fail';
-  } else {
-    if(['text', 'textarea', 'email', 'password', 'tel', 'url'].indexOf(inputType) >= 0) {
-      // length check
-      let minlength = input.getAttribute('minlength');
-      let maxlength = input.getAttribute('maxlength');
-      if(input.value.length < minlength || input.value.length >= maxlength) {
-        validationCheck = 'Fail';
-        status += 'Field should be ' + minlength + '-' + maxlength + ' characters long.' + '<br />';
-      } else {
-        status += 'Length is acceptable (' + minlength + '-' + maxlength + ' characters).' + '<br />';
-      }
-      // acceptable character check
-      if(inputType == 'email') {
-        if(input.checkValidity() == false) {
-          validationCheck = 'Fail';
-          status += 'Does not match standard email pattern.<br />';
-        } else { 
-          // extra validation
-          let host = input.value.slice(input.value.indexOf('@')+1);
-          if (host.indexOf('.') < 0) {
-            validationCheck = 'Fail';
-            status += 'Does not match acceptable email pattern: missing top-level domain.<br />';
-          }
-        }
-      } else if (inputType == 'password') {
-
-      }
-    } else if (inputType == 'number') {
-
-    } else if (inputType == 'textarea') {
-
-    } else if (inputType == 'password') {
-
-    } else if (inputType == 'email') {
-
-    } else if (inputType == 'tel') {
-
-    }
-  }
-  if (validationCheck == '') {
-    validationCheck = 'Pass';
-  }
-
-  let validationStatus = {status: status, validationCheck: validationCheck};
-  return validationStatus;
-}
-
-function validateInputs(inputBlock, formSelectee) {
-// Validate input fields that appear on the same line such as name (first, last) 
-  // or input fields that are otherwise grouped, such as confirmation fields
-  let validationStatusArray = [];
-  inputBlock.forEach(function(inputObject) {
-    let validationStatus = validateInput(formSelectee, inputObject['querySelectee'], inputObject['labelText']);
-    validationStatusArray.push(validationStatus);
-  });
-  return validationStatusArray;
-}
-
-function validateForm(formSelectee, inputBatch, submitSelectee) {
-  let formValidationCheck = '';
-  let form = document.querySelector(formSelectee);
-  
-  function renderValidationBlock(inputObject, validationStatus) {
-    let existingValidationBlock = document.querySelector('p.validationBlock[for='+inputObject['name']+']');
-    if(!existingValidationBlock) {
-      let validationBlock = document.createElement('p');
-      validationBlock.classList.add('validationBlock');
-      validationBlock.setAttribute('for', inputObject['name']);
-      validationBlock.innerHTML = validationStatus.status;
-      input = document.querySelector(inputObject['querySelectee']);
-      input.insertAdjacentElement('afterend', validationBlock);
-      if(validationStatus.validationCheck == 'Pass') {
-        validationBlock.remove();
-      }
-    } else {
-      existingValidationBlock.innerHTML = validationStatus.status;
-      if(validationStatus.validationCheck == 'Pass') {
-        existingValidationBlock.remove();
-      }
-    }
-  }
-
-  function renderCompositeValidationBlock(inputBlock, validationStatusArray) {
-    let groupDiv = form.querySelector(inputBlock[0]['groupDivSelectee']);
-    let groupValidationCheck = '';
-    let groupStatus = '';
-
-    validationStatusArray.forEach(function(validationStatus) {
-      if (validationStatus.validationCheck == 'Fail') {
-        groupValidationCheck = 'Fail';
-      }
-      groupStatus += validationStatus.status;
-    });
-    if (groupValidationCheck == '') {
-      groupValidationCheck = 'Pass';
-    }
-    //console.log(groupValidationCheck);
-
-    let groupDivName = groupDiv.classList[groupDiv.classList.length-1]; // last class name
-    //console.log(groupDivName);
-    console.log(groupDiv);
-    let existingCompositeValidationBlock = document.querySelector('p.validationBlock[for='+groupDivName+']');
-    console.log(existingCompositeValidationBlock);
-
-    if(!existingCompositeValidationBlock) {
-      let validationBlock = document.createElement('p');
-      validationBlock.classList.add('validationBlock');
-      validationBlock.setAttribute('for', groupDivName);
-      validationBlock.innerHTML = groupStatus;
-      //console.log(validationBlock);
-      groupDiv.insertAdjacentElement('beforeend', validationBlock);
-    } else {
-      //console.log(groupValidationCheck);
-      existingCompositeValidationBlock.innerHTML = groupStatus;
-      if(groupValidationCheck && groupValidationCheck == 'Pass') {
-        existingCompositeValidationBlock.remove();
-      }
-    }
-    return groupValidationCheck;
-  }
-
-  inputBatch.forEach(function(inputBlock) {
-    let inputObject = '';
-    
-    if (!Array.isArray(inputBlock)) {
-      inputObject = inputBlock;
-      let validationStatus = validateInput(formSelectee, inputObject['querySelectee'], inputObject['labelText']);
-      if (validationStatus.validationCheck == 'Fail') {
-        formValidationCheck = 'Fail';
-      }
-      renderValidationBlock(inputObject, validationStatus);
-    } else {
-      let validationStatusArray = validateInputs(inputBlock, formSelectee);
-      let groupValidationCheck = renderCompositeValidationBlock(inputBlock, validationStatusArray);
-      if (groupValidationCheck == 'Fail') {
-        formValidationCheck = 'Fail';
-      }
-    }
-
-  });
-
-  let submitButton = form.querySelector(submitSelectee);
-  if (formValidationCheck && formValidationCheck == 'Fail') {
-    submitButton.disabled = true;
-  } else {
-    formValidationCheck = 'Pass';
-    submitButton.disabled = false;
-  }
-
-  return formValidationCheck;
-}*/
