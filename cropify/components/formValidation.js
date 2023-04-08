@@ -1,61 +1,99 @@
-function validateFormInputs(formSelectee) {
+function validateFormInputs(formSelectee, submitSelectee) {
   let form = document.querySelector(formSelectee);
+  let formValidation = {check: '', status: ''};
   form.childNodes.forEach(function(child){
     if(child.tagName == 'INPUT') {
-      renderValidationBlock(child);
+      formValidation = renderValidationBlock(child, null);
     } else if (child.tagName == 'DIV') {
       let groupDiv = child;
       let inputNodes = child.querySelectorAll('input');
       if (inputNodes.length) {
-        renderValidationBlock(inputNodes, groupDiv);
+        formValidation = renderValidationBlock(inputNodes, groupDiv);
       }
     }
   });
+  let submitButton = document.querySelector(submitSelectee);
+  if(formValidation.check == '') {
+    formValidation.check == 'pass';
+    submitButton.disabled = false;
+  } else if(formValidation.check != 'pass') {
+    submitButton.disabled = true;
+  }
 
   function renderValidationBlock(inputNodes, groupDiv) {
     if(!Array.isArray(inputNodes) && !NodeList.prototype.isPrototypeOf(inputNodes)) {
       inputNodes = [inputNodes];
     }
+    let validationBlockToggle = 'hide';
     inputNodes.forEach(function(inputNode){
+      let validationBlockId = '';
       let validationBlockName = '';
       if(!groupDiv) {
+        validationBlockId = inputNode.id;
         validationBlockName = inputNode.getAttribute('name');
       } else {
+        validationBlockId = groupDiv.id;
         validationBlockName = groupDiv.getAttribute('name');
       }
-      let currentValidationBlock = form.querySelector('p.validationBlock[for='+validationBlockName+']');
+      let currentValidationBlock = form.querySelector('p.validationBlock[for='+validationBlockId+']');
+      let validation = validateInput(inputNode);
+      if (validation.check == 'fail') {
+        formValidation.check = 'fail';
+      }
       if( inputNode.getAttribute('type') != 'checkbox' 
           && inputNode.value
+          && validation.check == 'fail'
       ) {
+        validationBlockToggle = 'show';
         if(!currentValidationBlock) {
-          insertValidationBlock(validationBlockName);
+          insertValidationBlock(validationBlockId, inputNode, validationBlockName);
         }
-      } else if(!inputNode.value) {
+        modifyValidationBlock(validationBlockId, validation);
+      } else if(
+          (!inputNode.value && validationBlockToggle == 'hide') 
+          || (validation.check == 'pass' && validationBlockToggle == 'hide')
+        ) {
         if (currentValidationBlock) {
           currentValidationBlock.remove();
         }
       }
     });
 
-    function insertValidationBlock(validationBlockName) {
+    function insertValidationBlock(validationBlockId, inputNode, validationBlockName) {
       let validationBlock = document.createElement('p');
       validationBlock.classList.add('validationBlock');
-      validationBlock.setAttribute('for', validationBlockName);
-      validationBlock.innerHTML = validationBlockName;
+      validationBlock.setAttribute('for', validationBlockId);
+
+      validationBlock.innerHTML = validationBlockName+": <br />";
+
       if(!groupDiv) {
-        inputNodes.forEach(function(inputNode){
-          if (['text', 'email'].indexOf(inputNode.getAttribute('type')) >= 0) {
-            inputNode.insertAdjacentElement('afterend', validationBlock);
-          } else if (['checkbox'].indexOf(inputNode.getAttribute('type')) >= 0) {
-            inputNode.nextElementSibling.insertAdjacentElement('afterend', validationBlock);
-          }
-        });
+        if (['text', 'email'].indexOf(inputNode.getAttribute('type')) >= 0) {
+          inputNode.insertAdjacentElement('afterend', validationBlock);
+        } else if (['checkbox'].indexOf(inputNode.getAttribute('type')) >= 0) {
+          inputNode.nextElementSibling.insertAdjacentElement('afterend', validationBlock);
+        }
       } else {
         groupDiv.insertAdjacentElement('beforeend', validationBlock);
       }
     }
-    
+
+    function modifyValidationBlock(validationBlockId, validation) {
+      let validationBlock = form.querySelector('p.validationBlock[for='+validationBlockId+']');
+      validationBlock.innerHTML += 'Yo yo hey ';
+    }
+
+    return formValidation;
   }
+}
+
+function validateInput (inputNode) {
+  let validation = {status: '', check: ''};
+  if (!inputNode.checkValidity()) {
+    validation.check = 'fail';
+  } else {
+    validation.check = 'pass';
+  }
+  return validation;
 }
 
 function validateInputs(inputGroup) {
