@@ -17,7 +17,6 @@ html {
   --grey-text: rgb(133, 133, 133);
   --dark-grey-text: rgb(100, 100, 100);
   
-
   font-family: Roboto, Tahoma, Arial, sans-serif;
   font-size: 16px;
 }
@@ -263,6 +262,7 @@ div.formBlock label {
 }
 
 div.formBlock input[type=text], 
+div.formBlock input[type=email], 
 div.formBlock input[type=password], 
 div.formBlock input[type=number],
 div.formBlock textarea, 
@@ -275,6 +275,12 @@ div.formBlock select {
   font-size: 1.2em;
   box-sizing: border-box;
   font-family: inherit;
+}
+
+div.formBlock button[disabled],
+div.formBlock button[disabled]:hover {
+  background-color: var(--grey-text);
+  cursor: default;
 }
 
 select,
@@ -291,6 +297,18 @@ div.validationBlock {
   width: 100%;
   box-sizing: border-box;
   background-color: var(--primary-green);
+  color: white;
+}
+
+p.validationBlock {
+  font-size: 0.8em;
+  padding: 0.7em 1em;
+  border: 1px dashed rgb(207, 101, 101);
+  border-radius: 6px;
+  margin: -2px 0 1em 0;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: rgb(231, 130, 130);
   color: white;
 }
 

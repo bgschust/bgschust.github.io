@@ -4,6 +4,7 @@
   <title>Cropify - Sign Up</title>
   <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
   <link rel="icon" type="image/png" href="../images/favicon.png">
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="../components/style.css">
@@ -11,6 +12,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
   <script src="../components/functions.js"></script>
   <script src="../components/components.js"></script>
+  <script src="../components/formValidation.js"></script>
 </head>
 <body>
 
@@ -26,31 +28,39 @@
       <div class="formBlock">
         
         <label for="email">Email Address</label>
-        <input type="text" id="email"><br>
-        <label for="password">Password</label>
-        <input type="password" id="password"><br>
-        <label for="passwordConfirmation">Confirm Password</label>
-        <input type="password" id="passwordConfirmation"><br>
-        <div id="passwordValidationBlock"></div>
-        <div>
+        <input type="email" name="Email address" id="email" minlength="6" maxlength="40" required />
+        <div name="Passwords" id="passwords">
+          <label for="password">Password</label>
+          <input type="password" name="password" id="password" minlength="8" maxlength="32" required /><br>
+          <label for="passwordConfirmation">Confirm Password</label>
+          <input type="password" name="passwordConfirmation" id="passwordConfirmation" minlength="8" maxlength="32" required /><br>
+          <div id="passwordValidationBlock"></div>
+        </div>
+        <div name="Your name" id="personName">
           <div style="display:inline-block;">
             <label for="firstName">First Name</label>
-            <input type="text" id="firstName">
+            <input type="text" name="firstName" id="firstName" minlength="3" maxlength="20" required />
           </div>
           <div style="display:inline-block;">
             <label for="lastName">Last Name</label>
-            <input type="text" id="lastName">
+            <input type="text" name="lastName" id="lastName" minlength="3" maxlength="34" required />
           </div>
         </div>
         <label for="zipcode">Zipcode</label>
-        <input type="text" id="zipcode"><br>
-        <input type="checkbox" id="termsConditions">
+        <input type="text" name="Zip code" id="zipcode" minlength="5" maxlength="10" required />
+        <input type="checkbox" name="Terms & conditions" id="termsConditions" required />
         <label for="termsConditions">I accept the <a href="../files/terms-conditions.html" target="_blank">terms & conditions</a>.</label><br><br>
 
         <div id="statusBlock"></div>
-        <button class="submitForm registerUser">Register</button>
+        <button class="submitForm registerUser" disabled autocomplete="off">Register</button>
 
       </div>
+      <script id="validateRegistrationForm">
+        validateFormInputs('div.formBlock', 'button.submitForm.registerUser');
+        document.querySelector('div.formBlock').addEventListener('change', function() {
+          validateFormInputs('div.formBlock', 'button.submitForm.registerUser');
+        });
+      </script>
 
       <p>
         If you already have an account, <br>
@@ -66,11 +76,12 @@
 </body>
 
 <script id="validation">
-  let passwordValidationStatus = 'invalid';
+  let validationStatus = {};
 
+  let passwordValidationStatus = 'invalid';
   document.querySelector('input#password').addEventListener('input', validatePassword);
   document.querySelector('input#passwordConfirmation').addEventListener('input', validatePassword);
-  function validatePassword() {
+  function validatePassword(event) {
     let passwordValidationBlock = document.querySelector('div#passwordValidationBlock');
     passwordValidationBlock.classList.add('validationBlock');
 
@@ -78,9 +89,9 @@
     let passwordConfirmation = document.querySelector('input#passwordConfirmation');
     let regEx = /^[0-9a-zA-Z]+$/;
 
-    if (this.value.match(regEx) 
-        && this.value.length <= 32 
-        && this.value.length >=8 
+    if (event.target.value.match(regEx) 
+        && event.target.value.length <= event.target.getAttribute('maxlength') 
+        && event.target.value.length >= event.target.getAttribute('minlength') 
         && password.value == passwordConfirmation.value) {
       passwordValidationStatus = 'valid';
       passwordValidationBlock.setAttribute('style','display:none;');
@@ -89,7 +100,7 @@
       passwordValidationBlock.innerHTML = 'Invalid password: <br>';
     }
 
-    if(!this.value.match(regEx)) {
+    if(!event.target.value.match(regEx)) {
       passwordValidationStatus = 'invalid';
       let alphanumericStatus = document.createElement('p');
       alphanumericStatus.setAttribute('id','passwordValidation_alphanumericStatus');
@@ -99,7 +110,7 @@
       let passwordValidation_alphanumericStatus = document.querySelector('p#passwordValidation_alphanumericStatus');
       passwordValidation_alphanumericStatus ? passwordValidation_alphanumericStatus.remove() : '';
     }
-    if (this.value.length > 32 || this.value.length < 8) {
+    if (event.target.value.length > 32 || event.target.value.length < 8) {
       passwordValidationStatus = 'invalid';
       let lengthStatus = document.createElement('p');
       lengthStatus.setAttribute('id','passwordValidation_lengthStatus');
@@ -123,6 +134,63 @@
       passwordValidation_confirmStatus ? passwordValidation_confirmStatus.remove() : '';
     }
   }
+
+  validationStatus.email = 'invalid';
+  //document.querySelector('input#password').addEventListener('input', validatePassword);
+  //document.querySelector('input#passwordConfirmation').addEventListener('input', validatePassword);
+  /*function validatePassword(event) {
+    let passwordValidationBlock = document.querySelector('div#passwordValidationBlock');
+    passwordValidationBlock.classList.add('validationBlock');
+
+    let password = document.querySelector('input#password');
+    let passwordConfirmation = document.querySelector('input#passwordConfirmation');
+    let regEx = /^[0-9a-zA-Z]+$/;
+
+    if (event.target.value.match(regEx) 
+        && event.target.value.length <= event.target.getAttribute('maxlength') 
+        && event.target.value.length >= event.target.getAttribute('minlength') 
+        && password.value == passwordConfirmation.value) {
+      passwordValidationStatus = 'valid';
+      passwordValidationBlock.setAttribute('style','display:none;');
+    } else {
+      passwordValidationBlock.setAttribute('style','display:inherit;');
+      passwordValidationBlock.innerHTML = 'Invalid password: <br>';
+    }
+
+    if(!event.target.value.match(regEx)) {
+      passwordValidationStatus = 'invalid';
+      let alphanumericStatus = document.createElement('p');
+      alphanumericStatus.setAttribute('id','passwordValidation_alphanumericStatus');
+      alphanumericStatus.innerHTML = "&#x26A0; No special characters allowed. Alphanumeric only (i.e. a-z, A-Z, 0-9).";
+      passwordValidationBlock.appendChild(alphanumericStatus);
+    } else {
+      let passwordValidation_alphanumericStatus = document.querySelector('p#passwordValidation_alphanumericStatus');
+      passwordValidation_alphanumericStatus ? passwordValidation_alphanumericStatus.remove() : '';
+    }
+    if (event.target.value.length > 32 || event.target.value.length < 8) {
+      passwordValidationStatus = 'invalid';
+      let lengthStatus = document.createElement('p');
+      lengthStatus.setAttribute('id','passwordValidation_lengthStatus');
+      lengthStatus.innerHTML = "&#x26A0; Wrong length. Password should be 8-32 characters long.";
+      passwordValidationBlock.appendChild(lengthStatus);
+    } else {
+      let passwordValidation_lengthStatus = document.querySelector('p#passwordValidation_lengthStatus');
+      passwordValidation_lengthStatus ? passwordValidation_lengthStatus.remove() : '';
+    }
+    passwordValidation();
+  }
+  function passwordValidation() {
+    if (password.value !== passwordConfirmation.value) {
+      passwordValidationStatus = 'invalid';
+      let confirmStatus = document.createElement('p');
+      confirmStatus.setAttribute('id','passwordValidation_confirmStatus');
+      confirmStatus.innerHTML = "&#x26A0; Passwords do not match.";
+      passwordValidationBlock.appendChild(confirmStatus);
+    } else {
+      let passwordValidation_confirmStatus = document.querySelector('p#passwordValidation_confirmStatus');
+      passwordValidation_confirmStatus ? passwordValidation_confirmStatus.remove() : '';
+    }
+  }*/
 
 </script>
 
@@ -169,7 +237,7 @@
       async function showResponse() {
         statusBlock.textContent = "Please wait.";
         let response = await registerUser();
-        statusBlock.textContent = await response;
+        statusBlock.textContent = response;
       }
       showResponse();
     } else {
