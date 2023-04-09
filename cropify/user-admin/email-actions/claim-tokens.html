@@ -12,7 +12,7 @@
 </head>
 <body>
 
-  <div class="component topNavigation"></div>
+  <!-- div class="component topNavigation"></div -->
 
   <div id="mainContainer">
 
@@ -23,7 +23,7 @@
 
   </div>
 
-  <div class="component footer"></div>
+  <!-- div class="component footer"></div -->
 
 </body>
 
@@ -63,10 +63,12 @@
     statusBlock.textContent = 'Please wait.';
     let response = await postRequest_claimTokens();
     statusBlock.textContent = response;
-    if (response.statusMessage == 'Tokens claimed.') {
+    if (response.statusMessage == 'You have claimed your tokens.') {
       statusBlock.innerHTML = "Success! Please proceed to <a href='../log-in.html'>log in</a>.";
     } else if (response.statusMessage == 'Credential authentication failed.') {
-      statusBlock.textContent = 'Your email address could not be verified. Please try again.'
+      statusBlock.textContent = 'Credential authentication failed. Please try logging in again, or contact support.'
+    } else if (response.statusMessage == 'Acceptance code not recognized.') {
+      statusBlock.textContent = response.statusMessage;
     }
   }
 
