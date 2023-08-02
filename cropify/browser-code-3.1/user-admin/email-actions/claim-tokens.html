@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify - Claim Tokens</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../../images/favicon.png">
+  <link rel="stylesheet" href="../../public/style.css">
+  <link rel="stylesheet" href="../../components/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="../../components/functions.js"></script>
+  <script src="../../components/components.js"></script>
+</head>
+<body>
+
+  <!-- div class="component topNavigation"></div -->
+
+  <div id="mainContainer">
+
+    <h2>Claim Tokens</h2>
+    <div id="statusBlock">Preparing to check your token grant or transfer code...</div>
+
+    <div class="blankSpace"></div>
+
+  </div>
+
+  <!-- div class="component footer"></div -->
+
+</body>
+
+<script id="claimTokens">
+  const urlParams = new URLSearchParams(window.location.search);
+  let acceptanceCode = urlParams.get('acceptanceCode');
+
+  async function postRequest_claimTokens() {
+    var headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    var requestOptions = {
+        method: "PUT",
+        headers: headers,
+        redirect: "follow"
+    };
+    let body = {
+      acceptanceCode: acceptanceCode,
+      userID: JSON.parse(getCookie('user')).id
+    };
+    requestOptions.body = JSON.stringify(body);
+
+    let url = 'https://hammerhead.cropify.org/cors-proxy/'+ // CORS proxy server
+      'https://n8n.cropify.org/webhook-test/6b461c3e-d89f-40e7-a8fd-cc293ef76335';
+    try {
+        let res = await fetch(url, requestOptions);
+        console.log(res);
+        res = await res.text();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  let statusBlock = document.querySelector('div#statusBlock');
+
+  async function claimTokens() {
+    statusBlock.textContent = 'Please wait.';
+    let response = await postRequest_claimTokens();
+    statusBlock.textContent = response;
+    if (response.statusMessage == 'You have claimed your tokens.') {
+      statusBlock.innerHTML = "Success! Please proceed to <a href='../log-in.html'>log in</a>.";
+    } else if (response.statusMessage == 'Credential authentication failed.') {
+      statusBlock.textContent = 'Credential authentication failed. Please try logging in again, or contact support.'
+    } else if (response.statusMessage == 'Acceptance code not recognized.') {
+      statusBlock.textContent = response.statusMessage;
+    }
+  }
+
+  if(getCookie('user')) {
+    const delayTokenAcceptance = setTimeout(claimTokens, 3000);
+  } else {
+    statusBlock.innerHTML = 
+      "Please <a href='../log-in.html'>log in</a> and re-visit the emailed link to accept your tokens.";
+  }
+</script>
+
+</html>

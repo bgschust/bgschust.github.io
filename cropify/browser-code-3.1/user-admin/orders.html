@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify - Orders</title>
+  <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="../images/favicon.png">
+  <link rel="stylesheet" href="../public/style.css">
+  <link rel="stylesheet" href="../components/style.css">
+  <link rel="stylesheet" href="../user-admin/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="../components/functions.js"></script>
+  <script src="../components/components.js"></script>
+</head>
+<body>
+
+  <div class="component topNavigation"></div>
+
+  <div id="mainContainer">
+
+    <div id="listingsSalesOrders">
+      <div>
+        <a href="../public/general-items.html">Listings</a>
+      </div>
+      <div class="selected">
+        Orders
+      </div>
+      <div>
+        <a href="../org-admin/sales.html">Sales</a>
+      </div>
+    </div>
+    
+    <p>Orders: These are the orders you have made. Click on each for details.</p>
+    <div id="searchContainer">
+      <input type="text" id="search" placeholder="Search... (not yet functional)">
+      <img src="../images/icons8-search-32.png" alt="searchIcon" class="iconBtn">
+    </div>
+
+    <h3>My Orders</h3>
+    
+    <p class="placeholder">My orders here. Please <a href="../public/sign-up.html">sign up</a> or <a href="../user-admin/log-in.html">log in</a>.</p>
+    <div id="orderListSummaryContainer">
+      <p id="count"><span>0</span> items</p>
+    </div>
+    <ul id="myOrders" class="wideList"></ul>
+
+  </div>
+
+  <div class="component footer"></div>
+
+</body>
+
+<script id="initialization">
+  if(getCookie('user')) {
+    document.querySelector('p.placeholder').setAttribute('style','display:none');
+  } else {
+    if(confirm('Please sign up or log in to go to your orders.')) {
+      window.location.href = '../user-admin/profile.html';
+    } else {
+      history.back();
+    }
+  }
+</script>
+
+<script id="getOrderList">
+  async function getRequest_orderList() {
+    var headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    var requestOptions = {
+        method: "GET",
+        headers: headers,
+        redirect: "follow",
+    };
+    
+    let queryParams = [
+      {"User_ID": JSON.parse(getCookie('user')).id},
+      {"Password": JSON.parse(getCookie('user')).Password}
+    ];
+
+    let url = buildURL('https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+      + 'https://n8n.cropify.org/webhook/d7c27405-0b31-4ce1-86aa-dc8dad1f9708', 
+      queryParams);
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  async function renderOrderList() {
+    let response = await getRequest_orderList();
+    
+    // render summary
+    let summaryContainer = document.querySelector('div#orderListSummaryContainer');
+    summaryContainer.querySelector('p#count>span').textContent = response.summary['count'];
+
+    // simplify records JSON
+    let records = response.basicOrderList;
+    let recordCount = records.length;
+
+    // sort records
+    //records = _.sortBy(records, 'field_902131');
+    //records = _.sortBy(records, 'secondary sort field');
+    //records = _.sortBy(records, 'tertiary sort field');
+
+    // render records
+    let recordList = document.querySelector('ul#myOrders');
+    recordList.innerHTML = '';
+    records.forEach(function(record, index){
+      let listItem = document.createElement('li');
+      let title = document.createElement('h4');
+      let orderTime = document.createElement('p');
+      let detailsContainer = document.createElement('div');
+      let detailLink = document.createElement('a');
+      let detailBtn = document.createElement('button');
+      let detailIcon = document.createElement('img');
+      let col1 = document.createElement('div');
+      let col2 = document.createElement('div');
+      let p1 = document.createElement('p');
+      let p2 = document.createElement('p');
+      let p3 = document.createElement('p');
+      let p4 = document.createElement('p');
+      let p5 = document.createElement('p');
+
+      listItem.id = 'basketID-'+record['id'];
+      if(index == recordCount-1) {
+        listItem.classList.add('last');
+      }
+      title.textContent = 'Order #'+record['id'];
+      orderTime.textContent = 'Placed '+ new Date(record['field_902131']);
+      orderTime.id = 'orderTime';
+      detailsContainer.classList.add('detailsContainer');
+      let detailURL = buildURL(
+        './order-details.html',
+        [
+          {basketID: record['id']}
+        ]
+      );
+      detailLink.setAttribute('href', detailURL);
+      detailBtn.textContent = 'Details';
+      detailIcon.setAttribute('src','../images/icons8-details-48-white.png');
+      detailBtn.insertAdjacentElement('afterbegin', detailIcon);
+      detailBtn.classList.add('iconTextBtn');
+      col2.classList.add('col2');
+      p1.textContent = record['field_830551']+' market items ('+record['field_830550']+' total)'; // item counts
+      p2.textContent = 'Subtotal: ' + record['field_831732'] + ' AgG / ' + record['field_1010203'] + ' USD'; // subtotal
+      p3.textContent = 'Transaction Fee: ' + record['field_831733'] + ' AgG'; // transaction fee
+      p4.textContent = 'Total (AgG): '+(Number(record['field_831732'])+Number(record['field_831733'])).toFixed(2); // total
+      //p5.textContent = 'Subtotal (AgG): '+record['field_831732']; // applicable subtotal for amounts paid & owed in each currency
+
+      listItem.appendChild(title);
+      listItem.appendChild(orderTime);
+      detailLink.appendChild(detailBtn);
+      detailsContainer.appendChild(detailLink);
+      listItem.appendChild(detailsContainer);
+      col2.appendChild(p1);
+      col2.appendChild(p2);
+      col2.appendChild(p3);
+      col2.appendChild(p4);
+      listItem.appendChild(col1);
+      listItem.appendChild(col2);
+      recordList.appendChild(listItem);
+    });
+
+  }
+  renderOrderList();
+
+</script>
+
+</html>

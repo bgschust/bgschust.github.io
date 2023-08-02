@@ -1,0 +1,21 @@
+p.paymentMethod {
+  margin: 0 0 4px 0;
+}
+
+label[name=paymentMethod] {
+  margin-right: 25px;
+}
+
+p.qtyAvail {
+  margin: 2px 0px 8px 0px;
+}
+
+div.marketItem_cartOption
+  >label {
+    padding-right: 15px;
+  }
+
+div.marketItem_cartOption
+  >input[type=number] {
+    width: 4em;
+  }

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cropify: Specific Item Detail</title>
+  <meta name="google-site-verification" content="xge8ZYlv0TNmO1n4LLsieIdXQe71VYy20LBcUl-wsUQ" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <link rel="icon" type="image/png" href="../images/favicon.png">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./specific-item-detail.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.6/underscore-min.js"></script>
+  <script src="../components/functions.js"></script>
+</head>
+<body>
+
+  <h3 id="specificItem_Name">Specific Item Name</h3>
+  <p>Supplied by <span id="Supplier">Supplier not found</span>.</p>
+
+  <h4>Fulfillment Method</h4>
+  <input type="radio" id="selfPickup" name="fulfillmentMethod" value="selfPickup" checked>
+  <label for="selfPickup">Self Pick-Up</label>
+
+  <h4>Payment Method</h4>
+  
+    <p class="paymentMethod">
+      <input type="radio" id="payAtPickupUSD" name="paymentMethod" value="payAtPickupUSD" checked />
+      <label for="payAtPickupUSD">Pay at Pick-Up (USD)</label>
+    </p>
+    <p class="paymentMethod">
+      <input type="radio" id="payAtCheckoutAgG" name="paymentMethod" value="payAtCheckoutAgG" disabled />
+      <label for="payAtCheckoutAgG">Pay at Checkout (AgG)</label>
+    </p>
+
+  <h4 class="markets">Markets</h4>
+  <p>No markets found.</p>
+
+  <button id="addToCart">Add to Cart</button>
+
+</body>
+
+<script id="initialize">
+  const urlParams = new URLSearchParams(window.location.search);
+  let specificItem_id = urlParams.get('specificItem_id');
+
+  var headers = new Headers();
+  headers.append("Content-Type", "application/json");
+  headers.append("Authorization", "Token t48tRPtNQccyc6Q65klBDEP1QJqkwXw0");
+  var requestOptions = {
+      method: "get",
+      headers: headers,
+      redirect: "follow",
+  };
+</script>
+
+<script id="specificItem">
+  async function getRequest_specificItem() {
+    let queryParams = [
+      //{"user_field_names": true}
+    ];
+    
+    let url = buildURL(
+      'https://api.baserow.io/api/database/rows/table/6844/' + specificItem_id + '/', 
+      queryParams
+    );
+
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  if (specificItem_id != null || undefined) {
+    let specificItem = async function renderSpecificItem() {
+      let specificItem = {};
+      specificItem = await getRequest_specificItem();
+      
+      document.querySelector('#specificItem_Name').textContent = specificItem['field_29959'];
+      if(specificItem['field_825346'] && specificItem['field_825346'].length > 0) {
+        document.querySelector('span#Supplier').textContent = specificItem['field_825346'][0].value
+      }
+      
+      return specificItem;
+    }();
+  }
+  
+</script>
+
+<script id="marketItems">
+  async function getMarketItems() {
+    let queryParams = [
+      {"user_field_names": true},
+      {"filter__field_825410__link_row_has": specificItem_id}
+    ];
+    
+    let url = buildURL(
+      'https://api.baserow.io/api/database/rows/table/127821/', 
+      queryParams
+    );
+
+    try {
+        let res = await fetch(url, requestOptions);
+        res = await res.json();
+        return await res.results;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  let marketItems = async function renderMarketItems() {
+    let response = await getMarketItems();
+    
+    // browser sorting
+    response.forEach(record => {
+      record.MarketName = record.Market[0].value;
+    });
+    response = _.sortBy(response, 'MarketName');
+
+    // render market items
+    document.querySelector('h4.markets+p').innerHTML = '';
+    response.forEach(record => {
+      let recordDiv = document.createElement('div');
+      recordDiv.classList.add('marketItem_cartOption');
+      let recordRadioBtn = document.createElement('input');
+      recordRadioBtn.setAttribute('type','radio');
+      let recordLabel = document.createElement('label');
+      let recordInput = document.createElement('input');
+      recordInput.setAttribute('type','number');
+      let recordBr = document.createElement('br');
+      let recordQtyAvail = document.createElement('p');
+      recordQtyAvail.classList.add('qtyAvail');
+
+      recordRadioBtn.setAttribute('name','market');
+      recordRadioBtn.setAttribute('id', record.ID);// JSON.stringify(record.Market[0]));
+      recordLabel.textContent = record.Market[0].value;
+      recordLabel.setAttribute('for', record.ID);
+      recordInput.value = 1;
+      recordQtyAvail.innerHTML = 
+        record['Quantity Available'].toString() + ' available for <b>'
+        + record['Price (AgG)'] + ' AgG </b> / '
+        + record['Price (USD)'] + ' USD each';
+
+      recordDiv.appendChild(recordRadioBtn);
+      recordDiv.appendChild(recordLabel);
+      recordDiv.appendChild(recordInput);
+      recordDiv.appendChild(recordBr);
+      recordDiv.appendChild(recordQtyAvail);
+      document.querySelector('h4.markets+p').append(recordDiv);
+    });
+    
+    return response;
+  }();
+</script>
+
+<script id="postCartItem">
+  var headers_postCartItem = new Headers();
+  headers_postCartItem.append("Content-Type", "application/json");
+  var requestOptions_postCartItem = {
+      method: "POST",
+      headers: headers_postCartItem,
+      redirect: "follow",
+  };
+
+  async function postCartItem() {
+    let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
+      + 'https://bgschust.app.n8n.cloud/webhook/a19b8dc9-0847-45fe-b497-1a8eabbda88d';
+    try {
+        let res = await fetch(url, requestOptions_postCartItem);
+        res = await res.text();
+        return await res;
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  let cartQuantity = null;
+  let marketItem_ID = null;
+
+  document.querySelector('h4.markets+p').addEventListener('change', function getCartItem () {
+    if (event.target.parentNode.querySelector('input[type=radio]').getAttribute('type') == 'radio' && event.target.parentNode.querySelector('input[type=radio]').checked == true) {
+      marketItem_ID = JSON.parse(event.target.parentNode.querySelector('input[type=radio]').getAttribute('id'));
+      cartQuantity = Number(event.target.parentNode.querySelector('input[type=number]').value);
+    }
+  });
+
+  document.querySelector('button#addToCart').addEventListener('click', function submitCartItem(){
+    let paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+    let body = {
+      "Fulfillment Method": "Self Pick-Up",
+      "Payment Method": paymentMethod,
+      "Market-Item_ID": marketItem_ID,
+      "User_ID": JSON.parse(getCookie('user')).id,
+      "Password": JSON.parse(getCookie('user')).Password,
+      "Basket Quantity": cartQuantity,
+    };
+    requestOptions_postCartItem.body = JSON.stringify(body);
+    async function showCartItemResponse() {
+      let statusBlock = document.createElement("div");
+      statusBlock.setAttribute('id','statusBlock');
+      statusBlock.textContent = "Please wait.";
+      document.querySelector('button#addToCart').insertAdjacentElement('beforebegin',statusBlock);
+
+      let response = await postCartItem();
+      statusBlock.textContent = await response;
+    }
+    showCartItemResponse();
+  });
+</script>
+
+</html>
