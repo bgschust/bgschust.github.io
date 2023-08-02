@@ -43,6 +43,8 @@
 
 </body>
 
+<script src="./user-admin.js"></script>
+
 <script id="signIn">
   var headers_signIn = new Headers();
   headers_signIn.append("Content-Type", "application/json");
@@ -54,7 +56,7 @@
 
   async function request_signIn() {
     let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
-    +'https://n8n.cropify.org/webhook/1383521f-d15b-4e3f-aa00-a28da667243f';
+    + serverURL + '/1383521f-d15b-4e3f-aa00-a28da667243f';
     try {
         let res = await fetch(url, requestOptions_signIn);
         res = await res.json();
