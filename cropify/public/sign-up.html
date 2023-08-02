@@ -75,6 +75,8 @@
 
 </body>
 
+<script src="./public.js"></script>
+
 <script id="validation">
   let validationStatus = {};
 
@@ -205,7 +207,7 @@
 
   async function registerUser() {
     let url = 'https://hammerhead.cropify.org/cors-proxy/' // CORS proxy server
-    + 'https://bgschust.app.n8n.cloud/webhook/6d76236d-62ea-436c-8724-56eab00603a5';
+    + serverURL + '/6d76236d-62ea-436c-8724-56eab00603a5';
     try {
         let res = await fetch(url, requestOptions_registerUser);
         res = await res.text();
